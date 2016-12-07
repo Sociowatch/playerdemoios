@@ -1,4 +1,4 @@
-# SlikePlayer  (v0.0.1)
+# SlikePlayer Demo (iOS)  (v0.0.1)
 
 ## Example
 
