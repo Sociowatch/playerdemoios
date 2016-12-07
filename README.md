@@ -4,9 +4,14 @@
 
 To run the example project, clone this repo i.e. https://bitbucket.org/times_internet/slikeplayerdemoandroid.git.
 
+
 ## Requirements
 platform: iOS 8 or greater
 NSAppTransportSecurity: (For app transport security see the example's info plist file.)
+Dependencies:
+1 'GoogleAnalytics-iOS-SDK', '~> 3.12'
+2 'google-cast-sdk', '~> 3.3'
+3 'GoogleAds-IMA-iOS-SDK-For-AdMob', '~> 3.3.1'
 
 ## Installation
 
