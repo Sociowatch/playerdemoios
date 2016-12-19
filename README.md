@@ -31,7 +31,7 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
  
  Its main methods are as follows.
  
- - (void) playVideo:(NSString *)strVideoKey withTimeCode:(NSInteger) timeCode inParent:(id) parent withAds:(NSMutableArray *) arrAds withAnalyticsInfo:(AnalyticsSpecificInfo *) analyticsSpecificInfo
+ - (void) playVideo:(NSString *)strVideoKey withTimeCode:(NSInteger) timeCode inParent:(id) parent withAds:(NSMutableArray *) arrAds withAnalyticsInfo:(AnalyticsSpecificInfo *) analyticsSpecificInfo withProgressHandler:(progressinfohandler) block
  
  Parameters:
  strVideoKey: The kaltura video id.
@@ -54,6 +54,8 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
  
     This information is optional (perhaps required by TOI apps).
  
+    The progress handler is optional. If set, it will provide video update detail MDO i.e. ProgressInfo instance.
+ 
  
  Other playback options:
  
@@ -62,7 +64,7 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
  
  This method will give an instance of StreamingInfo.
  And can be used in...
- - (void) playVideoWithInfo:(StreamingInfo *)obj withTimeCode:(NSInteger) timeCode inParent:(id) parent
+ - (void) playVideoWithInfo:(StreamingInfo *)obj withTimeCode:(NSInteger) timeCode inParent:(id) parent withProgressHandler:(progressinfohandler) block
  
  
  For playing a playlist...
@@ -73,13 +75,17 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
  Parameters:
     arrVideos: a mutable array of StreamingInfo instances.
     index: index position of video which will be played after initialization.
-    currentlyPlaying: This block will notify whenever video changes.
+    currentlyPlaying: This block will notify whenever video changes. It consists 2 parameters. currently playing video index and ProgressInfo of currently playing video. the info can be nil while switching to other videos or replay.
  
  Refer to PlaylistViewController.
  e.g.
-    [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index) {
-        [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-    }];
+ [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, ProgressInfo *progressInfo) {
+ if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+ else
+ {
+ NSLog(@"%@", [progressInfo getString]);
+ }
+ }];
  
  
  To stop a player, just use.
