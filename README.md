@@ -1,4 +1,4 @@
-# SlikePlayer Demo (iOS)  (v0.0.1)
+# SlikePlayer Demo (iOS)  (v0.0.4)
 
 ## Example
 
@@ -10,8 +10,6 @@ platform: iOS 8 or greater
 NSAppTransportSecurity: (For app transport security see the example's info plist file.)
 
 ##Dependencies:
-1. 'GoogleAnalytics-iOS-SDK', '~> 3.12'
-2. 'google-cast-sdk', '~> 3.3'
 3. 'GoogleAds-IMA-iOS-SDK-For-AdMob', '~> 3.3.1'
 
 ## Installation
@@ -20,7 +18,7 @@ SlikePlayer is available through private repo [CocoaPods](http://cocoapods.org).
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.1'
+pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.4'
 ```
 
 #HOW TO INTEGRATE:
@@ -30,15 +28,6 @@ Best way to integrate, just clone the example repo.
 SlikePlayerManager is a singleton class and precisely do not create new instance by allocating yourself.
  
  SlikePlayerManager *myPlayer = [SlikePlayerManager getInstance];
- 
- If you'll need to initiate Google Analytics, initiate with following method.
- 
- -(void) initPlayerWithGATrackID:(id<GAITracker>) gaTracker
- 
- Above method must be called only once.
- 
-  e.g. SlikePlayerManager *myPlayer = [SlikePlayerManager getInstance] initPlayerWithGATrackID: myTracker];
- 
  
  Its main methods are as follows.
  
