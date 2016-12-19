@@ -18,7 +18,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:self.viewPlayer withAds:nil withAnalyticsInfo:analyticsSpecificInfo];
+    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:self.viewPlayer withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
+        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
+    }];
 }
 
 - (void)didReceiveMemoryWarning {

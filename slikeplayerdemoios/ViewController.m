@@ -2,7 +2,7 @@
 //  ViewController.m
 //  slikeplayerexample
 //
-//  Created by TIL on 16/09/16.
+//  Created by TIL on 19/12/16.
 //  Copyright © 2016 BBDSL. All rights reserved.
 //
 /**
@@ -10,15 +10,6 @@
  SlikePlayerManager is a singleton class and precisely do not create new instance by allocating yourself.
  
  SlikePlayerManager *myPlayer = [SlikePlayerManager getInstance];
- 
- If you'll need to initiate Google Analytics, initiate with following method.
- 
- -(void) initPlayerWithGATrackID:(id<GAITracker>) gaTracker
- 
- Above method must be called only once.
- 
-  e.g. SlikePlayerManager *myPlayer = [SlikePlayerManager getInstance] initPlayerWithGATrackID: myTracker];
- 
  
  Its main methods are as follows.
  
@@ -98,7 +89,9 @@
 }
 - (IBAction)clbPlayVideo:(id)sender {
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo];
+    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
+        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
+    }];
 }
 
 /***
@@ -127,7 +120,9 @@
     [info addPosition:-1 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]];
     [arr addObject:info];
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo];
+    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
+        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
+    }];
 }
 
 - (IBAction)clbLiveStream:(id)sender {
@@ -149,8 +144,9 @@
     [arr addObject:info];
     
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideoWithInfo:[StreamingInfo createStreamURL:@"http://timesnow-lh.akamaihd.net/i/Timesnow-TIL-APP-HLS/TimesNow_1@129288/master.m3u8" withTitle:@"Live Streaming" withSubTitle:@"" withDuration:0L withAds:arr withAnalyticsInfo:analyticsSpecificInfo] withTimeCode:0L inParent:nil];
-    //[[SlikePlayerManager getInstance] playVideoWithInfo:[StreamingInfo createStreamURL:@"https://tungsten.aaplimg.com/VOD/bipbop_adv_fmp4_example/master.m3u8" withTitle:@"Live Streaming" withSubTitle:@"" withDuration:0L withAds:nil] withTimeCode:0L inParent:nil];
+    [[SlikePlayerManager getInstance] playVideoWithInfo:[StreamingInfo createStreamURL:@"http://timesnow-lh.akamaihd.net/i/Timesnow-TIL-APP-HLS/TimesNow_1@129288/master.m3u8" withTitle:@"Live Streaming" withSubTitle:@"" withDuration:0L withAds:arr withAnalyticsInfo:analyticsSpecificInfo] withTimeCode:0L inParent:nil withProgressHandler:^(ProgressInfo *progressInfo) {
+        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
+    }];
 }
 
 -(IBAction)prepareForUnwind:(UIStoryboardSegue *)segue
