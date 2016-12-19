@@ -78,8 +78,8 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
     currentlyPlaying: This block will notify whenever video changes. It consists 2 parameters. currently playing video index and ProgressInfo of currently playing video. the info can be nil while switching to other videos or replay.
  
  Refer to PlaylistViewController.
+
  e.g.
- 
  [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, ProgressInfo *progressInfo) {
         if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
         else
@@ -87,6 +87,8 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
             NSLog(@"%@", [progressInfo getString]);
         }
     }];
+
+
  
  To stop a player, just use.
  - (void) stopPlayer;
