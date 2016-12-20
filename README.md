@@ -10,7 +10,9 @@ platform: iOS 8 or greater
 NSAppTransportSecurity: (For app transport security see the example's info plist file.)
 
 ##Dependencies:
-3. 'GoogleAds-IMA-iOS-SDK-For-AdMob', '~> 3.3.1'
+1 'google-cast-sdk', '~> 3.3'
+2 'GoogleAds-IMA-iOS-SDK-For-AdMob', '~> 3.3.1'
+3 'youtube-ios-player-helper', '~> 0.1.6'
 
 ## Installation
 
