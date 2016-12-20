@@ -42,10 +42,14 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
  into the rootviewcontroller of the main window. For smaller view of the player, you should set a view as parent. Precisely, only view will set the player in window view.
  arrAds: The ads array. This should by nil until explicitely need to override the ads array of the video. It is a mutable array of BoxAdsInfo instances.
  
- NSMutableArray *arr = [NSMutableArray array];
- BoxAdsInfo * info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
- [info addPosition:0 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="]];
- [arr addObject:info];
+e.g.
+ > NSMutableArray *arr = [NSMutableArray array];
+
+ > BoxAdsInfo * info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
+
+ > [info addPosition:0 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="]];
+
+ > [arr addObject:info];
  
  This ads array will override the actual ads of the video.
  
@@ -62,79 +66,112 @@ SlikePlayerManager is a singleton class and precisely do not create new instance
  Other playback options:
  
  In case of non kaltura streams or some live stream, the StreamingInfo can be created explicitely and passed to the player.
- +(StreamingInfo *) createStreamURL:(NSString *) strURL withTitle:(NSString *) strTitle withSubTitle:(NSString *) strSubTitle withDuration:(NSInteger) duration withAds:(NSMutableArray *) arrAds withAnalyticsInfo:(AnalyticsSpecificInfo *) analyticsSpecificInfo;
+
+
+ > +(StreamingInfo *) createStreamURL:(NSString *) strURL withTitle:(NSString *) strTitle withSubTitle:(NSString *) strSubTitle withDuration:(NSInteger) duration withAds:(NSMutableArray *) arrAds withAnalyticsInfo:(AnalyticsSpecificInfo *) analyticsSpecificInfo;
  
  This method will give an instance of StreamingInfo.
  And can be used in...
- - (void) playVideoWithInfo:(StreamingInfo *)obj withTimeCode:(NSInteger) timeCode inParent:(id) parent withProgressHandler:(progressinfohandler) block
+
+ > - (void) playVideoWithInfo:(StreamingInfo *)obj withTimeCode:(NSInteger) timeCode inParent:(id) parent withProgressHandler:(progressinfohandler) block
  
  
  For playing a playlist...
  
  Create a mutable array of StreamingInfo instances and pass it to the following method.
  
- - (void) playVideo:(NSMutableArray *)arrVideos withIndex:(NSInteger) index withCurrentlyPlaying:(currentlyPlaying) block
+ > - (void) playVideo:(NSMutableArray *)arrVideos withIndex:(NSInteger) index withCurrentlyPlaying:(currentlyPlaying) block
+
  Parameters:
  arrVideos: a mutable array of StreamingInfo instances.
  index: index position of video which will be played after initialization.
  currentlyPlaying: This block will notify whenever video changes. It consists 2 parameters. currently playing video index and ProgressInfo of currently playing video. the info can be nil while switching to other videos or replay.
  
  Refer to PlaylistViewController.
+
  e.g.
- [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, ProgressInfo *progressInfo) {
- if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
- else
- {
- NSLog(@"%@", [progressInfo getString]);
- }
- }];
+ > [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, ProgressInfo *progressInfo) {
+ > if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+ > else
+ > {
+ > NSLog(@"%@", [progressInfo getString]);
+ > }
+ > }];
  
  
  To stop a player, just use.
- - (void) stopPlayer;
  
- e.g. [SlikePlayerManager getInstance] stopPlayer];
+> - (void) stopPlayer;
+ 
+ e.g. 
+> [SlikePlayerManager getInstance] stopPlayer];
  
  
  ///STYLING e.g.
- UIImage *img = [UIImage imageNamed:@"testicon"];
- UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
- 
- UIColor *clrBackground = [[UIColor whiteColor] colorWithAlphaComponent:0.6];
- UIColor *clrTitle = [UIColor darkGrayColor];
- UIColor *clrSubtitle = [UIColor darkGrayColor];
- UIColor *clrContent = [UIColor darkGrayColor];
- UIColor *clrActivity = [UIColor greenColor];
- 
- [SlikePlayerManager getInstance].playerStyleBarBackground = clrBackground;
- UIFont *titleFont = [UIFont fontWithName:@"AmericanTypewriter" size:18];
- UIFont *subtitleFont = [UIFont fontWithName:@"AmericanTypewriter" size:12];
- 
- [SlikePlayerManager getInstance].playerStyleCloseButton = img;
- [SlikePlayerManager getInstance].playerStylePlayButton = img;
- [SlikePlayerManager getInstance].playerStylePauseButton = img;
- [SlikePlayerManager getInstance].playerStyleReverseButton = img;
- [SlikePlayerManager getInstance].playerStyleForwardButton = img;
- [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
- [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
- 
- //[SlikePlayerManager getInstance].playerStyleSliderMinTrackImage = imgResizable;
- //[SlikePlayerManager getInstance].playerStyleSliderMaxTrackImage = imgResizable;
- [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
- 
- [SlikePlayerManager getInstance].playerStyleTitleFont = titleFont;
- [SlikePlayerManager getInstance].playerStyleDurationFont = subtitleFont;
- [SlikePlayerManager getInstance].playerStyleBitrateTitleFont = titleFont;
- [SlikePlayerManager getInstance].playerStyleBitrateSubtitleFont = subtitleFont;
- [SlikePlayerManager getInstance].playerStyleBitrateContentFont = subtitleFont;
- 
- [SlikePlayerManager getInstance].playerStyleTitleColor = clrTitle;
- [SlikePlayerManager getInstance].playerStyleDurationColor = clrSubtitle;
- [SlikePlayerManager getInstance].playerStyleActivityTintColor = clrActivity;
- [SlikePlayerManager getInstance].playerStyleBitrateBackground = [clrBackground colorWithAlphaComponent:0.7];
- [SlikePlayerManager getInstance].playerStyleBitrateTitleColor = clrTitle;
- [SlikePlayerManager getInstance].playerStyleBitrateSubtitleColor = clrSubtitle;
- [SlikePlayerManager getInstance].playerStyleBitrateContentColor = clrContent;
+ > UIImage *img = [UIImage imageNamed:@"testicon"];
+
+ > UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
+ > 
+ > UIColor *clrBackground = [[UIColor whiteColor] colorWithAlphaComponent:0.6];
+
+ > UIColor *clrTitle = [UIColor darkGrayColor];
+
+ > UIColor *clrSubtitle = [UIColor darkGrayColor];
+
+ > UIColor *clrContent = [UIColor darkGrayColor];
+
+ > UIColor *clrActivity = [UIColor greenColor];
+ > 
+ > [SlikePlayerManager getInstance].playerStyleBarBackground = clrBackground;
+
+ > UIFont *titleFont = [UIFont fontWithName:@"AmericanTypewriter" size:18];
+
+ > UIFont *subtitleFont = [UIFont fontWithName:@"AmericanTypewriter" size:12];
+ > 
+ > [SlikePlayerManager getInstance].playerStyleCloseButton = img;
+
+ > [SlikePlayerManager getInstance].playerStylePlayButton = img;
+
+ > [SlikePlayerManager getInstance].playerStylePauseButton = img;
+
+ > [SlikePlayerManager getInstance].playerStyleReverseButton = img;
+
+ > [SlikePlayerManager getInstance].playerStyleForwardButton = img;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
+
+ > [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
+ > 
+ > //[SlikePlayerManager getInstance].playerStyleSliderMinTrackImage = imgResizable;
+
+ > //[SlikePlayerManager getInstance].playerStyleSliderMaxTrackImage = imgResizable;
+
+ > [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
+ > 
+ > [SlikePlayerManager getInstance].playerStyleTitleFont = titleFont;
+
+ > [SlikePlayerManager getInstance].playerStyleDurationFont = subtitleFont;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateTitleFont = titleFont;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateSubtitleFont = subtitleFont;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateContentFont = subtitleFont;
+ > 
+ > [SlikePlayerManager getInstance].playerStyleTitleColor = clrTitle;
+
+ > [SlikePlayerManager getInstance].playerStyleDurationColor = clrSubtitle;
+
+ > [SlikePlayerManager getInstance].playerStyleActivityTintColor = clrActivity;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateBackground = [clrBackground colorWithAlphaComponent:0.7];
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateTitleColor = clrTitle;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateSubtitleColor = clrSubtitle;
+
+ > [SlikePlayerManager getInstance].playerStyleBitrateContentColor = clrContent;
+
 **************************************
 
 
