@@ -18,6 +18,49 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    [[SlikePlayerManager getInstance] initPlayer];
+    
+    //UNCOMMENT TO TEST STYLING EXAMPLES
+    
+    /*UIImage *img = [UIImage imageNamed:@"testicon"];
+    UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
+    
+    UIColor *clrBackground = [[UIColor whiteColor] colorWithAlphaComponent:0.6];
+    UIColor *clrTitle = [UIColor darkGrayColor];
+    UIColor *clrSubtitle = [UIColor darkGrayColor];
+    UIColor *clrContent = [UIColor darkGrayColor];
+    UIColor *clrActivity = [UIColor greenColor];
+    
+    [SlikePlayerManager getInstance].playerStyleBarBackground = clrBackground;
+    UIFont *titleFont = [UIFont fontWithName:@"AmericanTypewriter" size:18];
+    UIFont *subtitleFont = [UIFont fontWithName:@"AmericanTypewriter" size:12];
+    
+    [SlikePlayerManager getInstance].playerStyleCloseButton = img;
+    [SlikePlayerManager getInstance].playerStylePlayButton = img;
+    [SlikePlayerManager getInstance].playerStylePauseButton = img;
+    [SlikePlayerManager getInstance].playerStyleReverseButton = img;
+    [SlikePlayerManager getInstance].playerStyleForwardButton = img;
+    [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
+    [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
+    
+    //[SlikePlayerManager getInstance].playerStyleSliderMinTrackImage = imgResizable;
+    //[SlikePlayerManager getInstance].playerStyleSliderMaxTrackImage = imgResizable;
+    [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
+    
+    [SlikePlayerManager getInstance].playerStyleTitleFont = titleFont;
+    [SlikePlayerManager getInstance].playerStyleDurationFont = subtitleFont;
+    [SlikePlayerManager getInstance].playerStyleBitrateTitleFont = titleFont;
+    [SlikePlayerManager getInstance].playerStyleBitrateSubtitleFont = subtitleFont;
+    [SlikePlayerManager getInstance].playerStyleBitrateContentFont = subtitleFont;
+    
+    [SlikePlayerManager getInstance].playerStyleTitleColor = clrTitle;
+    [SlikePlayerManager getInstance].playerStyleDurationColor = clrSubtitle;
+    [SlikePlayerManager getInstance].playerStyleActivityTintColor = clrActivity;
+    [SlikePlayerManager getInstance].playerStyleBitrateBackground = [clrBackground colorWithAlphaComponent:0.7];
+    [SlikePlayerManager getInstance].playerStyleBitrateTitleColor = clrTitle;
+    [SlikePlayerManager getInstance].playerStyleBitrateSubtitleColor = clrSubtitle;
+    [SlikePlayerManager getInstance].playerStyleBitrateContentColor = clrContent;*/
+    
     return YES;
 }
 

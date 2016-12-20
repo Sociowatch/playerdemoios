@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina5_5" orientation="portrait">
+    <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -19,19 +19,19 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SLIKE PLAYER" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RcK-ep-apJ">
-                                <rect key="frame" x="22" y="28" width="370" height="32"/>
+                                <rect key="frame" x="18" y="28" width="339" height="32"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                 <color key="textColor" red="0.82425820709999997" green="0.039132167439999997" blue="0.023847486460000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DTn-vo-6lq">
-                                <rect key="frame" x="29" y="110" width="363" height="30"/>
+                                <rect key="frame" x="25" y="110" width="332" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="pzm-Qp-obj"/>
+                                    <constraint firstAttribute="height" constant="30" id="Cf1-Fz-NJF"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Play Kaltura Video">
@@ -42,9 +42,9 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vbx-Tp-zev">
-                                <rect key="frame" x="29" y="200" width="363" height="30"/>
+                                <rect key="frame" x="25" y="233" width="332" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="cRb-tG-qr8"/>
+                                    <constraint firstAttribute="height" constant="30" id="KNN-yZ-9zd"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Open Playlist">
@@ -55,7 +55,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9ib-eI-QMm">
-                                <rect key="frame" x="29" y="243" width="363" height="34"/>
+                                <rect key="frame" x="25" y="276" width="332" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Navigation Controller">
                                     <color key="titleColor" red="0.0" green="0.46510533571243284" blue="0.00014237980973837456" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -65,15 +65,23 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c5X-4l-1X1">
-                                <rect key="frame" x="29" y="153" width="363" height="34"/>
+                                <rect key="frame" x="25" y="186" width="332" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="Play YouTube Video"/>
+                                <connections>
+                                    <action selector="clbPlayYT:" destination="BYZ-38-t0r" eventType="touchUpInside" id="X92-lj-kV0"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TjV-MO-9rm">
+                                <rect key="frame" x="25" y="146" width="332" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Play Video In Window"/>
                                 <connections>
-                                    <segue destination="YrO-df-Cpk" kind="show" id="UQs-ay-sxV"/>
+                                    <segue destination="YrO-df-Cpk" kind="show" id="ApB-n2-OeO"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gqe-cJ-PMU">
-                                <rect key="frame" x="29" y="290" width="363" height="34"/>
+                                <rect key="frame" x="25" y="323" width="332" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="(( Live Stream ))">
                                     <color key="titleColor" red="0.5" green="0.0" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
@@ -85,27 +93,33 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="DTn-vo-6lq" firstAttribute="top" secondItem="RcK-ep-apJ" secondAttribute="bottom" constant="50" id="1vR-VB-exz"/>
-                            <constraint firstItem="vbx-Tp-zev" firstAttribute="leading" secondItem="9ib-eI-QMm" secondAttribute="leading" id="E0l-j8-N0l"/>
-                            <constraint firstItem="Gqe-cJ-PMU" firstAttribute="top" secondItem="9ib-eI-QMm" secondAttribute="bottom" constant="13" id="Gzv-S7-Z6j"/>
-                            <constraint firstItem="c5X-4l-1X1" firstAttribute="trailing" secondItem="vbx-Tp-zev" secondAttribute="trailing" id="NdT-0j-Xyj"/>
-                            <constraint firstItem="9ib-eI-QMm" firstAttribute="trailing" secondItem="Gqe-cJ-PMU" secondAttribute="trailing" id="Nnh-nj-ERv"/>
-                            <constraint firstItem="RcK-ep-apJ" firstAttribute="trailing" secondItem="DTn-vo-6lq" secondAttribute="trailing" id="RxQ-dR-P8N"/>
-                            <constraint firstItem="DTn-vo-6lq" firstAttribute="trailing" secondItem="c5X-4l-1X1" secondAttribute="trailing" id="Svg-qP-bXQ"/>
-                            <constraint firstItem="DTn-vo-6lq" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="9" id="UIL-Ga-fXd"/>
-                            <constraint firstItem="vbx-Tp-zev" firstAttribute="top" secondItem="c5X-4l-1X1" secondAttribute="bottom" constant="13" id="Y8F-VO-PfL"/>
-                            <constraint firstItem="RcK-ep-apJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ygt-0C-Lqi"/>
-                            <constraint firstItem="c5X-4l-1X1" firstAttribute="leading" secondItem="vbx-Tp-zev" secondAttribute="leading" id="ZIF-jg-lGb"/>
-                            <constraint firstItem="DTn-vo-6lq" firstAttribute="leading" secondItem="c5X-4l-1X1" secondAttribute="leading" id="ZdX-1m-sGS"/>
-                            <constraint firstItem="9ib-eI-QMm" firstAttribute="leading" secondItem="Gqe-cJ-PMU" secondAttribute="leading" id="a2O-B0-vlI"/>
-                            <constraint firstItem="RcK-ep-apJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="2" id="ezN-ks-eIw"/>
-                            <constraint firstItem="vbx-Tp-zev" firstAttribute="trailing" secondItem="9ib-eI-QMm" secondAttribute="trailing" id="gmU-Sc-07U"/>
-                            <constraint firstItem="RcK-ep-apJ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" symbolic="YES" id="lfH-y2-rHI"/>
-                            <constraint firstItem="9ib-eI-QMm" firstAttribute="top" secondItem="vbx-Tp-zev" secondAttribute="bottom" constant="13" id="lhE-uM-kKu"/>
-                            <constraint firstItem="c5X-4l-1X1" firstAttribute="top" secondItem="DTn-vo-6lq" secondAttribute="bottom" constant="13" id="zne-jb-sVm"/>
+                            <constraint firstItem="c5X-4l-1X1" firstAttribute="trailing" secondItem="vbx-Tp-zev" secondAttribute="trailing" id="0Kq-uL-W60"/>
+                            <constraint firstItem="RcK-ep-apJ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" symbolic="YES" id="0n9-fN-U7e"/>
+                            <constraint firstItem="9ib-eI-QMm" firstAttribute="top" secondItem="vbx-Tp-zev" secondAttribute="bottom" constant="13" id="1co-3E-lOf"/>
+                            <constraint firstItem="c5X-4l-1X1" firstAttribute="top" secondItem="TjV-MO-9rm" secondAttribute="bottom" constant="6" id="1uk-sZ-LNR"/>
+                            <constraint firstItem="DTn-vo-6lq" firstAttribute="top" secondItem="RcK-ep-apJ" secondAttribute="bottom" constant="50" id="8by-Sk-IAF"/>
+                            <constraint firstItem="vbx-Tp-zev" firstAttribute="leading" secondItem="9ib-eI-QMm" secondAttribute="leading" id="Dya-hr-Ype"/>
+                            <constraint firstItem="9ib-eI-QMm" firstAttribute="trailing" secondItem="Gqe-cJ-PMU" secondAttribute="trailing" id="Gb1-OB-l3Q"/>
+                            <constraint firstItem="DTn-vo-6lq" firstAttribute="trailing" secondItem="TjV-MO-9rm" secondAttribute="trailing" id="Gfg-ah-Ca3"/>
+                            <constraint firstItem="DTn-vo-6lq" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="9" id="HPO-cO-6DF"/>
+                            <constraint firstItem="c5X-4l-1X1" firstAttribute="leading" secondItem="vbx-Tp-zev" secondAttribute="leading" id="LA0-1L-leq"/>
+                            <constraint firstItem="RcK-ep-apJ" firstAttribute="trailing" secondItem="DTn-vo-6lq" secondAttribute="trailing" id="M9M-1J-Q4K"/>
+                            <constraint firstItem="9ib-eI-QMm" firstAttribute="leading" secondItem="Gqe-cJ-PMU" secondAttribute="leading" id="O7P-Ur-H7K"/>
+                            <constraint firstItem="Gqe-cJ-PMU" firstAttribute="top" secondItem="9ib-eI-QMm" secondAttribute="bottom" constant="13" id="Qab-Yd-cba"/>
+                            <constraint firstItem="DTn-vo-6lq" firstAttribute="leading" secondItem="TjV-MO-9rm" secondAttribute="leading" id="SuP-3Y-dX0"/>
+                            <constraint firstItem="TjV-MO-9rm" firstAttribute="trailing" secondItem="c5X-4l-1X1" secondAttribute="trailing" id="U6f-uz-KO9"/>
+                            <constraint firstItem="vbx-Tp-zev" firstAttribute="top" secondItem="c5X-4l-1X1" secondAttribute="bottom" constant="13" id="YQk-Su-ebX"/>
+                            <constraint firstItem="RcK-ep-apJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="2" id="iAn-W7-X9g"/>
+                            <constraint firstItem="TjV-MO-9rm" firstAttribute="top" secondItem="DTn-vo-6lq" secondAttribute="bottom" constant="6" id="jjj-xx-1rE"/>
+                            <constraint firstItem="vbx-Tp-zev" firstAttribute="trailing" secondItem="9ib-eI-QMm" secondAttribute="trailing" id="p8e-1V-Clz"/>
+                            <constraint firstItem="RcK-ep-apJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ugc-py-Ry0"/>
+                            <constraint firstItem="TjV-MO-9rm" firstAttribute="leading" secondItem="c5X-4l-1X1" secondAttribute="leading" id="xju-Wo-T9v"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Example" id="dkA-qs-ohf"/>
+                    <connections>
+                        <outlet property="btnPlayVideo" destination="c5X-4l-1X1" id="Myi-uH-O3n"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -120,11 +134,11 @@
                         <viewControllerLayoutGuide type="bottom" id="DRh-A2-dej"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="rgs-CZ-O9Q">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LO1-4p-aN2">
-                                <rect key="frame" x="0.0" y="28" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <items>
                                     <navigationItem title="Slike playlist" id="mia-Bj-QNz">
                                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="AsO-Ra-14H">
@@ -136,7 +150,7 @@
                                 </items>
                             </navigationBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bsT-Ra-vJF">
-                                <rect key="frame" x="0.0" y="72" width="414" height="664"/>
+                                <rect key="frame" x="0.0" y="72" width="375" height="595"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="hMQ-0b-y3c" id="5dA-30-kUi"/>
@@ -173,11 +187,11 @@
                         <viewControllerLayoutGuide type="bottom" id="vOP-Ad-hKH"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="y9L-mx-7OF">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PLAYER IN VIEW" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QpS-ee-nrM">
-                                <rect key="frame" x="20" y="28" width="374" height="32"/>
+                                <rect key="frame" x="16" y="28" width="343" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="Fcs-8X-Ksb"/>
                                 </constraints>
@@ -186,11 +200,11 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jwc-SA-vA3">
-                                <rect key="frame" x="20" y="68" width="374" height="607"/>
+                                <rect key="frame" x="16" y="68" width="343" height="538"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QjE-Ll-iQG">
-                                <rect key="frame" x="20" y="683" width="374" height="30"/>
+                                <rect key="frame" x="16" y="614" width="343" height="30"/>
                                 <state key="normal" title="Back To Main Menu"/>
                                 <connections>
                                     <segue destination="Jla-qp-R3K" kind="unwind" unwindAction="prepareForUnwind:" id="qVd-vG-t6e"/>
@@ -247,11 +261,11 @@
                         <viewControllerLayoutGuide type="bottom" id="x6W-gF-ZH5"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="N6X-JA-Op6">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A0U-L4-lR7">
-                                <rect key="frame" x="16" y="72" width="374" height="30"/>
+                                <rect key="frame" x="12" y="72" width="343" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="ZeB-YY-Prf"/>
                                 </constraints>
@@ -290,11 +304,11 @@
                         <viewControllerLayoutGuide type="bottom" id="2J0-bY-Ypi"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="J2V-kE-8vi">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YOUTUBE IN VIEW" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4br-7w-nHd">
-                                <rect key="frame" x="20" y="28" width="374" height="32"/>
+                                <rect key="frame" x="16" y="28" width="343" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="gAu-4k-OBG"/>
                                 </constraints>
@@ -303,11 +317,11 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="trC-8T-okm">
-                                <rect key="frame" x="20" y="68" width="374" height="607"/>
+                                <rect key="frame" x="16" y="68" width="343" height="538"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="doE-Mf-Kid">
-                                <rect key="frame" x="20" y="683" width="374" height="30"/>
+                                <rect key="frame" x="16" y="614" width="343" height="30"/>
                                 <state key="normal" title="Back To Main Menu"/>
                                 <connections>
                                     <segue destination="Gog-eJ-fTQ" kind="unwind" unwindAction="prepareForUnwind:" id="AV4-Gn-1cc"/>
