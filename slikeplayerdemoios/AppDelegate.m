@@ -38,6 +38,7 @@
     [SlikePlayerManager getInstance].playerStyleCloseButton = img;
     [SlikePlayerManager getInstance].playerStylePlayButton = img;
     [SlikePlayerManager getInstance].playerStylePauseButton = img;
+    [SlikePlayerManager getInstance].playerStyleReplayButton = img;
     [SlikePlayerManager getInstance].playerStyleReverseButton = img;
     [SlikePlayerManager getInstance].playerStyleForwardButton = img;
     [SlikePlayerManager getInstance].playerStyleBitrateButton = img;

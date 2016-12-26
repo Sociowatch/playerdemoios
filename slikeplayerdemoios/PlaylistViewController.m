@@ -64,7 +64,7 @@
                         dict = [arr objectAtIndex:nIndex];
                         if(!dict) continue;
                         analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-                        streamingInfo = [StreamingInfo createStreamURL:nil withTitle:[dict objectForKey:@"name"] withSubTitle:@"" withDuration:[[dict objectForKey:@"duration"] integerValue] withAds:nil withAnalyticsInfo:analyticsSpecificInfo];
+                        streamingInfo = [StreamingInfo createStreamURL:nil withType:VIDEO_SOURCE_HLS withTitle:[dict objectForKey:@"name"] withSubTitle:@"" withDuration:[[dict objectForKey:@"duration"] integerValue] withAds:nil withAnalyticsInfo:analyticsSpecificInfo];
                         streamingInfo.strID = [dict objectForKey:@"id"];
                         streamingInfo.urlImageURL = [NSURL URLWithString:[dict objectForKey:@"image"]];
                         [self.arrData addObject:streamingInfo];

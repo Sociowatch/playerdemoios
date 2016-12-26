@@ -38,7 +38,7 @@
                                     <color key="titleColor" red="0.55508864641189581" green="0.42707194007441984" blue="0.013908895634862115" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
-                                    <action selector="clbPlayKaltura:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Eq7-bE-LgO"/>
+                                    <action selector="clbPlayVideo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2x4-DP-cIm"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vbx-Tp-zev">

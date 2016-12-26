@@ -93,6 +93,7 @@
  [SlikePlayerManager getInstance].playerStyleCloseButton = img;
  [SlikePlayerManager getInstance].playerStylePlayButton = img;
  [SlikePlayerManager getInstance].playerStylePauseButton = img;
+ [SlikePlayerManager getInstance].playerStyleReplayButton = img;
  [SlikePlayerManager getInstance].playerStyleReverseButton = img;
  [SlikePlayerManager getInstance].playerStyleForwardButton = img;
  [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
@@ -119,6 +120,8 @@
  **/
 #import "ViewController.h"
 #import <SlikePlayer/SlikePlayerManager.h>
+#import <SlikePlayer/ISlikePlayer.h>
+#import <SlikePlayer/Globals.h>
 
 @interface ViewController ()
 
@@ -137,7 +140,36 @@
 - (IBAction)clbPlayVideo:(id)sender {
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
     [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
-        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
+        if(progressInfo != nil)
+        {
+            NSLog(@"%@", [progressInfo getString]);
+            /**
+             Track the ready event to handle button events.
+             */
+            if([progressInfo.strState isEqualToString:@"ready"])
+            {
+                id<ISlikePlayer> player = [[SlikePlayerManager getInstance] getAnyPlayer];
+                //Enable previous button
+                [player handlePreviousButtonManually:YES];
+                //Enable next button
+                [player handleNextButtonManually:YES];
+                //Add button event. In need share button event only, no need to enable/disable previous or next button.
+                [player setButtonEventDelegate:^(NSInteger buttontype) {
+                    NSLog(@"%ld", buttontype);
+                    if(buttontype == kButtonEventPrevious) NSLog(@"Previous button is tapped.");
+                    else if(buttontype == kButtonEventNext)
+                    {
+                        NSLog(@"Next button is tapped.");
+                        [self clbPlayKaltura:nil];
+                    }
+                    else if(buttontype == kButtonEventActivity)
+                    {
+                        NSLog(@"Share button is tapped.");
+                        [self share:analyticsSpecificInfo];
+                    }
+                }];
+            }
+        }
     }];
 }
 
@@ -174,7 +206,7 @@
     [info addPosition:-1 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]];
     [arr addObject:info];
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
+    [[SlikePlayerManager getInstance] playVideo:@"0_00001n1l" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
         if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
     }];
 }
@@ -202,6 +234,17 @@
         if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
     }];
     //[[SlikePlayerManager getInstance] playVideoWithInfo:[StreamingInfo createStreamURL:@"https://tungsten.aaplimg.com/VOD/bipbop_adv_fmp4_example/master.m3u8" withTitle:@"Live Streaming" withSubTitle:@"" withDuration:0L withAds:nil] withTimeCode:0L inParent:nil];
+}
+
+-(void) share:(AnalyticsSpecificInfo *) info
+{
+    NSMutableArray *sharingItems = [NSMutableArray array];
+    [sharingItems addObject:info.strTitle];
+    [sharingItems addObject:[NSURL URLWithString:@"http://timesofindia.indiatimes.com/"]];
+    UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+    [self.presentedViewController presentViewController:activityController animated:YES completion:^{
+        [[[SlikePlayerManager getInstance] getAnyPlayer] pause];
+    }];
 }
 
 -(IBAction)prepareForUnwind:(UIStoryboardSegue *)segue
