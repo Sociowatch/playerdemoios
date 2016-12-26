@@ -1,4 +1,4 @@
-# SlikePlayer Demo (iOS)  (v0.0.5)
+# SlikePlayer Demo (iOS)  (v0.0.6)
 
 ## Example
 
@@ -20,7 +20,7 @@ SlikePlayer is available through private repo [CocoaPods](http://cocoapods.org).
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.5'
+pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.6'
 ```
 
 #HOW TO INTEGRATE:
@@ -133,6 +133,8 @@ e.g.
  > [SlikePlayerManager getInstance].playerStylePlayButton = img;
 
  > [SlikePlayerManager getInstance].playerStylePauseButton = img;
+
+ > [SlikePlayerManager getInstance].playerStyleReplayButton = img;
 
  > [SlikePlayerManager getInstance].playerStyleReverseButton = img;
 
