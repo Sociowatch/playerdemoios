@@ -1,4 +1,4 @@
-# SlikePlayer Demo (iOS)  (v0.0.6)
+# SlikePlayer Demo (iOS)  (v0.0.8)
 
 ## Example
 
@@ -9,19 +9,19 @@ To run the example project, clone this repo i.e. https://bitbucket.org/times_int
 platform: iOS 8 or greater
 NSAppTransportSecurity: (For app transport security see the example's info plist file.)
 
-##Dependencies:
-* 'google-cast-sdk', '~> 3.3'
-* 'GoogleAds-IMA-iOS-SDK-For-AdMob', '~> 3.3.1'
-* 'youtube-ios-player-helper', '~> 0.1.6'
-
 ## Installation
 
 SlikePlayer is available through private repo [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.6'
+pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.8'
 ```
+
+## ISSUES
+* UI fixes to be done while landscape mode.
+* UI fixes to be done in settings dialog.
+* At the end of the playback, play/pause screen doesn't appear.
 
 #HOW TO INTEGRATE:
 Best way to integrate, just clone the example repo.
@@ -134,19 +134,19 @@ e.g.
 
  > [SlikePlayerManager getInstance].playerStylePauseButton = img;
 
- > [SlikePlayerManager getInstance].playerStyleReplayButton = img;
-
  > [SlikePlayerManager getInstance].playerStyleReverseButton = img;
 
  > [SlikePlayerManager getInstance].playerStyleForwardButton = img;
+
+ > [SlikePlayerManager getInstance].playerStyleReplayButton = img;
 
  > [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
 
  > [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
  > 
- > //[SlikePlayerManager getInstance].playerStyleSliderMinTrackImage = imgResizable;
-
- > //[SlikePlayerManager getInstance].playerStyleSliderMaxTrackImage = imgResizable;
+ > [SlikePlayerManager getInstance].playerStyleSliderMinTrackColor = [UIColor redColor];
+ 
+ > [SlikePlayerManager getInstance].playerStyleSliderMaxTrackColor = [UIColor whiteColor];
 
  > [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
  > 
@@ -175,7 +175,6 @@ e.g.
  > [SlikePlayerManager getInstance].playerStyleBitrateContentColor = clrContent;
 
 **************************************
-
 
 ## Author
 
