@@ -99,8 +99,8 @@
  [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
  [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
  
- //[SlikePlayerManager getInstance].playerStyleSliderMinTrackImage = imgResizable;
- //[SlikePlayerManager getInstance].playerStyleSliderMaxTrackImage = imgResizable;
+ [SlikePlayerManager getInstance].playerStyleSliderMinTrackColor = [UIColor redColor];
+ [SlikePlayerManager getInstance].playerStyleSliderMaxTrackColor = [UIColor whiteColor];
  [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
  
  [SlikePlayerManager getInstance].playerStyleTitleFont = titleFont;
@@ -119,9 +119,10 @@
  
  **/
 #import "ViewController.h"
-#import <SlikePlayer/SlikePlayerManager.h>
-#import <SlikePlayer/ISlikePlayer.h>
-#import <SlikePlayer/Globals.h>
+#import <SlikePlayerManager.h>
+#import <ISlikePlayer.h>
+
+#import <SVProgressHUD.h>
 
 @interface ViewController ()
 
@@ -131,6 +132,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //*********IMPORTANT*****************//
+    //SlikePlayer uses SVProgressHUD. TOI needs to use these settings.
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
+    [SVProgressHUD setRingRadius:15];
+    [SVProgressHUD setRingNoTextRadius:15];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -146,7 +153,7 @@
             /**
              Track the ready event to handle button events.
              */
-            if([progressInfo.strState isEqualToString:@"ready"])
+            if(progressInfo.status == kSlikeAnalyticsInit)
             {
                 id<ISlikePlayer> player = [[SlikePlayerManager getInstance] getAnyPlayer];
                 //Enable previous button
@@ -206,7 +213,7 @@
     [info addPosition:-1 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]];
     [arr addObject:info];
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"0_00001n1l" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
+    [[SlikePlayerManager getInstance] playVideo:@"0_000oyfdd" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
         if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
     }];
 }
@@ -240,11 +247,8 @@
 {
     NSMutableArray *sharingItems = [NSMutableArray array];
     [sharingItems addObject:info.strTitle];
-    [sharingItems addObject:[NSURL URLWithString:@"http://timesofindia.indiatimes.com/"]];
     UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
-    [self.presentedViewController presentViewController:activityController animated:YES completion:^{
-        [[[SlikePlayerManager getInstance] getAnyPlayer] pause];
-    }];
+    [self presentViewController:activityController animated:YES completion:nil];
 }
 
 -(IBAction)prepareForUnwind:(UIStoryboardSegue *)segue

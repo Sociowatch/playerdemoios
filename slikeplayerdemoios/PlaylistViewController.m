@@ -7,13 +7,12 @@
 //
 
 #import "PlaylistViewController.h"
-#import <SlikePlayer/SlikePlayerManager.h>
-#import <SlikePlayer/SlikeNetworkManager.h>
-#import <SlikePlayer/SBJson.h>
-#import <SlikePlayer/SlikeProgressHUD.h>
-#import <SlikePlayer/StreamingInfo.h>
-#import <SlikePlayer/haneke.h>
-#import <SlikePlayer/Globals.h>
+#import <SlikePlayerManager.h>
+#import <SlikeNetworkManager.h>
+#import <SBJson.h>
+#import <SVProgressHUD.h>
+#import <StreamingInfo.h>
+#import "Haneke.h"
 
 @interface PlaylistViewController ()
 
@@ -27,7 +26,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.arrData = [NSMutableArray array];
-    [SlikeProgressHUD showProgress:0 status:@"loading..."];
+    [SVProgressHUD show];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadData];
     });
@@ -44,7 +43,7 @@
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:@"https://uat.boxtv.com/slike/streamlist"] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if([SlikeProgressHUD isVisible]) [SlikeProgressHUD dismiss];
+            if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         });
         
         if(data != nil)
@@ -78,7 +77,7 @@
         }
         else
         {
-            DLog(@"Ooops! Some error is occurred.");
+            SlikeDLog(@"Ooops! Some error is occurred.");
         }
     }];
 }

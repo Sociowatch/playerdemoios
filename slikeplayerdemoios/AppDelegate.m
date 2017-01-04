@@ -44,8 +44,8 @@
     [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
     [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
     
-    //[SlikePlayerManager getInstance].playerStyleSliderMinTrackImage = imgResizable;
-    //[SlikePlayerManager getInstance].playerStyleSliderMaxTrackImage = imgResizable;
+    [SlikePlayerManager getInstance].playerStyleSliderMinTrackColor = [UIColor redColor];
+    [SlikePlayerManager getInstance].playerStyleSliderMaxTrackColor = [UIColor whiteColor];
     [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
     
     [SlikePlayerManager getInstance].playerStyleTitleFont = titleFont;
