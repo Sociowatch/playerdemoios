@@ -156,13 +156,22 @@
             if(progressInfo.status == kSlikeAnalyticsInit)
             {
                 id<ISlikePlayer> player = [[SlikePlayerManager getInstance] getAnyPlayer];
+                
+                
+                
+                /*******EXPERIMENTAL*********/
+                player.autorotationMode = AVPlayerFullscreenAutorotationLandscapeMode;
+                
+                
+                
+                
                 //Enable previous button
                 [player handlePreviousButtonManually:YES];
                 //Enable next button
                 [player handleNextButtonManually:YES];
                 //Add button event. In need share button event only, no need to enable/disable previous or next button.
                 [player setButtonEventDelegate:^(NSInteger buttontype) {
-                    NSLog(@"%ld", buttontype);
+                    NSLog(@"%ld", (long)buttontype);
                     if(buttontype == kButtonEventPrevious) NSLog(@"Previous button is tapped.");
                     else if(buttontype == kButtonEventNext)
                     {
@@ -173,6 +182,10 @@
                     {
                         NSLog(@"Share button is tapped.");
                         [self share:analyticsSpecificInfo];
+                    }
+                    else if(buttontype == kButtonEventClose)
+                    {
+                        NSLog(@"Close button is tapped.");
                     }
                 }];
             }

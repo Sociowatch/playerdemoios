@@ -91,7 +91,7 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="c5X-4l-1X1" firstAttribute="trailing" secondItem="vbx-Tp-zev" secondAttribute="trailing" id="0Kq-uL-W60"/>
                             <constraint firstItem="RcK-ep-apJ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" symbolic="YES" id="0n9-fN-U7e"/>
@@ -200,7 +200,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jwc-SA-vA3">
-                                <rect key="frame" x="16" y="68" width="343" height="538"/>
+                                <rect key="frame" x="16" y="68" width="343" height="261"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QjE-Ll-iQG">
@@ -220,7 +220,7 @@
                             <constraint firstItem="Jwc-SA-vA3" firstAttribute="leading" secondItem="QjE-Ll-iQG" secondAttribute="leading" id="CCn-ma-x6d"/>
                             <constraint firstItem="QpS-ee-nrM" firstAttribute="top" secondItem="2DB-qo-FQq" secondAttribute="bottom" constant="8" id="DjV-eF-cGs"/>
                             <constraint firstAttribute="leadingMargin" secondItem="QpS-ee-nrM" secondAttribute="leading" id="VW6-vM-cDX"/>
-                            <constraint firstItem="QjE-Ll-iQG" firstAttribute="top" secondItem="Jwc-SA-vA3" secondAttribute="bottom" constant="8" id="Y8B-17-q1F"/>
+                            <constraint firstItem="QjE-Ll-iQG" firstAttribute="top" secondItem="Jwc-SA-vA3" secondAttribute="bottom" constant="285" id="Y8B-17-q1F"/>
                             <constraint firstItem="Jwc-SA-vA3" firstAttribute="top" secondItem="QpS-ee-nrM" secondAttribute="bottom" constant="8" id="dag-P5-wr3"/>
                             <constraint firstItem="QjE-Ll-iQG" firstAttribute="width" secondItem="Jwc-SA-vA3" secondAttribute="width" id="dlK-AI-r4K"/>
                             <constraint firstItem="QpS-ee-nrM" firstAttribute="centerX" secondItem="y9L-mx-7OF" secondAttribute="centerX" id="w11-a2-kEF"/>
@@ -234,7 +234,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b4w-Sc-v0z" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="Jla-qp-R3K" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1177" y="-1"/>
+            <point key="canvasLocation" x="1176.8" y="-1.3493253373313345"/>
         </scene>
         <!--Player With Navigation-->
         <scene sceneID="Sop-42-M3S">

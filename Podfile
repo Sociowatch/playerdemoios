@@ -7,6 +7,6 @@ target 'slikeplayerdemoios' do
   # use_frameworks!
 
   # Pods for slikeplayerdemoios
-  pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.8'
+  pod 'SlikePlayer', :git => 'https://pravin_ranjan@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.9'
 
 end
