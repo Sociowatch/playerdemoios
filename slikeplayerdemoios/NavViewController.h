@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface NavViewController : UIViewController
+@property (strong, nonatomic) IBOutlet UIView *viewPlayer;
 - (IBAction)clbPlayWithNav:(id)sender;
 - (IBAction)clbPlayYTWithNav:(id)sender;
 @end

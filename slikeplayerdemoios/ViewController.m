@@ -132,8 +132,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //*********IMPORTANT*****************//
-    //SlikePlayer uses SVProgressHUD. TOI needs to use these settings.
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
     [SVProgressHUD setRingRadius:15];
@@ -144,27 +142,51 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+/***
+ The example demonstrate 
+ 1) HUD implementation. HUD is not now used by SlikePlayer
+ 2) Manual buttons event handling
+ 3) Usage of ProgressInfo events.
+ */
 - (IBAction)clbPlayVideo:(id)sender {
+    if(![SVProgressHUD isVisible]) [SVProgressHUD show];
+    
     AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
     [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
         if(progressInfo != nil)
         {
             NSLog(@"%@", [progressInfo getString]);
+            
+            //Getting ads events...
+            if(progressInfo.adsProgressInfo)
+            {
+                AdsProgressInfo *info = progressInfo.adsProgressInfo;
+                /****See Globals.h for ads events ****/
+                /**
+                 #define kSlikeAdInit 0
+                 #define kSlikeAdStart 1
+                 #define kSlikeAdFailure 2
+                 #define kSlikeAdProgress 3
+                 #define kSlikeAdQuartile1 4
+                 #define kSlikeAdQuartile2 5
+                 #define kSlikeAdQuartile3 6
+                 #define kSlikeAdComplete 7
+                 #define kSlikeAdSkip 8
+                 #define kSlikeAdClick 9
+                 **/
+                NSLog(@"Ads information, ## %@", [info getString]);
+            }
+            
             /**
              Track the ready event to handle button events.
              */
             if(progressInfo.status == kSlikeAnalyticsInit)
             {
+                if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
+                
                 id<ISlikePlayer> player = [[SlikePlayerManager getInstance] getAnyPlayer];
-                
-                
-                
-                /*******EXPERIMENTAL*********/
                 player.autorotationMode = AVPlayerFullscreenAutorotationLandscapeMode;
-                
-                
-                
-                
                 //Enable previous button
                 [player handlePreviousButtonManually:YES];
                 //Enable next button
@@ -187,8 +209,20 @@
                     {
                         NSLog(@"Close button is tapped.");
                     }
+                    else if(buttontype == kButtonEventHideHUD) //HUD events
+                    {
+                        if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
+                    }
+                    else if(buttontype == kButtonEventShowHUD) //HUD events
+                    {
+                        if(![SVProgressHUD isVisible]) [SVProgressHUD show];
+                    }
                 }];
             }
+        }
+        else
+        {
+            if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
     }];
 }
