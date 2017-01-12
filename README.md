@@ -1,4 +1,4 @@
-# SlikePlayer Demo (iOS)  (v0.0.9)
+# SlikePlayer Demo (iOS)  (v0.0.10)
 
 ## Example
 
@@ -15,16 +15,14 @@ SlikePlayer is available through private repo [CocoaPods](http://cocoapods.org).
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'SlikePlayer', :git => 'https://your_name@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.9'
+pod 'SlikePlayer', :git => 'https://your_name@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.10'
 ```
 
 ## ISSUES Fixed
-* UI fixes to be done while landscape mode.
-* UI fixes to be done in settings dialog.
-* At the end of the playback, play/pause screen doesn't appear.
+* UI fixes.
 
 ## NEW FEATURE
-* Player autorotationMode can be changeable. AVPlayerFullscreenAutorotationDefaultMode (default mode) and AVPlayerFullscreenAutorotationLandscapeMode (auto rotate in fullscreen mode). See the example.
+* SVProgressHUD is removed from the framework.
 
 #HOW TO INTEGRATE:
 Best way to integrate, just clone the example repo.
