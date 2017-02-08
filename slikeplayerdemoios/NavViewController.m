@@ -7,7 +7,7 @@
 //
 
 #import "NavViewController.h"
-#import <SlikePlayer/SlikePlayerManager.h>
+#import <SlikePlayer/SlikePlayer.h>
 
 @interface NavViewController ()
 {
@@ -19,10 +19,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    /*myCntrlr = [[UIViewController alloc] init];
-    myCntrlr.view = self.viewPlayer;
-    [self addChildViewController:myCntrlr];
-    [myCntrlr didMoveToParentViewController:self];*/
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:@"1_oprrpt0x" withSection:@"/Entertainment/videos" withMSId:@"4724967"];
+    slikeConfig.isCloseControl = NO;
+    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:self.viewPlayer withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+        if(statusInfo != nil)
+        {
+            NSLog(@"%@", [statusInfo getString]);
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -32,10 +36,7 @@
 
 - (IBAction)clbPlayWithNav:(id)sender
 {
-    AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"1_oprrpt0x" withTimeCode:0L inParent:self.viewPlayer withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
-        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
-    }];
+    
 }
 - (IBAction)clbPlayYTWithNav:(id)sender
 {

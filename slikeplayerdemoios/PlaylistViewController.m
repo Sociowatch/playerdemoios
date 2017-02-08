@@ -7,7 +7,7 @@
 //
 
 #import "PlaylistViewController.h"
-#import <SlikePlayerManager.h>
+#import <SlikePlayer.h>
 #import <SlikeNetworkManager.h>
 #import <SBJson.h>
 #import <SVProgressHUD.h>
@@ -56,17 +56,19 @@
                 {
                     NSInteger nIndex, nLen = arr.count;
                     NSDictionary *dict;
+                    SlikeConfig *slikeConfig;
                     StreamingInfo *streamingInfo;
-                    AnalyticsSpecificInfo *analyticsSpecificInfo;
                     for(nIndex = 0; nIndex < nLen; nIndex++)
                     {
                         dict = [arr objectAtIndex:nIndex];
                         if(!dict) continue;
-                        analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-                        streamingInfo = [StreamingInfo createStreamURL:nil withType:VIDEO_SOURCE_HLS withTitle:[dict objectForKey:@"name"] withSubTitle:@"" withDuration:[[dict objectForKey:@"duration"] integerValue] withAds:nil withAnalyticsInfo:analyticsSpecificInfo];
+                        
+                        slikeConfig = [[SlikeConfig alloc] initWithTitle:[dict objectForKey:@"name"] withID:[dict objectForKey:@"id"] withSection:@"/Entertainment/videos" withMSId:@"4724967"];
+                        streamingInfo = [StreamingInfo createStreamURL:nil withType:VIDEO_SOURCE_HLS withTitle:[dict objectForKey:@"name"] withSubTitle:@"" withDuration:[[dict objectForKey:@"duration"] integerValue] withAds:nil];
                         streamingInfo.strID = [dict objectForKey:@"id"];
                         streamingInfo.urlImageURL = [NSURL URLWithString:[dict objectForKey:@"image"]];
-                        [self.arrData addObject:streamingInfo];
+                        slikeConfig.streamingInfo = streamingInfo;
+                        [self.arrData addObject:slikeConfig];
                     }
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -152,7 +154,8 @@
         theFrame.size.height = 55;
         cell.imageView.frame = theFrame;
     }
-    StreamingInfo *info = [self.arrData objectAtIndex:indexPath.row];
+    SlikeConfig *config = [self.arrData objectAtIndex:indexPath.row];
+    StreamingInfo *info = config.streamingInfo;
     cell.textLabel.text = info.strTitle;
     cell.detailTextLabel.text = [self getFormattedTime:info.nDuration / 1000];
     
@@ -173,11 +176,11 @@
 #pragma mark UITableViewDataDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, ProgressInfo *progressInfo) {
-        if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+    [[SlikePlayer getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+        if(!statusInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
         else
         {
-            NSLog(@"%@", [progressInfo getString]);
+            NSLog(@"%@", [statusInfo getString]);
         }
     }];
 }

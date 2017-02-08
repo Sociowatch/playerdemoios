@@ -7,7 +7,7 @@
 //
 
 #import "YTWindowViewController.h"
-#import <SlikePlayer/SlikePlayerManager.h>
+#import <SlikePlayer/SlikePlayer.h>
 
 @interface YTWindowViewController ()
 
@@ -17,9 +17,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
-    [[SlikePlayerManager getInstance] playVideo:@"Y_dKkU" withTimeCode:0L inParent:nil withAds:nil withAnalyticsInfo:analyticsSpecificInfo withProgressHandler:^(ProgressInfo *progressInfo) {
-        if(progressInfo != nil) NSLog(@"%@", [progressInfo getString]);
+    
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:@"Y_dKkU" withSection:@"/Entertainment/videos" withMSId:@"4724967"];
+    
+    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+        if(statusInfo != nil) NSLog(@"%@", [statusInfo getString]);
     }];
 }
 

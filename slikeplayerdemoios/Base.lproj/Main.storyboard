@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -200,7 +200,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jwc-SA-vA3">
-                                <rect key="frame" x="16" y="68" width="343" height="261"/>
+                                <rect key="frame" x="16" y="68" width="343" height="531"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QjE-Ll-iQG">
@@ -213,16 +213,15 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="Jwc-SA-vA3" secondAttribute="trailing" id="0Sr-8f-S2q"/>
-                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="leading" secondItem="QpS-ee-nrM" secondAttribute="leading" id="5VW-2E-yMd"/>
-                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="trailing" secondItem="QpS-ee-nrM" secondAttribute="trailing" id="9NB-el-CRg"/>
+                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="leading" secondItem="QpS-ee-nrM" secondAttribute="leading" id="0eg-Af-bij"/>
                             <constraint firstItem="vOP-Ad-hKH" firstAttribute="top" secondItem="QjE-Ll-iQG" secondAttribute="bottom" constant="23" id="C2l-lO-BrK"/>
-                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="leading" secondItem="QjE-Ll-iQG" secondAttribute="leading" id="CCn-ma-x6d"/>
                             <constraint firstItem="QpS-ee-nrM" firstAttribute="top" secondItem="2DB-qo-FQq" secondAttribute="bottom" constant="8" id="DjV-eF-cGs"/>
+                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="trailing" secondItem="QpS-ee-nrM" secondAttribute="trailing" id="HHZ-Qy-He9"/>
+                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="centerY" secondItem="y9L-mx-7OF" secondAttribute="centerY" id="JfQ-UP-e9p"/>
                             <constraint firstAttribute="leadingMargin" secondItem="QpS-ee-nrM" secondAttribute="leading" id="VW6-vM-cDX"/>
-                            <constraint firstItem="QjE-Ll-iQG" firstAttribute="top" secondItem="Jwc-SA-vA3" secondAttribute="bottom" constant="285" id="Y8B-17-q1F"/>
-                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="top" secondItem="QpS-ee-nrM" secondAttribute="bottom" constant="8" id="dag-P5-wr3"/>
-                            <constraint firstItem="QjE-Ll-iQG" firstAttribute="width" secondItem="Jwc-SA-vA3" secondAttribute="width" id="dlK-AI-r4K"/>
+                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="top" secondItem="QpS-ee-nrM" secondAttribute="bottom" constant="8" symbolic="YES" id="eux-73-aOT"/>
+                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="leading" secondItem="QjE-Ll-iQG" secondAttribute="leading" id="hWo-nX-boR"/>
+                            <constraint firstItem="Jwc-SA-vA3" firstAttribute="trailing" secondItem="QjE-Ll-iQG" secondAttribute="trailing" id="keE-fa-QLO"/>
                             <constraint firstItem="QpS-ee-nrM" firstAttribute="centerX" secondItem="y9L-mx-7OF" secondAttribute="centerX" id="w11-a2-kEF"/>
                         </constraints>
                     </view>
@@ -264,27 +263,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A0U-L4-lR7">
-                                <rect key="frame" x="12" y="72" width="343" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="ZeB-YY-Prf"/>
-                                </constraints>
-                                <state key="normal" title="Play Video Within Navigation Controller"/>
-                                <connections>
-                                    <action selector="clbPlayWithNav:" destination="nsd-Pa-rD1" eventType="touchUpInside" id="uRY-Vm-9bz"/>
-                                </connections>
-                            </button>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BmT-f6-SS5">
-                                <rect key="frame" x="16" y="110" width="339" height="537"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BmT-f6-SS5">
+                                <rect key="frame" x="16" y="93" width="343" height="481"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="A0U-L4-lR7" firstAttribute="leading" secondItem="N6X-JA-Op6" secondAttribute="leadingMargin" constant="-4" id="3F4-wn-7ON"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="A0U-L4-lR7" secondAttribute="trailing" constant="4" id="X70-Uh-rlg"/>
-                            <constraint firstItem="A0U-L4-lR7" firstAttribute="top" secondItem="Qen-YC-EFA" secondAttribute="bottom" constant="8" symbolic="YES" id="p7g-AT-q7N"/>
+                            <constraint firstItem="BmT-f6-SS5" firstAttribute="leading" secondItem="N6X-JA-Op6" secondAttribute="leadingMargin" id="0sG-y7-uMi"/>
+                            <constraint firstItem="BmT-f6-SS5" firstAttribute="centerX" secondItem="N6X-JA-Op6" secondAttribute="centerX" id="IPe-0B-i8w"/>
+                            <constraint firstItem="BmT-f6-SS5" firstAttribute="top" secondItem="Qen-YC-EFA" secondAttribute="bottom" constant="29" id="YUg-uW-voC"/>
+                            <constraint firstItem="BmT-f6-SS5" firstAttribute="centerY" secondItem="N6X-JA-Op6" secondAttribute="centerY" id="tgN-MX-RFy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Player With Navigation" id="ube-jM-2as">
