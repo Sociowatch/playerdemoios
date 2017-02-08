@@ -1,9 +1,10 @@
-# SlikePlayer Demo (iOS)  (v0.0.11)
+# SlikePlayer  (v0.1.0)
 
 ## Example
 
-To run the example project, clone this repo i.e. https://bitbucket.org/times_internet/slikeplayerdemoandroid.git.
+To run the example project, clone the repo by clicking [**SlikePlayer demo for iOS**][aef1a7c4]
 
+  [aef1a7c4]: https://bitbucket.org/times_internet/slikeplayerdemoios.git "SlikePlayerDemoiOS"
 
 ## Requirements
 platform: iOS 8 or greater
@@ -14,166 +15,174 @@ NSAppTransportSecurity: (For app transport security see the example's info plist
 SlikePlayer is available through private repo [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
-```ruby
-pod 'SlikePlayer', :git => 'https://your_name@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.0.11'
 ```
 
-## ISSUES Fixed
-* UI fixes.
+pod 'SlikePlayer', :git => 'https://your_name@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.1.0'
 
-## NEW FEATURE
-* SVProgressHUD is removed from the framework.
+```
+
 
 #HOW TO INTEGRATE:
-Best way to integrate, just clone the example repo.
+Best way to integrate, [**just clone the example repo**][65b043dc].
+
+  [65b043dc]: https://bitbucket.org/times_internet/slikeplayerdemoios.git "SlikePlayerDemoiOS"
 
 **************************************
-SlikePlayerManager is a singleton class and precisely do not create new instance by allocating yourself.
- 
- SlikePlayerManager *myPlayer = [SlikePlayerManager getInstance];
- 
- Its main methods are as follows.
- 
- - (void) playVideo:(NSString *)strVideoKey withTimeCode:(NSInteger) timeCode inParent:(id) parent withAds:(NSMutableArray *) arrAds withAnalyticsInfo:(AnalyticsSpecificInfo *) analyticsSpecificInfo withProgressHandler:(progressinfohandler) block
- 
- Parameters:
- strVideoKey: The kaltura video id.
- timeCode: The time code is the play start time in milliseconds.
- parent: Parent is the view in which the player will be added. It could be either an UIView or UIViewController or UINavigationController. If parent is nil, the player is added
- into the rootviewcontroller of the main window. For smaller view of the player, you should set a view as parent. Precisely, only view will set the player in window view.
- arrAds: The ads array. This should by nil until explicitely need to override the ads array of the video. It is a mutable array of BoxAdsInfo instances.
- 
-e.g.
- > NSMutableArray *arr = [NSMutableArray array];
+SlikePlayer is a singleton class. To instantiate,
 
- > BoxAdsInfo * info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
+```
+SlikePlayer *myPlayer = [SlikePlayer getInstance];
+```
+SlikePlayer will be initialized as follows.
 
- > [info addPosition:0 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="]];
+`-(void) initPlayerWithApikey:(NSString *) apikey andWithDeviceUID:(NSString *) uuid`
 
- > [arr addObject:info];
- 
+#####apikey
+The Slike key provided by the Slike CMS.
+#####uuid
+Device unique id used by the app.
+
+ ####method
+
+ `- (void) playVideo:(SlikeConfig *) config inParent:(id) parent withAds:(NSMutableArray *) arrAds withProgressHandler:(onChange) block`
+
+ #### Parameters:
+ #####config:
+ The media configuration file and instance of **SlikeConfig MDO**.
+ SlikeConfig has following properties.
+Property|Type|Description
+--|---|--
+mediaId|String|Media id to be played.(required)
+ssoid|String|SSO login id.(optional)
+msId|String|entity id (required)
+title|String|title of the media.
+channel|String|channel name. No need to be filled.
+section|String|Section id. Ads will be served as per section id. (required)
+streamingInfo|StreamingInfo|StreamingInfo instance. Not required to fill if using mediaId. SlikePlayer will take care of it.
+adCleanupTime|Number|Remove pending or stucked ad within time. Default is 8000 milliseconds.
+timecode|Number|Time in milliseconds from where media should start.
+isSkipAds|boolean|If property true, SlikePlayer does not show any ad.
+isAutoPlay|boolean|If property true, the media will start automatically.
+isFullscreenControl|boolean|If property false, the fullscreen button will not be visible.
+isCloseControl|boolean|If property false, the close button will be visible only in fullscreen mode. Close control sends CONTROL event as CLOSE.
+isShareControl|boolean|If property false, share button will not be visible. Share control sends CONTROL event as SHARE.
+isNextControl|boolean|If property true, next button control will be visible. Next control sends CONTROL event as NEXT.
+isPreviousControl|boolean|If property true, previous button control will not be visible. Previous control sends CONTROL event as PREVIOUS.
+ #####parent:
+ Parent is the view in which the player will be added. It could be either an UIView or UIViewController or UINavigationController. If parent is nil, the player will added
+ into the rootviewcontroller of the main window. For smaller view of the player, you should set a view as parent. Only view will set the player in window view.
+ #####arrAds:
+ The ads array. It is a mutable array of BoxAdsInfo instances.
+
+ ```
+
+NSMutableArray *arr = [NSMutableArray array];
+ BoxAdsInfo * info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
+ [info addPosition:0 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="]];
+ [arr addObject:info];
+
+```
+
  This ads array will override the actual ads of the video.
- 
- analyticsSpecificInfo: The analytics info is the object which needs to be filled by the SlikePlayer's owner app. This is video specific data needs for analytics purpose.
- 
- e.g.
- AnalyticsSpecificInfo *analyticsSpecificInfo = [[AnalyticsSpecificInfo alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withSection:@"home:city" withCategory:@"2" withNewsID:@"8" withChannel:@"toi"];
- 
- This information is optional (perhaps required by TOI apps).
- 
- The progress handler is optional. If set, it will provide video update detail MDO i.e. ProgressInfo instance.
- 
- 
- Other playback options:
- 
- In case of non kaltura streams or some live stream, the StreamingInfo can be created explicitely and passed to the player.
+
+ **This should be nil in most cases and should not use explicitely.**
+
+#####onChange:
+`typedef void(^onChange)(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo);`
+
+ The onChange handler is optional. If set, it will provide video update detail MDO i.e. StatusInfo instance.
 
 
- > +(StreamingInfo *) createStreamURL:(NSString *) strURL withTitle:(NSString *) strTitle withSubTitle:(NSString *) strSubTitle withDuration:(NSInteger) duration withAds:(NSMutableArray *) arrAds withAnalyticsInfo:(AnalyticsSpecificInfo *) analyticsSpecificInfo;
- 
- This method will give an instance of StreamingInfo.
+ ###Other playback options:
+
+ In case of other playback option, the playback can be done by explicitely creating media MDO.
+
+ ``+(StreamingInfo *) createStreamURL:(NSString *) strURL withTitle:(NSString *) strTitle withSubTitle:(NSString *) strSubTitle withDuration:(NSInteger) duration withAds:(NSMutableArray *) arrAds;``
+
+ This method will give an instance of **StreamingInfo**. Add this instance into config's **(SlikeConfig's)** streaminginfo property.
  And can be used in...
 
- > - (void) playVideoWithInfo:(StreamingInfo *)obj withTimeCode:(NSInteger) timeCode inParent:(id) parent withProgressHandler:(progressinfohandler) block
- 
- 
- For playing a playlist...
- 
+ ```- (void) playVideo:(SlikeConfig *) config inParent:(id) parent withAds:(NSMutableArray *) arrAds withProgressHandler:(onChange) block```
+
+
+ ###For playing a playlist...
+
  Create a mutable array of StreamingInfo instances and pass it to the following method.
- 
- > - (void) playVideo:(NSMutableArray *)arrVideos withIndex:(NSInteger) index withCurrentlyPlaying:(currentlyPlaying) block
 
- Parameters:
- arrVideos: a mutable array of StreamingInfo instances.
- index: index position of video which will be played after initialization.
- currentlyPlaying: This block will notify whenever video changes. It consists 2 parameters. currently playing video index and ProgressInfo of currently playing video. the info can be nil while switching to other videos or replay.
- 
- Refer to PlaylistViewController.
+ ```- (void) playVideo:(NSMutableArray *)arrVideos withIndex:(NSInteger) index withCurrentlyPlaying:(currentlyPlaying) block```
 
- e.g.
- > [[SlikePlayerManager getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, ProgressInfo *progressInfo) {
- > if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
- > else
- > {
- > NSLog(@"%@", [progressInfo getString]);
- > }
- > }];
- 
- 
+ ####Parameters:
+ #####arrVideos:
+ A mutable array of StreamingInfo instances.
+ #####index:
+ Index position of video which will be played after initialization.
+ #####currentlyPlaying:
+ This block will notify whenever video changes.
+
+`typedef void(^currentlyPlaying)(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo)`
+
+ > Refer to PlaylistViewController. e.g.
+ ```
+ [[SlikePlayer getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+ if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+ else
+ {
+ NSLog(@"%@", [statusInfo getString]);
+ }
+ }];
+
+```
+
  To stop a player, just use.
- 
-> - (void) stopPlayer;
- 
- e.g. 
-> [SlikePlayerManager getInstance] stopPlayer];
- 
- 
- ///STYLING e.g.
- > UIImage *img = [UIImage imageNamed:@"testicon"];
 
- > UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
- > 
- > UIColor *clrBackground = [[UIColor whiteColor] colorWithAlphaComponent:0.6];
+ `- (void) stopPlayer;`
 
- > UIColor *clrTitle = [UIColor darkGrayColor];
+ e.g. `[SlikePlayer getInstance] stopPlayer];`
 
- > UIColor *clrSubtitle = [UIColor darkGrayColor];
 
- > UIColor *clrContent = [UIColor darkGrayColor];
+ ###STYLING
+ ####Examples
+ ```
+ UIImage *img = [UIImage imageNamed:@"testicon"];
+ UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
 
- > UIColor *clrActivity = [UIColor greenColor];
- > 
- > [SlikePlayerManager getInstance].playerStyleBarBackground = clrBackground;
+ UIColor *clrBackground = [[UIColor whiteColor] colorWithAlphaComponent:0.6];
+ UIColor *clrTitle = [UIColor darkGrayColor];
+ UIColor *clrSubtitle = [UIColor darkGrayColor];
+ UIColor *clrContent = [UIColor darkGrayColor];
+ UIColor *clrActivity = [UIColor greenColor];
 
- > UIFont *titleFont = [UIFont fontWithName:@"AmericanTypewriter" size:18];
+ [SlikePlayer getInstance].playerStyleBarBackground = clrBackground;
+ UIFont *titleFont = [UIFont fontWithName:@"AmericanTypewriter" size:18];
+ UIFont *subtitleFont = [UIFont fontWithName:@"AmericanTypewriter" size:12];
 
- > UIFont *subtitleFont = [UIFont fontWithName:@"AmericanTypewriter" size:12];
- > 
- > [SlikePlayerManager getInstance].playerStyleCloseButton = img;
+ [SlikePlayer getInstance].playerStyleCloseButton = img;
+ [SlikePlayer getInstance].playerStylePlayButton = img;
+ [SlikePlayer getInstance].playerStylePauseButton = img;
+ [SlikePlayer getInstance].playerStyleReplayButton = img;
+ [SlikePlayer getInstance].playerStyleReverseButton = img;
+ [SlikePlayer getInstance].playerStyleForwardButton = img;
+ [SlikePlayer getInstance].playerStyleBitrateButton = img;
+ [SlikePlayer getInstance].playerStyleFullscreenButton = img;
 
- > [SlikePlayerManager getInstance].playerStylePlayButton = img;
+ [SlikePlayer getInstance].playerStyleSliderMinTrackColor = [UIColor redColor];
+ [SlikePlayer getInstance].playerStyleSliderMaxTrackColor = [UIColor whiteColor];
+ [SlikePlayer getInstance].playerStyleSliderThumbImage = imgResizable;
 
- > [SlikePlayerManager getInstance].playerStylePauseButton = img;
+ [SlikePlayer getInstance].playerStyleTitleFont = titleFont;
+ [SlikePlayer getInstance].playerStyleDurationFont = subtitleFont;
+ [SlikePlayer getInstance].playerStyleBitrateTitleFont = titleFont;
+ [SlikePlayer getInstance].playerStyleBitrateSubtitleFont = subtitleFont;
+ [SlikePlayer getInstance].playerStyleBitrateContentFont = subtitleFont;
 
- > [SlikePlayerManager getInstance].playerStyleReverseButton = img;
-
- > [SlikePlayerManager getInstance].playerStyleForwardButton = img;
-
- > [SlikePlayerManager getInstance].playerStyleReplayButton = img;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateButton = img;
-
- > [SlikePlayerManager getInstance].playerStyleFullscreenButton = img;
- > 
- > [SlikePlayerManager getInstance].playerStyleSliderMinTrackColor = [UIColor redColor];
- 
- > [SlikePlayerManager getInstance].playerStyleSliderMaxTrackColor = [UIColor whiteColor];
-
- > [SlikePlayerManager getInstance].playerStyleSliderThumbImage = imgResizable;
- > 
- > [SlikePlayerManager getInstance].playerStyleTitleFont = titleFont;
-
- > [SlikePlayerManager getInstance].playerStyleDurationFont = subtitleFont;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateTitleFont = titleFont;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateSubtitleFont = subtitleFont;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateContentFont = subtitleFont;
- > 
- > [SlikePlayerManager getInstance].playerStyleTitleColor = clrTitle;
-
- > [SlikePlayerManager getInstance].playerStyleDurationColor = clrSubtitle;
-
- > [SlikePlayerManager getInstance].playerStyleActivityTintColor = clrActivity;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateBackground = [clrBackground colorWithAlphaComponent:0.7];
-
- > [SlikePlayerManager getInstance].playerStyleBitrateTitleColor = clrTitle;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateSubtitleColor = clrSubtitle;
-
- > [SlikePlayerManager getInstance].playerStyleBitrateContentColor = clrContent;
+ [SlikePlayer getInstance].playerStyleTitleColor = clrTitle;
+ [SlikePlayer getInstance].playerStyleDurationColor = clrSubtitle;
+ [SlikePlayer getInstance].playerStyleActivityTintColor = clrActivity;
+ [SlikePlayer getInstance].playerStyleBitrateBackground = [clrBackground colorWithAlphaComponent:0.7];
+ [SlikePlayer getInstance].playerStyleBitrateTitleColor = clrTitle;
+ [SlikePlayer getInstance].playerStyleBitrateSubtitleColor = clrSubtitle;
+ [SlikePlayer getInstance].playerStyleBitrateContentColor = clrContent;
+```
 
 **************************************
 
@@ -181,6 +190,19 @@ e.g.
 
 Times Internet Limited, pravin.ranjan@timesinternet.in
 
-## License
+License
+-------
 
-TODO (Under consideration)
+    Copyright 2017 Times Internet
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
