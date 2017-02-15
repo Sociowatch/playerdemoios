@@ -1,4 +1,4 @@
-# SlikePlayer  (v0.1.0)
+# SlikePlayer  (v0.5.0)
 
 ## Example
 
@@ -17,7 +17,7 @@ it, simply add the following line to your Podfile:
 
 ```
 
-pod 'SlikePlayer', :git => 'https://your_name@bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.1.0'
+pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.0'
 
 ```
 
@@ -42,14 +42,18 @@ The Slike key provided by the Slike CMS.
 #####uuid
 Device unique id used by the app.
 
- ####method
+####method
 
  `- (void) playVideo:(SlikeConfig *) config inParent:(id) parent withAds:(NSMutableArray *) arrAds withProgressHandler:(onChange) block`
 
- #### Parameters:
- #####config:
+#### Parameters:
+
+#####config:
+
  The media configuration file and instance of **SlikeConfig MDO**.
- SlikeConfig has following properties.
+
+####SlikeConfig has following properties.
+
 Property|Type|Description
 --|---|--
 mediaId|String|Media id to be played.(required)
@@ -68,13 +72,19 @@ isCloseControl|boolean|If property false, the close button will be visible only 
 isShareControl|boolean|If property false, share button will not be visible. Share control sends CONTROL event as SHARE.
 isNextControl|boolean|If property true, next button control will be visible. Next control sends CONTROL event as NEXT.
 isPreviousControl|boolean|If property true, previous button control will not be visible. Previous control sends CONTROL event as PREVIOUS.
- #####parent:
+isFastSeekable|boolean|If property false (default), precise seeking is performed. Otherwise loose but fast seek is performed.
+isSeekableLive|boolean|If property true, DVR pause/play is enabled. Otherwise on play, seek directly to live.
+
+#####parent:
+
  Parent is the view in which the player will be added. It could be either an UIView or UIViewController or UINavigationController. If parent is nil, the player will added
  into the rootviewcontroller of the main window. For smaller view of the player, you should set a view as parent. Only view will set the player in window view.
- #####arrAds:
+
+#####arrAds:
+
  The ads array. It is a mutable array of BoxAdsInfo instances.
 
- ```
+```
 
 NSMutableArray *arr = [NSMutableArray array];
  BoxAdsInfo * info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
@@ -85,44 +95,52 @@ NSMutableArray *arr = [NSMutableArray array];
 
  This ads array will override the actual ads of the video.
 
- **This should be nil in most cases and should not use explicitely.**
+**This should be nil in most cases and should not use explicitely.**
 
 #####onChange:
+
 `typedef void(^onChange)(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo);`
 
  The onChange handler is optional. If set, it will provide video update detail MDO i.e. StatusInfo instance.
 
 
- ###Other playback options:
+###Other playback options:
 
  In case of other playback option, the playback can be done by explicitely creating media MDO.
 
- ``+(StreamingInfo *) createStreamURL:(NSString *) strURL withTitle:(NSString *) strTitle withSubTitle:(NSString *) strSubTitle withDuration:(NSInteger) duration withAds:(NSMutableArray *) arrAds;``
+`+(StreamingInfo *) createStreamURL:(NSString *) strURL withTitle:(NSString *) strTitle withSubTitle:(NSString *) strSubTitle withDuration:(NSInteger) duration withAds:(NSMutableArray *) arrAds;`
 
  This method will give an instance of **StreamingInfo**. Add this instance into config's **(SlikeConfig's)** streaminginfo property.
  And can be used in...
 
- ```- (void) playVideo:(SlikeConfig *) config inParent:(id) parent withAds:(NSMutableArray *) arrAds withProgressHandler:(onChange) block```
+```- (void) playVideo:(SlikeConfig *) config inParent:(id) parent withAds:(NSMutableArray *) arrAds withProgressHandler:(onChange) block```
 
 
- ###For playing a playlist...
+###For playing a playlist...
 
  Create a mutable array of StreamingInfo instances and pass it to the following method.
 
- ```- (void) playVideo:(NSMutableArray *)arrVideos withIndex:(NSInteger) index withCurrentlyPlaying:(currentlyPlaying) block```
+```- (void) playVideo:(NSMutableArray *)arrVideos withIndex:(NSInteger) index withCurrentlyPlaying:(currentlyPlaying) block```
 
- ####Parameters:
- #####arrVideos:
+####Parameters:
+
+#####arrVideos:
+
  A mutable array of StreamingInfo instances.
- #####index:
+
+#####index:
+
  Index position of video which will be played after initialization.
- #####currentlyPlaying:
+
+#####currentlyPlaying:
+
  This block will notify whenever video changes.
 
 `typedef void(^currentlyPlaying)(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo)`
 
- > Refer to PlaylistViewController. e.g.
- ```
+Refer to PlaylistViewController. e.g.
+
+```
  [[SlikePlayer getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
  if(!progressInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
  else
@@ -135,14 +153,16 @@ NSMutableArray *arr = [NSMutableArray array];
 
  To stop a player, just use.
 
- `- (void) stopPlayer;`
+`- (void) stopPlayer;`
 
- e.g. `[SlikePlayer getInstance] stopPlayer];`
+`e.g. [SlikePlayer getInstance] stopPlayer];`
 
 
- ###STYLING
- ####Examples
- ```
+###STYLING
+
+####Examples
+
+```
  UIImage *img = [UIImage imageNamed:@"testicon"];
  UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
 
@@ -186,7 +206,7 @@ NSMutableArray *arr = [NSMutableArray array];
 
 **************************************
 
-## Author
+##Author
 
 Times Internet Limited, pravin.ranjan@timesinternet.in
 
