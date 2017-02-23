@@ -34,7 +34,7 @@
                                     <constraint firstAttribute="height" constant="30" id="Cf1-Fz-NJF"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="Play Kaltura Video">
+                                <state key="normal" title="Play Video">
                                     <color key="titleColor" red="0.55508864641189581" green="0.42707194007441984" blue="0.013908895634862115" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
@@ -47,7 +47,7 @@
                                     <constraint firstAttribute="height" constant="30" id="KNN-yZ-9zd"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="Open Playlist">
+                                <state key="normal" title="Play As Playlist">
                                     <color key="titleColor" red="0.83156249999999998" green="0.45675528791107745" blue="0.033565838828841545" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
@@ -57,7 +57,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9ib-eI-QMm">
                                 <rect key="frame" x="25" y="276" width="332" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="Navigation Controller">
+                                <state key="normal" title="Play With Navigation Controller">
                                     <color key="titleColor" red="0.0" green="0.46510533571243284" blue="0.00014237980973837456" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
@@ -67,7 +67,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c5X-4l-1X1">
                                 <rect key="frame" x="25" y="186" width="332" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="Play YouTube Video"/>
+                                <state key="normal" title="Play YouTube Video">
+                                    <color key="titleColor" red="0.82425820709999997" green="0.039132167439999997" blue="0.023847486460000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="clbPlayYT:" destination="BYZ-38-t0r" eventType="touchUpInside" id="X92-lj-kV0"/>
                                 </connections>
@@ -83,11 +85,21 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gqe-cJ-PMU">
                                 <rect key="frame" x="25" y="323" width="332" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="(( Live Stream ))">
+                                <state key="normal" title="Play Live Stream">
                                     <color key="titleColor" red="0.5" green="0.0" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="clbLiveStream:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1ev-nt-H5z"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uUA-VE-XZX">
+                                <rect key="frame" x="25" y="371" width="332" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="Play Audio">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="clbPlayAudio:" destination="BYZ-38-t0r" eventType="touchUpInside" id="0DI-wg-Nz0"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -108,7 +120,10 @@
                             <constraint firstItem="Gqe-cJ-PMU" firstAttribute="top" secondItem="9ib-eI-QMm" secondAttribute="bottom" constant="13" id="Qab-Yd-cba"/>
                             <constraint firstItem="DTn-vo-6lq" firstAttribute="leading" secondItem="TjV-MO-9rm" secondAttribute="leading" id="SuP-3Y-dX0"/>
                             <constraint firstItem="TjV-MO-9rm" firstAttribute="trailing" secondItem="c5X-4l-1X1" secondAttribute="trailing" id="U6f-uz-KO9"/>
+                            <constraint firstItem="uUA-VE-XZX" firstAttribute="trailing" secondItem="Gqe-cJ-PMU" secondAttribute="trailing" id="Y2N-8x-SMH"/>
                             <constraint firstItem="vbx-Tp-zev" firstAttribute="top" secondItem="c5X-4l-1X1" secondAttribute="bottom" constant="13" id="YQk-Su-ebX"/>
+                            <constraint firstItem="uUA-VE-XZX" firstAttribute="leading" secondItem="Gqe-cJ-PMU" secondAttribute="leading" id="ab8-YZ-9or"/>
+                            <constraint firstItem="uUA-VE-XZX" firstAttribute="top" secondItem="Gqe-cJ-PMU" secondAttribute="bottom" constant="14" id="bQC-wg-CTb"/>
                             <constraint firstItem="RcK-ep-apJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="2" id="iAn-W7-X9g"/>
                             <constraint firstItem="TjV-MO-9rm" firstAttribute="top" secondItem="DTn-vo-6lq" secondAttribute="bottom" constant="6" id="jjj-xx-1rE"/>
                             <constraint firstItem="vbx-Tp-zev" firstAttribute="trailing" secondItem="9ib-eI-QMm" secondAttribute="trailing" id="p8e-1V-Clz"/>
@@ -204,7 +219,11 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QjE-Ll-iQG">
-                                <rect key="frame" x="16" y="614" width="343" height="30"/>
+                                <rect key="frame" x="16" y="619" width="343" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="Idl-Qg-QSc"/>
+                                    <constraint firstAttribute="width" constant="343" id="g3z-2s-kUs"/>
+                                </constraints>
                                 <state key="normal" title="Back To Main Menu"/>
                                 <connections>
                                     <segue destination="Jla-qp-R3K" kind="unwind" unwindAction="prepareForUnwind:" id="qVd-vG-t6e"/>
@@ -214,7 +233,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Jwc-SA-vA3" firstAttribute="leading" secondItem="QpS-ee-nrM" secondAttribute="leading" id="0eg-Af-bij"/>
-                            <constraint firstItem="vOP-Ad-hKH" firstAttribute="top" secondItem="QjE-Ll-iQG" secondAttribute="bottom" constant="23" id="C2l-lO-BrK"/>
+                            <constraint firstItem="QjE-Ll-iQG" firstAttribute="top" secondItem="Jwc-SA-vA3" secondAttribute="bottom" constant="20" id="8du-ye-C5T"/>
+                            <constraint firstItem="vOP-Ad-hKH" firstAttribute="top" secondItem="QjE-Ll-iQG" secondAttribute="bottom" constant="18" id="C2l-lO-BrK"/>
                             <constraint firstItem="QpS-ee-nrM" firstAttribute="top" secondItem="2DB-qo-FQq" secondAttribute="bottom" constant="8" id="DjV-eF-cGs"/>
                             <constraint firstItem="Jwc-SA-vA3" firstAttribute="trailing" secondItem="QpS-ee-nrM" secondAttribute="trailing" id="HHZ-Qy-He9"/>
                             <constraint firstItem="Jwc-SA-vA3" firstAttribute="centerY" secondItem="y9L-mx-7OF" secondAttribute="centerY" id="JfQ-UP-e9p"/>
@@ -318,7 +338,11 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="doE-Mf-Kid">
-                                <rect key="frame" x="16" y="614" width="343" height="30"/>
+                                <rect key="frame" x="16" y="619" width="343" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="2je-Ld-xJX"/>
+                                    <constraint firstAttribute="width" constant="343" id="boW-wL-w3e"/>
+                                </constraints>
                                 <state key="normal" title="Back To Main Menu"/>
                                 <connections>
                                     <segue destination="Gog-eJ-fTQ" kind="unwind" unwindAction="prepareForUnwind:" id="AV4-Gn-1cc"/>
@@ -330,11 +354,11 @@
                             <constraint firstAttribute="leadingMargin" secondItem="4br-7w-nHd" secondAttribute="leading" id="2UR-8C-T4t"/>
                             <constraint firstItem="trC-8T-okm" firstAttribute="top" secondItem="4br-7w-nHd" secondAttribute="bottom" constant="8" id="2ng-fX-olL"/>
                             <constraint firstAttribute="trailingMargin" secondItem="trC-8T-okm" secondAttribute="trailing" id="JMT-Sv-cYP"/>
-                            <constraint firstItem="doE-Mf-Kid" firstAttribute="top" secondItem="trC-8T-okm" secondAttribute="bottom" constant="8" id="S19-Yj-AwO"/>
+                            <constraint firstItem="doE-Mf-Kid" firstAttribute="top" secondItem="trC-8T-okm" secondAttribute="bottom" constant="13" id="S19-Yj-AwO"/>
                             <constraint firstItem="trC-8T-okm" firstAttribute="leading" secondItem="4br-7w-nHd" secondAttribute="leading" id="SA4-7C-SZ4"/>
                             <constraint firstItem="trC-8T-okm" firstAttribute="trailing" secondItem="4br-7w-nHd" secondAttribute="trailing" id="TPS-lI-ZZF"/>
                             <constraint firstItem="trC-8T-okm" firstAttribute="leading" secondItem="doE-Mf-Kid" secondAttribute="leading" id="UTA-t1-b2H"/>
-                            <constraint firstItem="2J0-bY-Ypi" firstAttribute="top" secondItem="doE-Mf-Kid" secondAttribute="bottom" constant="23" id="ZHs-7y-L3m"/>
+                            <constraint firstItem="2J0-bY-Ypi" firstAttribute="top" secondItem="doE-Mf-Kid" secondAttribute="bottom" constant="18" id="ZHs-7y-L3m"/>
                             <constraint firstItem="doE-Mf-Kid" firstAttribute="width" secondItem="trC-8T-okm" secondAttribute="width" id="h9k-AX-M6f"/>
                             <constraint firstItem="4br-7w-nHd" firstAttribute="centerX" secondItem="J2V-kE-8vi" secondAttribute="centerX" id="jM6-SF-o9Z"/>
                             <constraint firstItem="4br-7w-nHd" firstAttribute="top" secondItem="j30-9S-X3t" secondAttribute="bottom" constant="8" id="rwt-hZ-FZb"/>

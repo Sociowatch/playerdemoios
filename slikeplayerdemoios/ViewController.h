@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnPlayVideo;
 @property (weak, nonatomic) IBOutlet UIButton *btnPlayYT;
 - (IBAction)clbPlayVideo:(id)sender;
+- (IBAction)clbPlayAudio:(id)sender;
 - (IBAction)clbPlayYT:(id)sender;
 - (IBAction)clbPlayKaltura:(id)sender;
 - (IBAction)clbLiveStream:(id)sender;

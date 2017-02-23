@@ -18,7 +18,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [[SlikePlayer getInstance] initPlayerWithApikey:@"fe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil];
+    BOOL isDebug = NO;
+#ifdef DEBUG
+    isDebug = YES;
+#endif
+    [[SlikePlayer getInstance] initPlayerWithApikey:@"fe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil debugMode:isDebug];
     
     //UNCOMMENT TO TEST STYLING EXAMPLES
     

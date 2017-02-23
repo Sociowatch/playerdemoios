@@ -63,7 +63,7 @@
                         dict = [arr objectAtIndex:nIndex];
                         if(!dict) continue;
                         
-                        slikeConfig = [[SlikeConfig alloc] initWithTitle:[dict objectForKey:@"name"] withID:[dict objectForKey:@"id"] withSection:@"/Entertainment/videos" withMSId:@"4724967"];
+                        slikeConfig = [[SlikeConfig alloc] initWithTitle:[dict objectForKey:@"name"] withID:[dict objectForKey:@"id"] withSection:@"/videos/news" withMSId:@"4724967"];
                         streamingInfo = [StreamingInfo createStreamURL:nil withType:VIDEO_SOURCE_HLS withTitle:[dict objectForKey:@"name"] withSubTitle:@"" withDuration:[[dict objectForKey:@"duration"] integerValue] withAds:nil];
                         streamingInfo.strID = [dict objectForKey:@"id"];
                         streamingInfo.urlImageURL = [NSURL URLWithString:[dict objectForKey:@"image"]];

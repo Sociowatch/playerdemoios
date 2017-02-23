@@ -8,6 +8,7 @@
 
 #import "NavViewController.h"
 #import <SlikePlayer/SlikePlayer.h>
+#import <CustomAlertView.h>
 
 @interface NavViewController ()
 {
@@ -19,12 +20,19 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:@"1_oprrpt0x" withSection:@"/Entertainment/videos" withMSId:@"4724967"];
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Suicide Squad" withID:@"1yty589glg" withSection:@"/videos/news" withMSId:@"4724967"];
     slikeConfig.isCloseControl = NO;
+    slikeConfig.channel = @"toi";
+    slikeConfig.isSkipAds = true;
     [[SlikePlayer getInstance] playVideo:slikeConfig inParent:self.viewPlayer withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
         if(statusInfo != nil)
         {
             NSLog(@"%@", [statusInfo getString]);
+        }
+        if(type == MEDIA && name == ERROR)
+        {
+            NSLog(@"Error while playing media: %@", statusInfo.error);
+            [self showAlert:statusInfo.error];
         }
     }];
 }
@@ -42,5 +50,12 @@
 {
     //
 }
+-(void) showAlert:(NSString *) strMsg
+{
+    CustomAlertView *alertView = [[CustomAlertView alloc] initWithTitle:@"Playback failed" message:strMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alertView show];
+    alertView = nil;
+}
+
 
 @end

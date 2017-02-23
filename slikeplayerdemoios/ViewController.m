@@ -223,6 +223,7 @@
 #import <DeviceSettings.h>
 #import <CustomAlertView.h>
 #import <SVProgressHUD.h>
+#import <BoxUtility.h>
 
 @interface ViewController ()
 
@@ -243,6 +244,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+
 /***
  The example demonstrate 
  1) HUD implementation. HUD is not now used by SlikePlayer
@@ -251,7 +256,7 @@
  */
 - (IBAction)clbPlayVideo:(id)sender {
     if(![SVProgressHUD isVisible]) [SVProgressHUD show];
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:@"1_oprrpt0x" withSection:@"/videos/news" withMSId:@"56087249"];
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithChannel:@"toi" withID:@"1_oprrpt0x" withSection:@"/videos/news" withMSId:@"56087249"];
     slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     //Enable next button
     slikeConfig.isNextControl = YES;
@@ -310,11 +315,69 @@
     
 }
 
-- (IBAction)clbPlayYT:(id)sender {
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:nil withSection:@"/videos/news" withMSId:@"56087249"];
+- (IBAction)clbPlayAudio:(id)sender {
+    if(![SVProgressHUD isVisible]) [SVProgressHUD show];
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithChannel:@"toi" withID:@"0_2d1ote04" withSection:@"/videos/news" withMSId:@"56087249"];
+    slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    slikeConfig.isSkipAds = true;
     
-    StreamingInfo *streamingInfo = [StreamingInfo createStreamURL:@"eRDojLoCDpQ" withType:VIDEO_SOURCE_YT withTitle:@"YouTube Video" withSubTitle:@"" withDuration:0L withAds:nil];
-    streamingInfo.videoSource = VIDEO_SOURCE_YT;
+    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+        if(statusInfo != nil)
+        {
+            NSLog(@"%@", [statusInfo getString]);
+            
+            //Getting ads events...
+            if(type == AD && statusInfo.adStatusInfo)
+            {
+                AdStatusInfo *info = statusInfo.adStatusInfo;
+                /****See Globals.h for ads events ****/
+                NSLog(@"Ads information, ## %@", [info getString]);
+            }
+            
+            if(type == MEDIA && name == READY)
+            {
+                if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
+            }
+        }
+        if(type == CONTROL && name == SHARE)
+        {
+            NSLog(@"Share button is tapped.");
+            [self share:slikeConfig];
+        }
+        else if(type == CONTROL && name == NEXT)
+        {
+            NSLog(@"Next button is tapped.");
+            [self clbPlayKaltura:nil];
+        }
+        else if(type == CONTROL && name == PREVIOUS)
+        {
+            NSLog(@"Previous button is tapped.");
+        }
+        else if(type == CONTROL && name == SHOWHUD)
+        {
+            if(![SVProgressHUD isVisible]) [SVProgressHUD show];
+        }
+        else if(type == CONTROL && name == HIDEHUD)
+        {
+            if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
+        }
+        else
+        {
+            if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
+        }
+        if(type == MEDIA && name == ERROR)
+        {
+            NSLog(@"Error while playing media: %@", statusInfo.error);
+            [self showAlert:statusInfo.error];
+        }
+    }];
+    
+}
+
+- (IBAction)clbPlayYT:(id)sender {
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Youtube Video" withID:nil withSection:@"/videos/news" withMSId:@"56087249"];
+    
+    StreamingInfo *streamingInfo = [StreamingInfo createStreamURL:@"hzTg4zPBtDU" withType:VIDEO_SOURCE_YT withTitle:@"YouTube Video" withSubTitle:@"" withDuration:0L withAds:nil];
     
     slikeConfig.streamingInfo = streamingInfo;
     
@@ -325,8 +388,9 @@
 
 - (IBAction)clbPlayKaltura:(id)sender {
     if(![SVProgressHUD isVisible]) [SVProgressHUD show];
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:@"0_000oyfdd" withSection:@"/videos/news" withMSId:@"56087249"];
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"NBT Khabar express 26 09 2016 new" withID:@"1ytcef9gl6" withSection:@"/videos/news" withMSId:@"56087249"];
     slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    slikeConfig.channel = @"toi";
     //Enable previous button
     slikeConfig.isPreviousControl = YES;
     [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
@@ -386,29 +450,9 @@
 }
 
 - (IBAction)clbLiveStream:(id)sender {
-    NSMutableArray *arr = [NSMutableArray array];
-    BoxAdsInfo * info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
-    [info addPosition:0 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="]];
-    [arr addObject:info];
-    
-    info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
-    [info addPosition:6 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]];
-    [arr addObject:info];
-    
-    info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
-    [info addPosition:10 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]];
-    [arr addObject:info];
-    
-    info = (BoxAdsInfo *)[[BoxAdsInfo alloc] init];
-    [info addPosition:-1 withAdUnit:[[BoxAdsUnit alloc] initWithCategory:@"6" andAdURL:@"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]];
-    [arr addObject:info];
-    
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Cauvery-protests-Dont-blindly-believe-messages-on-social-media-say-Bengaluru-Police" withID:nil withSection:@"/videos/news" withMSId:@"56087249"];
-    slikeConfig.isSkipAds = NO;
-    //http://timeslive.live-s.cdn.bitgravity.com/cdn-live/_definst_/timeslive/live/timesnow.smil/playlist.m3u8
-    slikeConfig.streamingInfo = [StreamingInfo createStreamURL:@"http://timesnow-lh.akamaihd.net/i/Timesnow-TIL-APP-HLS/TimesNow_1@129288/master.m3u8" withType:VIDEO_SOURCE_HLS withTitle:@"Live Streaming" withSubTitle:@"" withDuration:0L withAds:arr];
-    
-    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:arr withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithChannel:@"toi" withID:@"times-now" withSection:@"/videos/news" withMSId:@"56087249"];
+    slikeConfig.isSkipAds = YES;
+    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
         if(statusInfo != nil) NSLog(@"%@", [statusInfo getString]);
         if(type == MEDIA && name == ERROR)
         {
