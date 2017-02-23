@@ -1,4 +1,4 @@
-# SlikePlayer  (v0.5.0)
+# SlikePlayer  (v0.5.1)
 
 ## Example
 
@@ -17,7 +17,7 @@ it, simply add the following line to your Podfile:
 
 ```
 
-pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.0'
+pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.1'
 
 ```
 
@@ -35,12 +35,16 @@ SlikePlayer *myPlayer = [SlikePlayer getInstance];
 ```
 SlikePlayer will be initialized as follows.
 
-`-(void) initPlayerWithApikey:(NSString *) apikey andWithDeviceUID:(NSString *) uuid`
+`-(void) initPlayerWithApikey:(NSString *) apikey andWithDeviceUID:(NSString *) uuid debugMode:(BOOL) isDebug`
 
 #####apikey
 The Slike key provided by the Slike CMS.
+
 #####uuid
 Device unique id used by the app.
+
+#####debug mode
+BOOL. The app should ensure release build should not go with debug mode as YES.
 
 ####method
 
