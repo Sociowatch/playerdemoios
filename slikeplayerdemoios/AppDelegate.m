@@ -22,7 +22,7 @@
 #ifdef DEBUG
     isDebug = YES;
 #endif
-    [[SlikePlayer getInstance] initPlayerWithApikey:@"fe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil debugMode:isDebug];
+    [[SlikePlayer getInstance] initPlayerWithApikey:@"toiiphonefe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil debugMode:isDebug];
     
     //UNCOMMENT TO TEST STYLING EXAMPLES
     

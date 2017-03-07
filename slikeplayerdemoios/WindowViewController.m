@@ -18,7 +18,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"For Sting   TOI ENT Manish Wadhwa likes portraying negative roles" withID:@"1yti1t9gl6" withSection:@"/videos/news" withMSId:@"4724967"];
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"NBT Khabar express 26 09 2016 new" withID:@"1ytcef9gl6" withSection:@"/videos/news" withMSId:@"56087249"];
+    slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     slikeConfig.channel = @"toi";
     slikeConfig.isCloseControl = NO;
     slikeConfig.autorotationMode = SlikeFullscreenAutorotationModeLandscape;
