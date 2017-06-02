@@ -77,7 +77,7 @@ isShareControl|boolean|If property false, share button will not be visible. Shar
 isNextControl|boolean|If property true, next button control will be visible. Next control sends CONTROL event as NEXT.
 isPreviousControl|boolean|If property true, previous button control will not be visible. Previous control sends CONTROL event as PREVIOUS.
 isFastSeekable|boolean|If property false (default), precise seeking is performed. Otherwise loose but fast seek is performed.
-customControl|optional|If you want to create your own custom control, Please provide the customControl.
+customControl|optional|Create custom control for player to handle events
 
 ##### Custom Control:
 
