@@ -1,4 +1,4 @@
-# SlikePlayer  (v0.5.3)
+# SlikePlayer  (v0.5.5)
 
 ## Example
 
@@ -17,7 +17,7 @@ it, simply add the following line to your Podfile:
 
 ```
 
-pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.3'
+pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.5'
 
 ```
 
@@ -77,14 +77,82 @@ isShareControl|boolean|If property false, share button will not be visible. Shar
 isNextControl|boolean|If property true, next button control will be visible. Next control sends CONTROL event as NEXT.
 isPreviousControl|boolean|If property true, previous button control will not be visible. Previous control sends CONTROL event as PREVIOUS.
 isFastSeekable|boolean|If property false (default), precise seeking is performed. Otherwise loose but fast seek is performed.
-isSeekableLive|boolean|If property true, DVR pause/play is enabled. Otherwise on play, seek directly to live.
+customControl|optional|If you want to create your own custom control, Please provide the customControl.
 
-#####parent:
+##### Custom Control:
+
+Create custom control and provide this custom control to config.customControl
+
+```
+NSBundle *myBundle = [NSBundle bundleForClass:[PlayerViewController class]];
+    slikeConfig.customControl = [[SlikePlayerControl alloc] initWithNibName:@"PlayerControlView" bundle:myBundle]
+
+```
+
+##### ISlikePlayerControl implementation
+
+```
+    -(void)viewWillEnterForeground
+    {
+    //  Handle playerStylePlayButton
+    }
+    -(void)viewWillEnterBackground
+    {
+      //  Handle playerStylePlayButton and seekBar
+    }
+    -(void) showBitrateChooser:(BOOL) flag
+    {
+        //Handle bit rate section
+    }
+    -(void) setHostPlayer:(id<ISlikePlayer>) hostPlayer
+    {
+        //Set the host player
+    }
+    -(void) setPlayerData:(SlikeConfig *)config
+    {
+        //set the player data as SlikeConfig
+    }
+    -(void) setAdsMarkers:(NSMutableArray *) arrMarkers
+    {
+        //self.seekBar.arrMarkers = arrMarkers;
+        //TODO::
+    }
+    -(void) setAdMarkerDone:(NSInteger) index
+    {
+        //
+    }
+    -(void) updateFullScreen:(BOOL) isFullScreen
+    {
+        //Update fullscreen button.
+    }
+    -(void) showFullscreenButton:(BOOL) flag
+    {
+              //toggle to FullScreen
+    }
+    -(void)updatePlaybackProgress
+    {
+    }
+    -(void) updateButtons:(SlikePlayerState) state
+    {
+      //Update controls as per config. This will be called very first time before video start.
+    }
+    -(void) show
+   {
+     //Use to show custom Control view
+   }
+   -(void) hide
+   {
+     //Use to hide custom Control view
+   }
+
+```
+
+##### parent:
 
  Parent is the view in which the player will be added. It could be either an UIView or UIViewController or UINavigationController. If parent is nil, the player will added
  into the rootviewcontroller of the main window. For smaller view of the player, you should set a view as parent. Only view will set the player in window view.
 
-#####arrAds:
+##### arrAds:
 
  The ads array. It is a mutable array of BoxAdsInfo instances.
 
