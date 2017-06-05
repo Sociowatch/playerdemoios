@@ -63,7 +63,7 @@
                         dict = [arr objectAtIndex:nIndex];
                         if(!dict) continue;
                         
-                        slikeConfig = [[SlikeConfig alloc] initWithTitle:[dict objectForKey:@"name"] withID:[dict objectForKey:@"id"] withSection:@"/videos/news" withMSId:@"4724967"];
+                        slikeConfig = [[SlikeConfig alloc] initWithTitle:[dict objectForKey:@"name"] withID:[dict objectForKey:@"id"] withSection:@"/videos/news" withMSId:@"4724967" posterImage:@""];
                         streamingInfo = [StreamingInfo createStreamURL:nil withType:VIDEO_SOURCE_HLS withTitle:[dict objectForKey:@"name"] withSubTitle:@"" withDuration:[[dict objectForKey:@"duration"] integerValue] withAds:nil];
                         streamingInfo.strID = [dict objectForKey:@"id"];
                         streamingInfo.urlImageURL = [NSURL URLWithString:[dict objectForKey:@"image"]];
@@ -136,7 +136,6 @@
 {
     return 60;
 }
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = nil;
@@ -172,17 +171,21 @@
     return cell;
 }
 
-#pragma --
-#pragma mark UITableViewDataDelegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [[SlikePlayer getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
-        if(!statusInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-        else
-        {
-            NSLog(@"%@", [statusInfo getString]);
-        }
-    }];
-}
 
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    [[SlikePlayer getInstance] playVideo:self.arrData withIndex:indexPath.row withCurrentlyPlaying:^(NSInteger index, SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+//        if(!statusInfo)[self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+//        else
+//        {
+//            NSLog(@"%@", [statusInfo getString]);
+//        }
+//    }];
+//}
+//
+//- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+//   
+//    NSIndexPath *firstVisibleIndexPath = [[self.tableView indexPathsForVisibleRows] objectAtIndex:0];
+//    NSLog(@"first visible cell's section: %li, row: %li",(long) firstVisibleIndexPath.section, (long)firstVisibleIndexPath.row);
+//}
 @end

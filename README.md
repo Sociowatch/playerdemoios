@@ -1,4 +1,4 @@
-# SlikePlayer  (v0.5.5)
+# SlikePlayer  (v0.5.8)
 
 ## Example
 
@@ -17,7 +17,7 @@ it, simply add the following line to your Podfile:
 
 ```
 
-pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.5'
+pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '0.5.8'
 
 ```
 
@@ -77,7 +77,7 @@ isShareControl|boolean|If property false, share button will not be visible. Shar
 isNextControl|boolean|If property true, next button control will be visible. Next control sends CONTROL event as NEXT.
 isPreviousControl|boolean|If property true, previous button control will not be visible. Previous control sends CONTROL event as PREVIOUS.
 isFastSeekable|boolean|If property false (default), precise seeking is performed. Otherwise loose but fast seek is performed.
-customControl|optional|Create custom control for player to handle events
+customControl|optional|If you want to create your own custom control, Please provide the customControl.
 
 ##### Custom Control:
 

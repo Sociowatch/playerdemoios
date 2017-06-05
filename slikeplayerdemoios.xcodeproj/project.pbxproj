@@ -17,6 +17,7 @@
 		3D21EE961DF7F8A60002132E /* PlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D21EE901DF7F8A60002132E /* PlaylistViewController.m */; };
 		3D21EE971DF7F8A60002132E /* WindowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D21EE921DF7F8A60002132E /* WindowViewController.m */; };
 		3D21EE981DF7F8A60002132E /* YTWindowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D21EE941DF7F8A60002132E /* YTWindowViewController.m */; };
+		3DF1C8F11EE534E400CDACC2 /* LWPViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */; };
 		7C3F563D9F4469259C7B5439 /* libPods-slikeplayerdemoios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13F939DEE1708D2759E95DFF /* libPods-slikeplayerdemoios.a */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,8 @@
 		3D21EE921DF7F8A60002132E /* WindowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WindowViewController.m; sourceTree = "<group>"; };
 		3D21EE931DF7F8A60002132E /* YTWindowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTWindowViewController.h; sourceTree = "<group>"; };
 		3D21EE941DF7F8A60002132E /* YTWindowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTWindowViewController.m; sourceTree = "<group>"; };
+		3DF1C8EF1EE534E400CDACC2 /* LWPViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWPViewController.h; sourceTree = "<group>"; };
+		3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWPViewController.m; sourceTree = "<group>"; };
 		C4FC53A0A0EA3AD63DD3DE15 /* Pods-slikeplayerdemoios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-slikeplayerdemoios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,6 +80,8 @@
 		3D21EE751DF7F8300002132E /* classes */ = {
 			isa = PBXGroup;
 			children = (
+				3DF1C8EF1EE534E400CDACC2 /* LWPViewController.h */,
+				3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */,
 				3D21EE8D1DF7F8A60002132E /* NavViewController.h */,
 				3D21EE8E1DF7F8A60002132E /* NavViewController.m */,
 				3D21EE8F1DF7F8A60002132E /* PlaylistViewController.h */,
@@ -206,7 +211,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		AA92B762B1B106415F928AA1 /* [CP] Copy Pods Resources */ = {
@@ -246,6 +251,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DF1C8F11EE534E400CDACC2 /* LWPViewController.m in Sources */,
 				3D21EE7E1DF7F8300002132E /* ViewController.m in Sources */,
 				3D21EE981DF7F8A60002132E /* YTWindowViewController.m in Sources */,
 				3D21EE7B1DF7F8300002132E /* AppDelegate.m in Sources */,

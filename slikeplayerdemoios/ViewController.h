@@ -8,16 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import <Globals.h>
+#import "WindowViewController.h"
 
 @interface ViewController : UIViewController
+{
+    NSArray *infoArray;
+}
+@property (weak, nonatomic) IBOutlet UITableView *tbView;
 
-@property (weak, nonatomic) IBOutlet UIButton *btnPlayVideo;
-@property (weak, nonatomic) IBOutlet UIButton *btnPlayYT;
-- (IBAction)clbPlayVideo:(id)sender;
-- (IBAction)clbPlayAudio:(id)sender;
-- (IBAction)clbPlayYT:(id)sender;
-- (IBAction)clbPlayKaltura:(id)sender;
-- (IBAction)clbLiveStream:(id)sender;
--(IBAction)prepareForUnwind:(UIStoryboardSegue *)segue;
+
+
 @end
 

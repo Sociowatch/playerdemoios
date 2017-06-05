@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import <SlikePlayer/SlikePlayer.h>
+// IMPORTANT!!! replace with you api key
+#define apikey @"test"
 
 @interface AppDelegate ()
 
@@ -22,8 +24,11 @@
 #ifdef DEBUG
     isDebug = YES;
 #endif
-    [[SlikePlayer getInstance] initPlayerWithApikey:@"toiiphonefe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil debugMode:isDebug];
+//    [[SlikePlayer getInstance] initPlayerWithApikey:@"toiiphonefe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil debugMode:isDebug];
     
+
+    [[SlikePlayer getInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
+
     //UNCOMMENT TO TEST STYLING EXAMPLES
     
     /*UIImage *img = [UIImage imageNamed:@"testicon"];
@@ -89,6 +94,34 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+// Expects the URL of the scheme e.g. "fb://"
+- (BOOL)schemeAvailable:(NSString *)scheme {
+    UIApplication *application = [UIApplication sharedApplication];
+    NSURL *URL = [NSURL URLWithString:scheme];
+    return [application canOpenURL:URL];
+}
+- (void)openScheme:(NSString *)scheme {
+    UIApplication *application = [UIApplication sharedApplication];
+    NSURL *URL = [NSURL URLWithString:scheme];
+    [application openURL:URL options:@{} completionHandler:^(BOOL success) {
+        if (success) {
+            NSLog(@"Opened %@",scheme);
+        }
+    }];
+}
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    // Display text
+    UIAlertView *alertView;
+    NSString *text = [[url host] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    alertView = [[UIAlertView alloc] initWithTitle:@"Text" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alertView show];
+    return YES;
+}
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    NSLog(@"%@u",url);
+    return NO;
 }
 
 @end

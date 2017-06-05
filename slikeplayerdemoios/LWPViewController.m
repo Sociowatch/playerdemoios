@@ -1,29 +1,28 @@
 //
-//  NavViewController.m
+//  LWPViewController.m
 //  slikeplayerexample
 //
 //  Created by TIL on 16/09/16.
 //  Copyright © 2016 BBDSL. All rights reserved.
 //
 
-#import "NavViewController.h"
+#import "LWPViewController.h"
 #import <SlikePlayer/SlikePlayer.h>
 #import <CustomAlertView.h>
 
-@interface NavViewController ()
-{
-    UIViewController *myCntrlr;
-}
+@interface LWPViewController ()
+
 @end
 
-@implementation NavViewController
+@implementation LWPViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"Suicide Squad" withID:@"1yty589glg" withSection:@"/videos/news" withMSId:@"4724967" posterImage:nil];
-    slikeConfig.isCloseControl = NO;
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"NBT Khabar express 26 09 2016 new" withID:@"1ytcef9gl6" withSection:@"/videos/news" withMSId:@"56087249" posterImage:nil];
+    slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     slikeConfig.channel = @"toi";
-    slikeConfig.isSkipAds = true;
+    slikeConfig.isCloseControl = NO;
+    slikeConfig.autorotationMode = SlikeFullscreenAutorotationModeLandscape;
     [[SlikePlayer getInstance] playVideo:slikeConfig inParent:self.viewPlayer withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
         if(statusInfo != nil)
         {
@@ -42,20 +41,11 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)clbPlayWithNav:(id)sender
-{
-    
-}
-- (IBAction)clbPlayYTWithNav:(id)sender
-{
-    //
-}
 -(void) showAlert:(NSString *) strMsg
 {
     CustomAlertView *alertView = [[CustomAlertView alloc] initWithTitle:@"Playback failed" message:strMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
     alertView = nil;
 }
-
 
 @end
