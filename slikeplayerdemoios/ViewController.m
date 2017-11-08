@@ -103,25 +103,25 @@
                 if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
             }
         }
-        if(type == CONTROL && name == SHARE)
+        if(type == CONTROLS && name == SHARE)
         {
             NSLog(@"Share button is tapped.");
             [self share:slikeConfig];
         }
-        else if(type == CONTROL && name == NEXT)
+        else if(type == CONTROLS && name == NEXT)
         {
             NSLog(@"Next button is tapped.");
             [self clbPlayKaltura:nil];
         }
-        else if(type == CONTROL && name == PREVIOUS)
+        else if(type == CONTROLS && name == PREVIOUS)
         {
             NSLog(@"Previous button is tapped.");
         }
-        else if(type == CONTROL && name == SHOWHUD)
+        else if(type == CONTROLS && name == SHOWHUD)
         {
             if(![SVProgressHUD isVisible]) [SVProgressHUD show];
         }
-        else if(type == CONTROL && name == HIDEHUD)
+        else if(type == CONTROLS && name == HIDEHUD)
         {
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
@@ -164,25 +164,25 @@
                 if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
             }
         }
-        if(type == CONTROL && name == SHARE)
+        if(type == CONTROLS && name == SHARE)
         {
             NSLog(@"Share button is tapped.");
             [self share:slikeConfig];
         }
-        else if(type == CONTROL && name == NEXT)
+        else if(type == CONTROLS && name == NEXT)
         {
             NSLog(@"Next button is tapped.");
             [self clbPlayKaltura:nil];
         }
-        else if(type == CONTROL && name == PREVIOUS)
+        else if(type == CONTROLS && name == PREVIOUS)
         {
             NSLog(@"Previous button is tapped.");
         }
-        else if(type == CONTROL && name == SHOWHUD)
+        else if(type == CONTROLS && name == SHOWHUD)
         {
             if(![SVProgressHUD isVisible]) [SVProgressHUD show];
         }
-        else if(type == CONTROL && name == HIDEHUD)
+        else if(type == CONTROLS && name == HIDEHUD)
         {
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
@@ -225,29 +225,29 @@
                 if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
             }
         }
-        if(type == CONTROL && name == SHARE)
+        if(type == CONTROLS && name == SHARE)
         {
             NSLog(@"Share button is tapped.");
             [self share:slikeConfig];
         }
-        else if(type == CONTROL && name == CLOSE)
+        else if(type == CONTROLS && name == CLOSE)
         {
             NSLog(@"Close button is tapped.");
         }
-        else if(type == CONTROL && name == NEXT)
+        else if(type == CONTROLS && name == NEXT)
         {
             NSLog(@"Next button is tapped.");
         }
-        else if(type == CONTROL && name == PREVIOUS)
+        else if(type == CONTROLS && name == PREVIOUS)
         {
             NSLog(@"Previous button is tapped.");
             [self clbPlayVideo];
         }
-        else if(type == CONTROL && name == SHOWHUD)
+        else if(type == CONTROLS && name == SHOWHUD)
         {
             if(![SVProgressHUD isVisible]) [SVProgressHUD show];
         }
-        else if(type == CONTROL && name == HIDEHUD)
+        else if(type == CONTROLS && name == HIDEHUD)
         {
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
@@ -359,7 +359,7 @@
     slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     //Enable next button
     slikeConfig.isNextControl = NO;
-    slikeConfig.preferredVideoType = VIDEO_SOURCE_DM;
+    slikeConfig.preferredVideoType = VIDEO_SOURCE_YT;
     slikeConfig.isSkipAds = YES;
  
     

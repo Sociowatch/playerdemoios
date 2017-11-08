@@ -40,7 +40,7 @@
 -(void)loadData
 {
     if(self.arrData.count > 0) [self.arrData removeAllObjects];
-    [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:@"http://slike.indiatimes.com/feed/feed-test.json"] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSError *error) {
+    [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:@"http://slike.indiatimes.com/feed/feed-test.json"] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger status, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
