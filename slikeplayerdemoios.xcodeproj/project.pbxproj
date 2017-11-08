@@ -393,7 +393,7 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_pause.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_play.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui",
-				"$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayer.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayer.bundle,
 				"${PODS_ROOT}/youtube-ios-player-helper/youtube-ios-player-helper/Assets.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -563,7 +563,7 @@
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.slike.slikeplayerdemoios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.slikeplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -576,7 +576,7 @@
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.slike.slikeplayerdemoios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.slikeplayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
