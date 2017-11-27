@@ -9,7 +9,7 @@
 #import "AppDelegate.h"
 #import <SlikePlayer/SlikePlayer.h>
 // IMPORTANT!!! replace with you api key
-#define apikey @"test"
+#define apikey @"ios"
 
 @interface AppDelegate ()
 
@@ -17,6 +17,10 @@
 
 @implementation AppDelegate
 
++ (AppDelegate *)getAppDelegate
+{
+    return (AppDelegate*)[UIApplication sharedApplication].delegate;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.

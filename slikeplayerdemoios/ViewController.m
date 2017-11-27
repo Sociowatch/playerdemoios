@@ -32,6 +32,7 @@
 #import <BoxUtility.h>
 #import <DMPlayerViewController.h>
 #import "SlikePlayerControl.h"
+#import "HomeViewController.h"
 
 @interface ViewController ()<DMPlayerDelegate>
 
@@ -43,7 +44,7 @@
     [super viewDidLoad];
     //infoArray = [[NSArray alloc] initWithObjects: @"Play Video In Window",@"Play YouTube Video",@"Play With Navigation Controller",@"Play Live Stream",@"Play Audio",@"Play DailyMotion",@"LightWeight Player",nil];
     
-    infoArray = [[NSArray alloc] initWithObjects: @"Play Video",@"Play Live Stream",@"Play With Navigation Controller",@"Play DailyMotion",@"Play YouTube Video",nil];
+    infoArray = [[NSArray alloc] initWithObjects: @"Play Video",@"Play Live Stream",@"Play With Navigation Controller",@"Play DailyMotion",@"Play YouTube Video",@"YouTube Style",nil];
 
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
@@ -413,13 +414,7 @@
     cell = [self.tbView dequeueReusableCellWithIdentifier:@"infoCell"];
     
     
-//    if(indexPath.row == 0)
-//    {
-//        UILabel *infoLbl = (UILabel*)[cell.contentView viewWithTag:11];
-//        infoLbl.text = [infoArray objectAtIndex:indexPath.row];
-//        infoLbl.textColor = [UIColor colorWithRed:142.0/255.0 green:109.0/255.0 blue:4.0/255.0 alpha:1];
-//        
-//    }else
+
         if(indexPath.row == 0)
     {
         cell = [self.tbView dequeueReusableCellWithIdentifier:@"infoCellWindow"];
@@ -458,21 +453,28 @@
         infoLbl.textColor = [UIColor colorWithRed:142.0/255.0 green:109.0/255.0 blue:4.0/255.0 alpha:1];
 
     }
+//    else if(indexPath.row == 5)
+//    {
+//        UILabel *infoLbl = (UILabel*)[cell.contentView viewWithTag:11];
+//        infoLbl.text = [infoArray objectAtIndex:indexPath.row];
+//        infoLbl.textColor = [UIColor colorWithRed:142.0/255.0 green:109.0/255.0 blue:4.0/255.0 alpha:1];
+//
+//
+//    }
+//    else if(indexPath.row == 6)
+//    {
+//        cell = [self.tbView dequeueReusableCellWithIdentifier:@"infoCellLightWait"];
+//        UILabel *infoLbl = (UILabel*)[cell.contentView viewWithTag:11];
+//        infoLbl.text = [infoArray objectAtIndex:indexPath.row];
+//        infoLbl.textColor = [UIColor colorWithRed:210/255.0 green:10/255.0 blue:6/255.0 alpha:1];
+//
+//    }
     else if(indexPath.row == 5)
     {
         UILabel *infoLbl = (UILabel*)[cell.contentView viewWithTag:11];
         infoLbl.text = [infoArray objectAtIndex:indexPath.row];
-        infoLbl.textColor = [UIColor colorWithRed:142.0/255.0 green:109.0/255.0 blue:4.0/255.0 alpha:1];
-        
+        infoLbl.textColor = [UIColor colorWithRed:0/255.0 green:119/255.0 blue:0/255.0 alpha:1];
 
-    }
-    else if(indexPath.row == 6)
-    {
-        cell = [self.tbView dequeueReusableCellWithIdentifier:@"infoCellLightWait"];
-        UILabel *infoLbl = (UILabel*)[cell.contentView viewWithTag:11];
-        infoLbl.text = [infoArray objectAtIndex:indexPath.row];
-        infoLbl.textColor = [UIColor colorWithRed:210/255.0 green:10/255.0 blue:6/255.0 alpha:1];
-        
     }
    
     return cell;
@@ -514,15 +516,26 @@
 
 
     }
-    else if(indexPath.row == 5)
+//    else if(indexPath.row == 5)
+//    {
+//        [self clbPlayAudio];
+//
+//    }
+//    else if (indexPath.row == 6)
+//    {
+////Play Light Wait
+//    }
+    else if (indexPath.row == 5)
     {
-        [self clbPlayAudio];
-
-    }
-    else if (indexPath.row == 6)
-    {
-//Play Light Wait
+        //Play Light Wait
+        [self youTubeStyle];
     }
 }
-
+-(void)youTubeStyle
+{
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    
+    HomeViewController *OBJ=   [mainStoryboard instantiateViewControllerWithIdentifier:@"HomeViewController"];
+    [self.navigationController pushViewController:OBJ animated:YES];
+}
 @end

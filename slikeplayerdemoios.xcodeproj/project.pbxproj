@@ -19,6 +19,12 @@
 		3D21EE981DF7F8A60002132E /* YTWindowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D21EE941DF7F8A60002132E /* YTWindowViewController.m */; };
 		3DF1C8F11EE534E400CDACC2 /* LWPViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */; };
 		7C3F563D9F4469259C7B5439 /* libPods-slikeplayerdemoios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13F939DEE1708D2759E95DFF /* libPods-slikeplayerdemoios.a */; };
+		BFE665B01FCC400B00F05ADC /* SlikeUICard.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665A51FCC400B00F05ADC /* SlikeUICard.m */; };
+		BFE665B11FCC400B00F05ADC /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665A61FCC400B00F05ADC /* HomeViewController.m */; };
+		BFE665B21FCC400B00F05ADC /* SlikeUICard.xib in Resources */ = {isa = PBXBuildFile; fileRef = BFE665AA1FCC400B00F05ADC /* SlikeUICard.xib */; };
+		BFE665B31FCC400B00F05ADC /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665AC1FCC400B00F05ADC /* PreviewViewController.m */; };
+		BFE665B41FCC400B00F05ADC /* ArticleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665AE1FCC400B00F05ADC /* ArticleViewController.m */; };
+		BFE665B51FCC400B00F05ADC /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665AF1FCC400B00F05ADC /* SecondViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +50,17 @@
 		3D21EE941DF7F8A60002132E /* YTWindowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTWindowViewController.m; sourceTree = "<group>"; };
 		3DF1C8EF1EE534E400CDACC2 /* LWPViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWPViewController.h; sourceTree = "<group>"; };
 		3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWPViewController.m; sourceTree = "<group>"; };
+		BFE665A51FCC400B00F05ADC /* SlikeUICard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlikeUICard.m; sourceTree = "<group>"; };
+		BFE665A61FCC400B00F05ADC /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		BFE665A71FCC400B00F05ADC /* PreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviewViewController.h; sourceTree = "<group>"; };
+		BFE665A81FCC400B00F05ADC /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		BFE665A91FCC400B00F05ADC /* ArticleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArticleViewController.h; sourceTree = "<group>"; };
+		BFE665AA1FCC400B00F05ADC /* SlikeUICard.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SlikeUICard.xib; sourceTree = "<group>"; };
+		BFE665AB1FCC400B00F05ADC /* SlikeUICard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlikeUICard.h; sourceTree = "<group>"; };
+		BFE665AC1FCC400B00F05ADC /* PreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreviewViewController.m; sourceTree = "<group>"; };
+		BFE665AD1FCC400B00F05ADC /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
+		BFE665AE1FCC400B00F05ADC /* ArticleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArticleViewController.m; sourceTree = "<group>"; };
+		BFE665AF1FCC400B00F05ADC /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		C4FC53A0A0EA3AD63DD3DE15 /* Pods-slikeplayerdemoios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-slikeplayerdemoios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,6 +97,7 @@
 		3D21EE751DF7F8300002132E /* classes */ = {
 			isa = PBXGroup;
 			children = (
+				BFE665A41FCC400B00F05ADC /* DocPlayer */,
 				3DF1C8EF1EE534E400CDACC2 /* LWPViewController.h */,
 				3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */,
 				3D21EE8D1DF7F8A60002132E /* NavViewController.h */,
@@ -129,6 +147,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BFE665A41FCC400B00F05ADC /* DocPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				BFE665A51FCC400B00F05ADC /* SlikeUICard.m */,
+				BFE665A61FCC400B00F05ADC /* HomeViewController.m */,
+				BFE665A71FCC400B00F05ADC /* PreviewViewController.h */,
+				BFE665A81FCC400B00F05ADC /* SecondViewController.h */,
+				BFE665A91FCC400B00F05ADC /* ArticleViewController.h */,
+				BFE665AA1FCC400B00F05ADC /* SlikeUICard.xib */,
+				BFE665AB1FCC400B00F05ADC /* SlikeUICard.h */,
+				BFE665AC1FCC400B00F05ADC /* PreviewViewController.m */,
+				BFE665AD1FCC400B00F05ADC /* HomeViewController.h */,
+				BFE665AE1FCC400B00F05ADC /* ArticleViewController.m */,
+				BFE665AF1FCC400B00F05ADC /* SecondViewController.m */,
+			);
+			path = DocPlayer;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -163,7 +199,7 @@
 				TargetAttributes = {
 					3D21EE721DF7F8300002132E = {
 						CreatedOnToolsVersion = 8.1;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -190,6 +226,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFE665B21FCC400B00F05ADC /* SlikeUICard.xib in Resources */,
 				3D21EE861DF7F8300002132E /* LaunchScreen.storyboard in Resources */,
 				3D21EE831DF7F8300002132E /* Assets.xcassets in Resources */,
 				3D21EE811DF7F8300002132E /* Main.storyboard in Resources */,
@@ -224,6 +261,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
+				$PODS_CONFIGURATION_BUILD_DIR/ComScore/SCORBundle.bundle,
 				"${PODS_ROOT}/SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/backword.imageset/backword.pdf",
@@ -270,14 +308,21 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/unmute.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/unmute.imageset/unmute.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/bitrate_icon.imageset/bitrate_icon_all.pdf",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/airplay.imageset/airplay.pdf",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/airplay.imageset/Contents.json",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/bitrate_icon.imageset/bitrate_icon.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/bitrate_icon.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/exit-full-screen.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/exit-full-screen.imageset/contract_all.pdf",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/Float.imageset/Contents.json",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/Float.imageset/Float.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/full-screen.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/full-screen.imageset/expand.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/gray_bg.imageset/Contents.json",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/ic_settings.imageset/Contents.json",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/ic_settings.imageset/ic_settings.png",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/ic_settings.imageset/ic_settings@2x.png",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/live_stream.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/live_stream.imageset/live_stream.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/player_audio.imageset/Contents.json",
@@ -367,10 +412,13 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/shareCast.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/unmute.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/airplay.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/bitrate_icon.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/exit-full-screen.imageset",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/Float.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/full-screen.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/gray_bg.imageset",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/ic_settings.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/live_stream.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/player_audio.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/player_closebtn.imageset",
@@ -433,7 +481,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DF1C8F11EE534E400CDACC2 /* LWPViewController.m in Sources */,
+				BFE665B51FCC400B00F05ADC /* SecondViewController.m in Sources */,
 				3D21EE7E1DF7F8300002132E /* ViewController.m in Sources */,
+				BFE665B01FCC400B00F05ADC /* SlikeUICard.m in Sources */,
+				BFE665B11FCC400B00F05ADC /* HomeViewController.m in Sources */,
+				BFE665B31FCC400B00F05ADC /* PreviewViewController.m in Sources */,
+				BFE665B41FCC400B00F05ADC /* ArticleViewController.m in Sources */,
 				3D21EE981DF7F8A60002132E /* YTWindowViewController.m in Sources */,
 				3D21EE7B1DF7F8300002132E /* AppDelegate.m in Sources */,
 				3D21EE971DF7F8A60002132E /* WindowViewController.m in Sources */,
@@ -560,11 +613,14 @@
 			baseConfigurationReference = C4FC53A0A0EA3AD63DD3DE15 /* Pods-slikeplayerdemoios.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.slikeplayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -573,11 +629,14 @@
 			baseConfigurationReference = 15816757388768BEBF6C1DC9 /* Pods-slikeplayerdemoios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.slikeplayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
