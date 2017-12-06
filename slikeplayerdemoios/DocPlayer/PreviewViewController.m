@@ -212,7 +212,7 @@
         }
         
 
-        if(type == MEDIA && name == ERROR)
+        if(type == MEDIA && name == SK_ERROR)
         {
 //            NSLog(@"%@", [statusInfo getString]);
 

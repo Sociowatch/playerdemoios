@@ -28,7 +28,7 @@
         {
             NSLog(@"%@", [statusInfo getString]);
         }
-        if(type == MEDIA && name == ERROR)
+        if(type == MEDIA && name == SK_ERROR)
         {
             NSLog(@"Error while playing media: %@", statusInfo.error);
             [self showAlert:statusInfo.error];

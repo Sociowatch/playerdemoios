@@ -26,7 +26,7 @@
 #import "ViewController.h"
 #import <SlikePlayer.h>
 #import <ISlikePlayer.h>
-#import <DeviceSettings.h>
+#import <SlikeDeviceSettings.h>
 #import <CustomAlertView.h>
 #import <SVProgressHUD.h>
 #import <BoxUtility.h>
@@ -44,7 +44,7 @@
     [super viewDidLoad];
     //infoArray = [[NSArray alloc] initWithObjects: @"Play Video In Window",@"Play YouTube Video",@"Play With Navigation Controller",@"Play Live Stream",@"Play Audio",@"Play DailyMotion",@"LightWeight Player",nil];
     
-    infoArray = [[NSArray alloc] initWithObjects: @"Play Video",@"Play Live Stream",@"Play With Navigation Controller",@"Play DailyMotion",@"Play YouTube Video",@"YouTube Style",nil];
+    infoArray = [[NSArray alloc] initWithObjects: @"Play Video",@"Play Live Stream",@"Play With Navigation Controller",@"Play DailyMotion",@"Play YouTube Video",@"YouTube Style",@"Play FaceBook",nil];
 
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
@@ -104,7 +104,7 @@
                 if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
             }
         }
-        if(type == CONTROLS && name == SHARE)
+        if(type == CONTROLS && name == SK_SHARE)
         {
             NSLog(@"Share button is tapped.");
             [self share:slikeConfig];
@@ -130,7 +130,7 @@
         {
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
-        if(type == MEDIA && name == ERROR)
+        if(type == MEDIA && name == SK_ERROR)
         {
             NSLog(@"Error while playing media: %@", statusInfo.error);
             [self showAlert:statusInfo.error];
@@ -165,7 +165,7 @@
                 if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
             }
         }
-        if(type == CONTROLS && name == SHARE)
+        if(type == CONTROLS && name == SK_SHARE)
         {
             NSLog(@"Share button is tapped.");
             [self share:slikeConfig];
@@ -191,7 +191,7 @@
         {
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
-        if(type == MEDIA && name == ERROR)
+        if(type == MEDIA && name == SK_ERROR)
         {
             NSLog(@"Error while playing media: %@", statusInfo.error);
             [self showAlert:statusInfo.error];
@@ -226,12 +226,12 @@
                 if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
             }
         }
-        if(type == CONTROLS && name == SHARE)
+        if(type == CONTROLS && name == SK_SHARE)
         {
             NSLog(@"Share button is tapped.");
             [self share:slikeConfig];
         }
-        else if(type == CONTROLS && name == CLOSE)
+        else if(type == CONTROLS && name == SK_CLOSE)
         {
             NSLog(@"Close button is tapped.");
         }
@@ -256,7 +256,7 @@
         {
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         }
-        if(type == MEDIA && name == ERROR)
+        if(type == MEDIA && name == SK_ERROR)
         {
             NSLog(@"Error while playing media: %@", statusInfo.error);
             [self showAlert:statusInfo.error];
@@ -271,7 +271,7 @@
     slikeConfig.streamingInfo.isLive = YES;
     [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
         if(statusInfo != nil) NSLog(@"%@", [statusInfo getString]);
-        if(type == MEDIA && name == ERROR)
+        if(type == MEDIA && name == SK_ERROR)
         {
             NSLog(@"Error while playing media: %@", statusInfo.error);
             [self showAlert:statusInfo.error];
@@ -476,7 +476,14 @@
         infoLbl.textColor = [UIColor colorWithRed:0/255.0 green:119/255.0 blue:0/255.0 alpha:1];
 
     }
-   
+    else if(indexPath.row == 6)
+    {
+        UILabel *infoLbl = (UILabel*)[cell.contentView viewWithTag:11];
+        infoLbl.text = [infoArray objectAtIndex:indexPath.row];
+        infoLbl.textColor = [UIColor colorWithRed:0/255.0 green:119/255.0 blue:0/255.0 alpha:1];
+        
+    }
+    
     return cell;
 }
 
@@ -530,6 +537,47 @@
         //Play Light Wait
         [self youTubeStyle];
     }
+    else if (indexPath.row == 6)
+    {
+        //Play FB
+        [self playFBVideo];
+    }
+}
+-(void)playFBVideo
+{
+    
+    
+    //    if(![SVProgressHUD isVisible]) [SVProgressHUD show];
+    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithChannel:@"mensxp" withID:@"2205183029507967" withSection:@"default" withMSId:@"56087249" posterImage:@"http://slike.indiatimes.com/thumbs/1x/11/1x115ai9g6/thumb.jpg"];
+    slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    slikeConfig.title = @"Test Video";
+    //Enable next button
+    slikeConfig.isNextControl = NO;
+    slikeConfig.preferredVideoType = VIDEO_SOURCE_FB;
+    slikeConfig.isSkipAds = YES;
+    slikeConfig.fbAppID =  @"121697241177107";
+    StreamingInfo *streamingInfo = [StreamingInfo createStreamURL:@"https://www.facebook.com/mensxp/videos/2205183029507967/" withType:VIDEO_SOURCE_FB withTitle:@"FB Videos" withSubTitle:@"" withDuration:0.0 withAds:nil];
+    slikeConfig.streamingInfo =streamingInfo;
+    
+    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+        if(statusInfo != nil)
+        {
+            NSLog(@"%ld", (long)type);
+            
+            NSLog(@"%@", [statusInfo getString]);
+            NSLog(@"%ld", (long)name);
+            
+            //Getting ads events...
+            if(type == AD && statusInfo.adStatusInfo)
+            {
+                AdStatusInfo *info = statusInfo.adStatusInfo;
+                /****See Globals.h for ads events ****/
+                NSLog(@"Ads information, ## %@", [info getString]);
+            }
+            
+        }
+    }];
+    
 }
 -(void)youTubeStyle
 {

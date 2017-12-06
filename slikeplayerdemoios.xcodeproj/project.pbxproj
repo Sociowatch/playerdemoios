@@ -261,7 +261,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
-				$PODS_CONFIGURATION_BUILD_DIR/ComScore/SCORBundle.bundle,
+				"$PODS_CONFIGURATION_BUILD_DIR/ComScore/SCORBundle.bundle",
 				"${PODS_ROOT}/SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/backword.imageset/backword.pdf",
@@ -376,6 +376,7 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/CastView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/DMPlayerView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/ErrorPopUpView.xib",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/facebook-slike-helper.html",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/InFringementView~ipad.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/InFringementView~iphone.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/LiveEventView.xib",
@@ -386,6 +387,7 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/NormalControlPlayerView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/PlayerControlView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/PlayerView.xib",
+				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/SlikeFBView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/SlikeInAppBrowserView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images",
@@ -441,7 +443,7 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_pause.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_play.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui",
-				$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayer.bundle,
+				"$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayer.bundle",
 				"${PODS_ROOT}/youtube-ios-player-helper/youtube-ios-player-helper/Assets.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
