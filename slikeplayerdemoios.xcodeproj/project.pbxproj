@@ -199,6 +199,7 @@
 				TargetAttributes = {
 					3D21EE721DF7F8300002132E = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 2C5Z9X929T;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -261,52 +262,11 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
-				"$PODS_CONFIGURATION_BUILD_DIR/ComScore/SCORBundle.bundle",
 				"${PODS_ROOT}/SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/backword.imageset/backword.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/backword.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/cancelCast.imageset/cancelCast.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/cancelCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/caption.imageset/caption.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/caption.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castConnected.imageset/castConnected.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castConnected.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castDisconnect.imageset/castDisconnect.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castDisconnect.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castGrayIcon.imageset/castGrayIcon.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castGrayIcon.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/closeCast.imageset/closeCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/closeCast.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBackground-1.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBackground-1.imageset/eventBackground.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBackground.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBackground.imageset/eventBackground.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBg.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBg.imageset/eventBg.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/forward.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/forward.imageset/forward.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/moreCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/moreCast.imageset/moreCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/mute.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/mute.imageset/mute.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/nextCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/nextCast.imageset/nextCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/nobeCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/nobeCast.imageset/nobeCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/pauseCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/pauseCast.imageset/pauseCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/playCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/playCast.imageset/playCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/previousCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/previousCast.imageset/previousCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/replyCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/replyCast.imageset/replyCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/shareCast.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/shareCast.imageset/shareCast.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/unmute.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/unmute.imageset/unmute.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/airplay.imageset/airplay.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/airplay.imageset/Contents.json",
@@ -347,33 +307,7 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/player_stop.imageset/player_stop.pdf",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/preloader.imageset/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/preloader.imageset/preloader.pdf",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_off.imageset/cast_off.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_off.imageset/cast_off@2x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_off.imageset/cast_off@3x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_off.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on.imageset/cast_on.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on.imageset/cast_on@2x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on.imageset/cast_on@3x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on0.imageset/cast_on0.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on0.imageset/cast_on0@2x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on0.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on1.imageset/cast_on1.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on1.imageset/cast_on1@2x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on1.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on2.imageset/cast_on2.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on2.imageset/cast_on2@2x.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on2.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_pause.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_pause.imageset/pause.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_play.imageset/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_play.imageset/play.png",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/Contents.json",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/Contents.json",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/AdView.xib",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/castListCell.xib",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/CastListView.xib",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/CastView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/DMPlayerView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/ErrorPopUpView.xib",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui/facebook-slike-helper.html",
@@ -392,27 +326,7 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/backword.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/cancelCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/caption.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castConnected.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castDisconnect.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/castGrayIcon.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/closeCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBackground-1.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBackground.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/eventBg.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/forward.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/moreCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/mute.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/nextCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/nobeCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/pauseCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/playCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/previousCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/replyCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/shareCast.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/castCustomUI/unmute.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/airplay.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/bitrate_icon.imageset",
@@ -433,15 +347,6 @@
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/player_share.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/player_stop.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/player assets/preloader.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_off.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on0.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on1.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_on2.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_pause.imageset",
-				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/Images.xcassets/images/third party/cast icons/cast_play.imageset",
 				"${PODS_ROOT}/SlikePlayer/SlikePlayer/Assets/ui",
 				"$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayer.bundle",
 				"${PODS_ROOT}/youtube-ios-player-helper/youtube-ios-player-helper/Assets.bundle",
@@ -463,12 +368,10 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-frameworks.sh",
 				"${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds/GoogleInteractiveMediaAds.framework",
-				"${PODS_ROOT}/google-cast-sdk/GoogleCastSDK-Public-3.5.6-Release/GoogleCast.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleInteractiveMediaAds.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleCast.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -615,14 +518,17 @@
 			baseConfigurationReference = C4FC53A0A0EA3AD63DD3DE15 /* Pods-slikeplayerdemoios.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2C5Z9X929T;
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "971fab44-114b-4ac6-b02d-93921f248786";
+				PROVISIONING_PROFILE_SPECIFIER = TilPrimeApp_Dev;
 			};
 			name = Debug;
 		};
@@ -631,14 +537,17 @@
 			baseConfigurationReference = 15816757388768BEBF6C1DC9 /* Pods-slikeplayerdemoios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2C5Z9X929T;
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "971fab44-114b-4ac6-b02d-93921f248786";
+				PROVISIONING_PROFILE_SPECIFIER = TilPrimeApp_Dev;
 			};
 			name = Release;
 		};
