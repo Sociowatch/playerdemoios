@@ -50,7 +50,7 @@
                                     <constraint firstAttribute="height" constant="64" id="qei-Fc-SyY"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SLIKE PLAYER v0.6.0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RcK-ep-apJ">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SLIKE PLAYER (V_0.6)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RcK-ep-apJ">
                                 <rect key="frame" x="18" y="16" width="339" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="OcR-rl-5UT"/>

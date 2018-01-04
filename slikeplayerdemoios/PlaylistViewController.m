@@ -45,7 +45,6 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if([SVProgressHUD isVisible]) [SVProgressHUD dismiss];
         });
-        
         if(data != nil)
         {
             NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
