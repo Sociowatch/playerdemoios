@@ -43,9 +43,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     //infoArray = [[NSArray alloc] initWithObjects: @"Play Video In Window",@"Play YouTube Video",@"Play With Navigation Controller",@"Play Live Stream",@"Play Audio",@"Play DailyMotion",@"LightWeight Player",nil];
-    
     infoArray = [[NSArray alloc] initWithObjects: @"Play Video",@"Play Live Stream",@"Play With Navigation Controller",@"Play DailyMotion",@"Play YouTube Video",@"YouTube Style",@"Play FaceBook",nil];
-
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD setForegroundColor:[UIColor whiteColor]];
     [SVProgressHUD setRingRadius:15];
@@ -84,9 +82,7 @@
     //customControl is optional, If you want to create your own custom control, Please provide the control
     NSBundle *myBundle = [NSBundle bundleForClass:[PlayerViewController class]];
     slikeConfig.customControl = [[SlikePlayerControl alloc] initWithNibName:@"PlayerControlView" bundle:myBundle];
-    
-    
-    [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
+        [[SlikePlayer getInstance] playVideo:slikeConfig inParent:nil withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
         if(statusInfo != nil)
         {
             NSLog(@"%@", [statusInfo getString]);
@@ -555,7 +551,8 @@
     slikeConfig.isNextControl = NO;
     slikeConfig.preferredVideoType = VIDEO_SOURCE_FB;
     slikeConfig.isSkipAds = YES;
-    slikeConfig.fbAppID =  @"121697241177107";
+    slikeConfig.fbAppId = @"121697241177107";
+
     StreamingInfo *streamingInfo = [StreamingInfo createStreamURL:@"https://www.facebook.com/mensxp/videos/2205183029507967/" withType:VIDEO_SOURCE_FB withTitle:@"FB Videos" withSubTitle:@"" withDuration:0.0 withAds:nil];
     slikeConfig.streamingInfo =streamingInfo;
     
