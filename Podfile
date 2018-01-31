@@ -5,6 +5,6 @@ source 'https://github.com/CocoaPods/Specs.git'
 target 'slikeplayerdemoios' do
   pod 'SVProgressHUD', :git => 'https://github.com/SVProgressHUD/SVProgressHUD.git'
  
- pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => ‘0.7.2’
+ pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => ‘0.7.3’
 #  pod 'slike-ios-sdk-cast', :git => 'https://bitbucket.org/times_internet/slike-ios-sdk-cast', :tag => '0.1.2'
 end

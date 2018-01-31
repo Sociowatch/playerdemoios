@@ -19,6 +19,10 @@
 		3D21EE981DF7F8A60002132E /* YTWindowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D21EE941DF7F8A60002132E /* YTWindowViewController.m */; };
 		3DF1C8F11EE534E400CDACC2 /* LWPViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */; };
 		7C3F563D9F4469259C7B5439 /* libPods-slikeplayerdemoios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13F939DEE1708D2759E95DFF /* libPods-slikeplayerdemoios.a */; };
+		BFA9760D20188B7F006987F2 /* slikeCustomUIViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BFA9760A20188B7E006987F2 /* slikeCustomUIViewController.xib */; };
+		BFA9760E20188B7F006987F2 /* slikeCustomUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFA9760C20188B7F006987F2 /* slikeCustomUIViewController.m */; };
+		BFA9761120188BFE006987F2 /* ASValueTrackingSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = BFA9760F20188BFD006987F2 /* ASValueTrackingSlider.m */; };
+		BFA9761420188C2A006987F2 /* ASValuePopUpView.m in Sources */ = {isa = PBXBuildFile; fileRef = BFA9761220188C2A006987F2 /* ASValuePopUpView.m */; };
 		BFE665B01FCC400B00F05ADC /* SlikeUICard.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665A51FCC400B00F05ADC /* SlikeUICard.m */; };
 		BFE665B11FCC400B00F05ADC /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFE665A61FCC400B00F05ADC /* HomeViewController.m */; };
 		BFE665B21FCC400B00F05ADC /* SlikeUICard.xib in Resources */ = {isa = PBXBuildFile; fileRef = BFE665AA1FCC400B00F05ADC /* SlikeUICard.xib */; };
@@ -50,6 +54,13 @@
 		3D21EE941DF7F8A60002132E /* YTWindowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTWindowViewController.m; sourceTree = "<group>"; };
 		3DF1C8EF1EE534E400CDACC2 /* LWPViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWPViewController.h; sourceTree = "<group>"; };
 		3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWPViewController.m; sourceTree = "<group>"; };
+		BFA9760A20188B7E006987F2 /* slikeCustomUIViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = slikeCustomUIViewController.xib; sourceTree = "<group>"; };
+		BFA9760B20188B7E006987F2 /* slikeCustomUIViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = slikeCustomUIViewController.h; sourceTree = "<group>"; };
+		BFA9760C20188B7F006987F2 /* slikeCustomUIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = slikeCustomUIViewController.m; sourceTree = "<group>"; };
+		BFA9760F20188BFD006987F2 /* ASValueTrackingSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASValueTrackingSlider.m; sourceTree = "<group>"; };
+		BFA9761020188BFE006987F2 /* ASValueTrackingSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASValueTrackingSlider.h; sourceTree = "<group>"; };
+		BFA9761220188C2A006987F2 /* ASValuePopUpView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASValuePopUpView.m; sourceTree = "<group>"; };
+		BFA9761320188C2A006987F2 /* ASValuePopUpView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASValuePopUpView.h; sourceTree = "<group>"; };
 		BFE665A51FCC400B00F05ADC /* SlikeUICard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlikeUICard.m; sourceTree = "<group>"; };
 		BFE665A61FCC400B00F05ADC /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		BFE665A71FCC400B00F05ADC /* PreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviewViewController.h; sourceTree = "<group>"; };
@@ -97,6 +108,13 @@
 		3D21EE751DF7F8300002132E /* classes */ = {
 			isa = PBXGroup;
 			children = (
+				BFA9761320188C2A006987F2 /* ASValuePopUpView.h */,
+				BFA9761220188C2A006987F2 /* ASValuePopUpView.m */,
+				BFA9761020188BFE006987F2 /* ASValueTrackingSlider.h */,
+				BFA9760F20188BFD006987F2 /* ASValueTrackingSlider.m */,
+				BFA9760B20188B7E006987F2 /* slikeCustomUIViewController.h */,
+				BFA9760C20188B7F006987F2 /* slikeCustomUIViewController.m */,
+				BFA9760A20188B7E006987F2 /* slikeCustomUIViewController.xib */,
 				BFE665A41FCC400B00F05ADC /* DocPlayer */,
 				3DF1C8EF1EE534E400CDACC2 /* LWPViewController.h */,
 				3DF1C8F01EE534E400CDACC2 /* LWPViewController.m */,
@@ -228,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFE665B21FCC400B00F05ADC /* SlikeUICard.xib in Resources */,
+				BFA9760D20188B7F006987F2 /* slikeCustomUIViewController.xib in Resources */,
 				3D21EE861DF7F8300002132E /* LaunchScreen.storyboard in Resources */,
 				3D21EE831DF7F8300002132E /* Assets.xcassets in Resources */,
 				3D21EE811DF7F8300002132E /* Main.storyboard in Resources */,
@@ -263,7 +282,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
 				"${PODS_ROOT}/SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle",
-				"$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayerResources.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/SlikePlayer/SlikePlayerResources.bundle,
 				"${PODS_ROOT}/youtube-ios-player-helper/youtube-ios-player-helper/Assets.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -302,15 +321,18 @@
 			files = (
 				3DF1C8F11EE534E400CDACC2 /* LWPViewController.m in Sources */,
 				BFE665B51FCC400B00F05ADC /* SecondViewController.m in Sources */,
+				BFA9761120188BFE006987F2 /* ASValueTrackingSlider.m in Sources */,
 				3D21EE7E1DF7F8300002132E /* ViewController.m in Sources */,
 				BFE665B01FCC400B00F05ADC /* SlikeUICard.m in Sources */,
 				BFE665B11FCC400B00F05ADC /* HomeViewController.m in Sources */,
 				BFE665B31FCC400B00F05ADC /* PreviewViewController.m in Sources */,
 				BFE665B41FCC400B00F05ADC /* ArticleViewController.m in Sources */,
 				3D21EE981DF7F8A60002132E /* YTWindowViewController.m in Sources */,
+				BFA9760E20188B7F006987F2 /* slikeCustomUIViewController.m in Sources */,
 				3D21EE7B1DF7F8300002132E /* AppDelegate.m in Sources */,
 				3D21EE971DF7F8A60002132E /* WindowViewController.m in Sources */,
 				3D21EE951DF7F8A60002132E /* NavViewController.m in Sources */,
+				BFA9761420188C2A006987F2 /* ASValuePopUpView.m in Sources */,
 				3D21EE961DF7F8A60002132E /* PlaylistViewController.m in Sources */,
 				3D21EE781DF7F8300002132E /* main.m in Sources */,
 			);

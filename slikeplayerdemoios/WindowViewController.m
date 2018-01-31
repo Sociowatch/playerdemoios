@@ -9,8 +9,10 @@
 #import "WindowViewController.h"
 #import <SlikePlayer/SlikePlayer.h>
 #import <CustomAlertView.h>
+#import "slikeCustomUIViewController.h"
 
 @interface WindowViewController ()
+@property (nonatomic, strong) slikeCustomUIViewController *slikeCustomObj;
 
 @end
 
@@ -18,19 +20,23 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+ 
+    _slikeCustomObj = [[slikeCustomUIViewController alloc] initWithNibName:@"slikeCustomUIViewController" bundle:nil];
+
     SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"NBT Khabar express 26 09 2016 new" withID:@"1yty589glg" withSection:@"/videos/news" withMSId:@"56087249" posterImage:@""];
     //    SlikeConfig *slikeConfig = [[SlikeConfig alloc] initWithTitle:@"NBT Khabar express 26 09 2016 new" withID:@"1_oprrpt0x" withSection:@"/videos/news" withMSId:@"56087249" posterImage:@"http://slike.indiatimes.com/thumbs/1x/11/1x115ai9g6/thumb.jpg"];
     slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     slikeConfig.channel = @"toi";
     slikeConfig.isCloseControl = NO;
     slikeConfig.autorotationMode = SlikeFullscreenAutorotationModeLandscape;
-    slikeConfig.isSkipAds =  false;
+    slikeConfig.isSkipAds =  NO;
     slikeConfig.preferredVideoType = VIDEO_SOURCE_HLS;
     //
     [slikeConfig setLatitudeLongitude:@"26.539345" Longitude:@"80.487820"];
     [slikeConfig setCountry_State_City:@"IN" State:@"UP" City:@"Unnao"];
     [slikeConfig setUserInformation:@"Male" Age:28];
     slikeConfig.isSkipAds =  YES;
+    slikeConfig.customControl =  _slikeCustomObj;
     //
     [[SlikePlayer getInstance] playVideo:slikeConfig inParent:self.viewPlayer withAds:nil withProgressHandler:^(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo) {
         if(statusInfo != nil)
