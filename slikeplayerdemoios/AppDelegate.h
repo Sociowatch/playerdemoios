@@ -7,8 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PreviewViewController.h"
-
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 {
     
@@ -16,7 +14,6 @@
 + (AppDelegate *)getAppDelegate;
 
 @property (strong, nonatomic) UIWindow *window;
-@property(nonatomic,strong) PreviewViewController *previewObj;
 
 
 @end

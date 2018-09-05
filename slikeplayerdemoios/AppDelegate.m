@@ -7,9 +7,8 @@
 //
 
 #import "AppDelegate.h"
-#import <SlikePlayer/SlikePlayer.h>
-// IMPORTANT!!! replace with you api key
 #define apikey @"ios"
+#import <SlikePlayer/SlikePlayer.h>
 
 @interface AppDelegate ()
 
@@ -24,57 +23,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+
     BOOL isDebug = NO;
 #ifdef DEBUG
     isDebug = YES;
 #endif
-//    [[SlikePlayer getInstance] initPlayerWithApikey:@"toiiphonefe6b17700fa1d800a8c4b8851" andWithDeviceUID:nil debugMode:isDebug];
-    
-
-    [[SlikePlayer getInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
-
-    //UNCOMMENT TO TEST STYLING EXAMPLES
-    
-    /*UIImage *img = [UIImage imageNamed:@"testicon"];
-    UIImage *imgResizable = [img stretchableImageWithLeftCapWidth: 9 topCapHeight: 0];
-    
-    UIColor *clrBackground = [[UIColor whiteColor] colorWithAlphaComponent:0.6];
-    UIColor *clrTitle = [UIColor darkGrayColor];
-    UIColor *clrSubtitle = [UIColor darkGrayColor];
-    UIColor *clrContent = [UIColor darkGrayColor];
-    UIColor *clrActivity = [UIColor greenColor];
-    
-    [SlikePlayer getInstance].playerStyleBarBackground = clrBackground;
-    UIFont *titleFont = [UIFont fontWithName:@"AmericanTypewriter" size:18];
-    UIFont *subtitleFont = [UIFont fontWithName:@"AmericanTypewriter" size:12];
-    
-    [SlikePlayer getInstance].playerStyleCloseButton = img;
-    [SlikePlayer getInstance].playerStylePlayButton = img;
-    [SlikePlayer getInstance].playerStylePauseButton = img;
-    [SlikePlayer getInstance].playerStyleReplayButton = img;
-    [SlikePlayer getInstance].playerStyleReverseButton = img;
-    [SlikePlayer getInstance].playerStyleForwardButton = img;
-    [SlikePlayer getInstance].playerStyleBitrateButton = img;
-    [SlikePlayer getInstance].playerStyleFullscreenButton = img;
-    
-    [SlikePlayer getInstance].playerStyleSliderMinTrackColor = [UIColor redColor];
-    [SlikePlayer getInstance].playerStyleSliderMaxTrackColor = [UIColor whiteColor];
-    [SlikePlayer getInstance].playerStyleSliderThumbImage = imgResizable;
-    
-    [SlikePlayer getInstance].playerStyleTitleFont = titleFont;
-    [SlikePlayer getInstance].playerStyleDurationFont = subtitleFont;
-    [SlikePlayer getInstance].playerStyleBitrateTitleFont = titleFont;
-    [SlikePlayer getInstance].playerStyleBitrateSubtitleFont = subtitleFont;
-    [SlikePlayer getInstance].playerStyleBitrateContentFont = subtitleFont;
-    
-    [SlikePlayer getInstance].playerStyleTitleColor = clrTitle;
-    [SlikePlayer getInstance].playerStyleDurationColor = clrSubtitle;
-    [SlikePlayer getInstance].playerStyleActivityTintColor = clrActivity;
-    [SlikePlayer getInstance].playerStyleBitrateBackground = [clrBackground colorWithAlphaComponent:0.7];
-    [SlikePlayer getInstance].playerStyleBitrateTitleColor = clrTitle;
-    [SlikePlayer getInstance].playerStyleBitrateSubtitleColor = clrSubtitle;
-    [SlikePlayer getInstance].playerStyleBitrateContentColor = clrContent;*/
-    
+    if ([apikey length]> 0) {
+        [[SlikePlayerSettings playerSettingsInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
+    }
     return YES;
 }
 
@@ -99,33 +55,4 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
-// Expects the URL of the scheme e.g. "fb://"
-- (BOOL)schemeAvailable:(NSString *)scheme {
-    UIApplication *application = [UIApplication sharedApplication];
-    NSURL *URL = [NSURL URLWithString:scheme];
-    return [application canOpenURL:URL];
-}
-- (void)openScheme:(NSString *)scheme {
-    UIApplication *application = [UIApplication sharedApplication];
-    NSURL *URL = [NSURL URLWithString:scheme];
-    [application openURL:URL options:@{} completionHandler:^(BOOL success) {
-        if (success) {
-            NSLog(@"Opened %@",scheme);
-        }
-    }];
-}
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    // Display text
-    UIAlertView *alertView;
-    NSString *text = [[url host] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    alertView = [[UIAlertView alloc] initWithTitle:@"Text" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alertView show];
-    return YES;
-}
--(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
-    NSLog(@"%@u",url);
-    return NO;
-}
-
 @end
