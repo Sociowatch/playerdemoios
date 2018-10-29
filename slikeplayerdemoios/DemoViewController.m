@@ -35,7 +35,7 @@
 
 -(void)startPlayer
 {
-    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"slike" withID:@"1x13srhggk" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"slike" withID:@"1x1eafjggl" withSection:@"default" withMSId:@"56087249" posterImage:@""];
     _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"Toi.in";
@@ -44,6 +44,7 @@
     _slikeConfig.isFullscreenControl =  YES;
     _slikeConfig.autorotationMode  =
     SlikeFullscreenAutorotationModeLandscape;
+    _slikeConfig.preview =  YES;
     _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     self.slikePlayer = [SlikePlayer sharedSlikePlayer];
     [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
