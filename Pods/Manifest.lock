@@ -9,13 +9,13 @@ PODS:
     - ComScore (~> 5.5)
     - GoogleAnalytics (~> 3)
     - SlikePlayer
-  - SlikePlayer (2.4.2):
+  - SlikePlayer (2.4.5):
     - FBAudienceNetwork
     - GoogleAds-IMA-iOS-SDK (~> 3.6.1)
 
 DEPENDENCIES:
   - slike-ios-sdk-analytics (from `https://bitbucket.org/times_internet/slike-ios-sdk-analytics.git`, tag `2.1.9`)
-  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.4.2`)
+  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.4.5`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -30,7 +30,7 @@ EXTERNAL SOURCES:
     :tag: 2.1.9
   SlikePlayer:
     :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
-    :tag: 2.4.2
+    :tag: 2.4.5
 
 CHECKOUT OPTIONS:
   slike-ios-sdk-analytics:
@@ -38,7 +38,7 @@ CHECKOUT OPTIONS:
     :tag: 2.1.9
   SlikePlayer:
     :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
-    :tag: 2.4.2
+    :tag: 2.4.5
 
 SPEC CHECKSUMS:
   ComScore: e7349d7612401c65cd0bfced9aa68a7c6e31bda9
@@ -46,8 +46,8 @@ SPEC CHECKSUMS:
   GoogleAds-IMA-iOS-SDK: 5825cb7d5f6004618527828936a077e118da556e
   GoogleAnalytics: f42cc53a87a51fe94334821868d9c8481ff47a7b
   slike-ios-sdk-analytics: e4d04803b661989e6d24918f7a62e8c5712eb87c
-  SlikePlayer: 3841f011a4c4e859761e7cff4686359f1f83abe9
+  SlikePlayer: cfcc2ceb35514385e523cefc763fb1d1da3af619
 
-PODFILE CHECKSUM: cc5856e2113be893f3960f86c716cedd002f3c6f
+PODFILE CHECKSUM: 1353687fc246e7383dc2daf1d9ebc82f29f2a0bc
 
 COCOAPODS: 1.7.0.beta.3

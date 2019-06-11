@@ -22,7 +22,7 @@
 @property (assign, nonatomic) NSInteger bitarteType;
 @property (assign, nonatomic) NSInteger currentPlaylistIndex;
 @property (strong, nonatomic) NSMutableDictionary *cacahedStreams;
-
+@property (strong, nonatomic) NSString *tileImageURLString;
 @end
 
 @implementation SlikeSharedDataCache
@@ -55,6 +55,8 @@
         _cacahedStreams = [[NSMutableDictionary alloc]init];
         _isGDPREnable =  false;
         _cssId =  @"";
+        
+        _tileImageURLString = @"http://imgslike.akamaized.net/";
     }
     
     return self;
@@ -359,4 +361,19 @@
 //    }
 //    return Nil;
 //}
+
+- (NSString *)tileImageBaseUrl {
+    if (_tileImageURLString && [_tileImageURLString length]>0) {
+        return _tileImageURLString;
+    }
+    _tileImageURLString = @"http://imgslike.akamaized.net/";
+    return _tileImageURLString;
+    
+}
+- (void)updateTileImageBaseUrl:(NSString *)tileImageURLString {
+    if (tileImageURLString != nil && [tileImageURLString length]>0) {
+        _tileImageURLString = tileImageURLString;
+    }
+}
+
 @end

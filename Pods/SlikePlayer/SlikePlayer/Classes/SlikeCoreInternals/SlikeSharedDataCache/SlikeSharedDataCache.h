@@ -219,9 +219,12 @@ CSS ID
  @return -  TRUE|FALSE
  */
 - (BOOL)isStreamAlreadyCached:(NSString *)mediaId;
-
 - (BOOL)isPlayListVideo;
 
 @property (nonatomic, assign) BOOL isGDPREnable;
+
+- (NSString *)tileImageBaseUrl;
+- (void)updateTileImageBaseUrl:(NSString *)tileImageURLString;
+
 
 @end

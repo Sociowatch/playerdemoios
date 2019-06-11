@@ -154,6 +154,12 @@
 @property(nonatomic,strong) NSString *errorMsg;
 
 /**
+ Preview image base Url
+ */
+@property(nonatomic,strong) NSString *imgBaseUrl;
+
+
+/**
  Section within the app where media is to be played eg. Home/Videos
  */
 @property(nonatomic,strong) NSString *pageTemplate;

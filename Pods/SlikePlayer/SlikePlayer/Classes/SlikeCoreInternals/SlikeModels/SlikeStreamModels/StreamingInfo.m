@@ -5,6 +5,7 @@
 #import "StreamingInfo.h"
 #import "Stream.h"
 #import "SlikeUtilities.h"
+#import "SlikeSharedDataCache.h"
 
 @interface StreamingInfo() {
     Stream *currentStream;
@@ -13,7 +14,6 @@
 @property(nonatomic, assign) VideoSourceType currentVideoSource;
 @end
 
-static NSString * const kTileImageBaseUrl = @"http://imgslike.akamaized.net";
 
 @implementation StreamingInfo
 
@@ -771,7 +771,10 @@ static NSString * const kTileImageBaseUrl = @"http://imgslike.akamaized.net";
     NSString * middlePath = [self.mediaId substringWithRange:range];
     NSRange rangeNext = NSMakeRange(4,2);
     NSString * lastPath = [self.mediaId substringWithRange:rangeNext];
-    return  [NSString stringWithFormat:@"%@/%@/%@/%@/sprite/imagestile-%ld.jpg", kTileImageBaseUrl, middlePath, lastPath,self.mediaId, (long)tiledIndex];
+    
+    NSString *tiledImageUrl = [[SlikeSharedDataCache sharedCacheManager]tileImageBaseUrl];
+    
+    return  [NSString stringWithFormat:@"%@%@/%@/%@/sprite/imagestile-%ld.jpg", tiledImageUrl, middlePath, lastPath,self.mediaId, (long)tiledIndex];
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification {

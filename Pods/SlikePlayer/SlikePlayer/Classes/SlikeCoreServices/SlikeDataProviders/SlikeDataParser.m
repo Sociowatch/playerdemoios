@@ -218,6 +218,11 @@
         slikeConfigModel.gifInterval = [gifIntervalString integerValue];
     }
     
+    NSString *imgBaseUrlString = [dictSettings stringForKey:@"imgBaseUrl"];
+    if(imgBaseUrlString != nil) {
+        slikeConfigModel.imgBaseUrl = imgBaseUrlString;
+        [[SlikeSharedDataCache sharedCacheManager] updateTileImageBaseUrl:imgBaseUrlString];
+    }
     
     NSString *analyticsUrlString = [dictSettings stringForKey:@"analytics-url"];
     if(analyticsUrlString != nil) {
@@ -326,6 +331,12 @@
     NSString *analyticsUrlString = [configDict stringForKey:@"analytics-url"];
     if(analyticsUrlString != nil) {
         [[SlikeSharedDataCache sharedCacheManager]updateSlikeAnalyticsBaseUrl:analyticsUrlString];
+    }
+    
+    NSString *imgBaseUrlString = [configDict stringForKey:@"imgBaseUrl"];
+    if(imgBaseUrlString != nil) {
+        slikeConfigModel.imgBaseUrl = imgBaseUrlString;
+        [[SlikeSharedDataCache sharedCacheManager] updateTileImageBaseUrl:imgBaseUrlString];
     }
     
     NSString *baseUrlString = [configDict stringForKey:@"apibase"];
