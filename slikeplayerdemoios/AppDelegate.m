@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#define apikey @"ios"
+#define apikey @"tnr24ios5a8cg6zu6g"
 #import <SlikePlayer/SlikePlayer.h>
 
 @interface AppDelegate ()

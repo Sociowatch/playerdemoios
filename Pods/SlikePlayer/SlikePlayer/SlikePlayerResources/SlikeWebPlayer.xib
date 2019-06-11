@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SlikeWebPlayerViewController">
+            <connections>
+                <outlet property="loadingView" destination="0ck-WM-CV0" id="HmX-bv-azC"/>
+                <outlet property="playerWebView" destination="TuH-Ho-la3" id="xFa-gn-DVf"/>
+                <outlet property="posterImage" destination="Rvx-2P-TvB" id="ayO-2y-auk"/>
+                <outlet property="view" destination="iN0-l3-epB" id="cPv-Em-SQx"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" userLabel="ContentView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TuH-Ho-la3" userLabel="PlayerWebView">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="zaB-ws-DOo"/>
+                    </connections>
+                </webView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rvx-2P-TvB">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                </imageView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0ck-WM-CV0" customClass="SlikeMaterialDesignSpinner">
+                    <rect key="frame" x="169.5" y="315.5" width="36" height="36"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="36" id="1Qy-q3-rL8"/>
+                        <constraint firstAttribute="height" constant="36" id="Xkk-Xw-iNQ"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="TuH-Ho-la3" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="6Iv-C9-nD5"/>
+                <constraint firstItem="Rvx-2P-TvB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="8es-F9-t4S"/>
+                <constraint firstItem="0ck-WM-CV0" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="FBa-of-3Si"/>
+                <constraint firstAttribute="trailing" secondItem="Rvx-2P-TvB" secondAttribute="trailing" id="Gl8-Dm-JAx"/>
+                <constraint firstItem="0ck-WM-CV0" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="MgL-G7-s0p"/>
+                <constraint firstAttribute="bottom" secondItem="Rvx-2P-TvB" secondAttribute="bottom" id="Oq0-At-0bc"/>
+                <constraint firstAttribute="trailing" secondItem="TuH-Ho-la3" secondAttribute="trailing" id="Qfv-XU-yq3"/>
+                <constraint firstAttribute="bottom" secondItem="TuH-Ho-la3" secondAttribute="bottom" id="e9o-HT-JGh"/>
+                <constraint firstItem="Rvx-2P-TvB" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="nON-j2-dy1"/>
+                <constraint firstItem="TuH-Ho-la3" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="vio-5R-MMr"/>
+            </constraints>
+        </view>
+    </objects>
+</document>

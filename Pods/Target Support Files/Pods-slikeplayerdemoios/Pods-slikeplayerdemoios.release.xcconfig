@@ -1,0 +1,10 @@
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/ComScore/ComScore/dynamic/iOS" "${PODS_ROOT}/FBAudienceNetwork/Static" "${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/GoogleAnalytics" "${PODS_ROOT}/Headers/Public/SlikePlayer" "${PODS_ROOT}/Headers/Public/slike-ios-sdk-analytics"
+LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/SlikePlayer" "${PODS_CONFIGURATION_BUILD_DIR}/slike-ios-sdk-analytics" "${PODS_ROOT}/GoogleAnalytics/Libraries"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"GoogleAnalytics" -l"SlikePlayer" -l"c++" -l"slike-ios-sdk-analytics" -l"sqlite3" -l"xml2" -l"z" -framework "AVFoundation" -framework "AdSupport" -framework "AudioToolbox" -framework "ComScore" -framework "CoreData" -framework "CoreFoundation" -framework "CoreGraphics" -framework "CoreImage" -framework "CoreMedia" -framework "FBAudienceNetwork" -framework "Foundation" -framework "GoogleInteractiveMediaAds" -framework "MessageUI" -framework "QuartzCore" -framework "Security" -framework "StoreKit" -framework "SystemConfiguration" -framework "UIKit" -weak_framework "AdSupport" -weak_framework "CFNetwork" -weak_framework "CoreMotion" -weak_framework "CoreTelephony" -weak_framework "LocalAuthentication" -weak_framework "SafariServices" -weak_framework "SystemConfiguration" -weak_framework "VideoToolbox" -weak_framework "WebKit"
+PODS_BUILD_DIR = ${BUILD_DIR}
+PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
+PODS_ROOT = ${SRCROOT}/Pods

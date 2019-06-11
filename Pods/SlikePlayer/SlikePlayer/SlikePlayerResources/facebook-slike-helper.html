@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=100%, initial-scale=1.0">
+            <style type="text/css">
+                html, body {
+                    height:100vh;
+                    width:100%;
+                    margin: 0;
+                    padding: 0;
+                    position:relative;
+                    overflow:hidden;
+                    background:black;
+                }
+            
+                </style>
+            <title>Slike</title>
+            </head>
+    <body>
+        <!-- Load Facebook SDK for JavaScript -->
+        <div id="fb-root"></div>
+        <script>
+            var fb_player;
+            window.fbAsyncInit = function() {
+                FB.init({
+                        appId      : '{app_id}',
+                        xfbml      : true,
+                        version    : 'v2.5'
+                        });
+                        
+                        // Get Embedded Video Player API Instance
+                        FB.Event.subscribe('xfbml.ready', function(msg) {
+                                           
+                                           console.log('#someButton was clicked');
+                                           
+                                           if (msg.type === 'video') {
+                                           fb_player = msg.instance;
+                                           fb_player.subscribe("startedPlaying", function(e){
+                                                               window.location.href = 'fbplayer://startedPlaying?data=' + e;
+                                                               window.FacebookInterface.onStartPlaying(e);
+                                                               });
+                                           
+                                           fb_player.subscribe("startedBuffering", function(e){
+                                                               window.location.href = 'fbplayer://startedBuffering?data=' + e;
+                                                               window.FacebookInterface.onStartBuffering(e);
+                                                               });
+                                           
+                                           fb_player.subscribe("paused", function(e){
+                                                               window.location.href = 'fbplayer://paused?data=' + e;
+                                                               window.FacebookInterface.onPaused(e);
+                                                               });
+                                           
+                                           fb_player.subscribe("error", function(e){
+                                                               window.location.href = 'fbplayer://error?data=' + e;
+                                                               window.FacebookInterface.onError(e);
+                                                               });
+                                           
+                                           fb_player.subscribe("finishedPlaying", function(e){
+                                                               window.location.href = 'fbplayer://finishedPlaying?data=' + e;
+                                                               window.FacebookInterface.onFinishPlaying(e);
+                                                               });
+                                           
+                                           fb_player.subscribe("finishedBuffering", function(e){
+                                                               window.location.href = 'fbplayer://finishedBuffering?data=' + e;
+
+                                                               window.FacebookInterface.onFinishBuffering(e);
+                                                               });
+                                           }
+                                           });
+            };
+        
+        function pauseVideo(){
+            fb_player.pause();
+        }
+        
+        function playVideo(){
+            fb_player.play();
+        }
+        
+        function muteVideo(){
+            fb_player.mute();
+        }
+        
+        function unMuteVideo(){
+            fb_player.unmute();
+        }
+        
+        function setVolumeVideo(vol){
+            fb_player.setVolume(vol);
+        }
+        
+        function seekVideo(sec){
+            fb_player.seek(sec);
+        }
+        
+        function getDuration(){
+            fb_player.getDuration();
+        }
+        
+        function getVolume(){
+            fb_player.getVolume();
+        }
+        
+        function getCurrentPosition(){
+            fb_player.getCurrentPosition();
+        }
+        
+        function isMuted(){
+            fb_player.isMuted();
+        }
+        function getDuration(){
+            window.location.href = 'fbplayer://finishedPlaying?data=' + e;
+            window.FacebookInterface.onData("duration:" + fb_player.getDuration() * 1000);
+        }
+        
+        (function(d, s, id) {
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) return;
+         js = d.createElement(s); js.id = id;
+         js.src = 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.11';
+         fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+            </script>
+        <!-- Your embedded video player code -->
+        <div class="fb-video" data-href="{video_url}"
+            data-allowfullscreen="true"
+            data-autoplay="{auto_play}"
+            data-show-text="false"
+            data-show-captions="false"
+            data-width="1500"
+            data-height="1500" style="top:-44px;position:absolute;bottom:0px"></div>
+    </body>
+</html>

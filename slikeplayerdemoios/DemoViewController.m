@@ -40,7 +40,8 @@
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"Toi.in";
     _slikeConfig.isSkipAds =  NO;
-    _slikeConfig.pageTemplate =  @"Test";
+    _slikeConfig.section =  @"default";
+    _slikeConfig.pageTemplate =  @"home/api/test";
     _slikeConfig.isFullscreenControl =  YES;
     _slikeConfig.autorotationMode  =
     SlikeFullscreenAutorotationModeLandscape;

@@ -139,7 +139,7 @@
 					3D21EE721DF7F8300002132E = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 2C5Z9X929T;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -148,6 +148,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -199,18 +200,18 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ComScore/SCORBundle.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SlikePlayer/SlikePlayerResources.bundle",
-				"${PODS_ROOT}/youtube-ios-player-helper/youtube-ios-player-helper/Assets.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SCORBundle.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SlikePlayerResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DC4F493682E9B8D4F0F8CAD1 /* [CP] Embed Pods Frameworks */ = {
@@ -219,16 +220,18 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-frameworks.sh",
+				"${PODS_ROOT}/ComScore/ComScore/dynamic/iOS/ComScore.framework",
 				"${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds/GoogleInteractiveMediaAds.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ComScore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleInteractiveMediaAds.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -361,17 +364,17 @@
 			baseConfigurationReference = C4FC53A0A0EA3AD63DD3DE15 /* Pods-slikeplayerdemoios.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2C5Z9X929T;
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.prime;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "971fab44-114b-4ac6-b02d-93921f248786";
-				PROVISIONING_PROFILE_SPECIFIER = TilPrimeApp_Dev;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -380,17 +383,17 @@
 			baseConfigurationReference = 15816757388768BEBF6C1DC9 /* Pods-slikeplayerdemoios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Pravin Ranjan (E8Z58N8X5Q)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2C5Z9X929T;
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.prime;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "971fab44-114b-4ac6-b02d-93921f248786";
-				PROVISIONING_PROFILE_SPECIFIER = TilPrimeApp_Dev;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
