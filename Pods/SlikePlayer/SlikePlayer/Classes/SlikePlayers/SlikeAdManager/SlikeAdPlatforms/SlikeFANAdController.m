@@ -124,7 +124,7 @@
     if (error.localizedDescription) {
         errMessage = error.localizedDescription;
     }
-    
+    NSLog(@"%@",errMessage);
     NSString *errCode = [NSString stringWithFormat:@"%ld", (long)error.code];
 //    NSDictionary *payload = @{
 //                              kSlikeAdDescriptionKey:errMessage,

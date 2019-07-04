@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SPLM3U8ExtXStreamInfList.h"
 
 @class SlikeAdsQueue;
 @class SlikeBitratesModel;
@@ -226,5 +227,11 @@ CSS ID
 - (NSString *)tileImageBaseUrl;
 - (void)updateTileImageBaseUrl:(NSString *)tileImageURLString;
 
+
+/**
+ secure playlist nodes
+ */
+@property (nonatomic, strong) SPLM3U8ExtXStreamInfList *xStreamList;
+@property (nonatomic, assign) BOOL isEncrypted;
 
 @end

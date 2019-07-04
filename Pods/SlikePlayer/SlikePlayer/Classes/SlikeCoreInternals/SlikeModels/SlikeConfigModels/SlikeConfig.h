@@ -77,6 +77,12 @@
  */
 @property(nonatomic,assign) BOOL orientationTypeiPad;
 
+
+/**
+ Enable the Airplay. By default AirPlay is Enabled
+ */
+@property(nonatomic,assign) BOOL enableAirPlay;
+
 /**
  Section id required to play ads
  */
@@ -499,5 +505,7 @@
  isNoNetworkCloseCloseControl Default value is YES.
 */
 @property(nonatomic, assign) BOOL isNoNetworkCloseControlEnable;
+
+
 
 @end

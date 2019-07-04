@@ -10,7 +10,13 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <netinet/in.h>
 
-
+typedef NS_ENUM(NSInteger, NetworkType) {
+    NetworkWiFi = 1,
+    Network2G,
+    Network3G,
+    Network4G,
+    NetworkNone
+};
 typedef enum : NSInteger {
 	NotReachable = 0,
 	ReachableViaWiFi,

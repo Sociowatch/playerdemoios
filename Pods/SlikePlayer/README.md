@@ -1,4 +1,4 @@
-# SlikePlayer  (v 2.4.5)
+# SlikePlayer  (v 2.5.0)
 
 ## Example
 
@@ -17,7 +17,7 @@ it, simply add the following line to your Podfile:
 
 ```
 
-pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '2.4.5'
+pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => '2.5.0'
 
 ```
 

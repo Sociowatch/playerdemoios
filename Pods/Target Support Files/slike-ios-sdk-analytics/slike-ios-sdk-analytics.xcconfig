@@ -1,7 +1,7 @@
 CONFIGURATION_BUILD_DIR = ${PODS_CONFIGURATION_BUILD_DIR}/slike-ios-sdk-analytics
 FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/ComScore/ComScore/dynamic/iOS" "${PODS_ROOT}/FBAudienceNetwork/Static" "${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/slike-ios-sdk-analytics" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/GoogleAnalytics" "${PODS_ROOT}/Headers/Public/SlikePlayer" "${PODS_ROOT}/Headers/Public/slike-ios-sdk-analytics"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/slike-ios-sdk-analytics" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/FBSDKCoreKit" "${PODS_ROOT}/Headers/Public/GoogleAnalytics" "${PODS_ROOT}/Headers/Public/SlikePlayer" "${PODS_ROOT}/Headers/Public/slike-ios-sdk-analytics"
 OTHER_LDFLAGS = $(inherited) -ObjC -all_load
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)

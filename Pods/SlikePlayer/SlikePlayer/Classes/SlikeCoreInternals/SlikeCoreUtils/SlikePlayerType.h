@@ -26,6 +26,8 @@ typedef enum VideoPlayerType {
     VIDEO_PLAYER_3GP = 12,
     VIDEO_PLAYER_WEBM = 13,
     VIDEO_PLAYER_MEME = 14,
+    VIDEO_PLAYER_FHLS = 15,
+    VIDEO_PLAYER_SHLS =  16,
     VIDEO_PLAYER_NOT_DEFINED =-1
     
 } VideoPlayer;
@@ -61,6 +63,8 @@ typedef NS_ENUM(NSInteger, VideoSourceType) {
     VIDEO_SOURCE_EMBEDDED,
     VIDEO_SOURCE_3GP,
     VIDEO_SOURCE_WEBM,
+    VIDEO_SOURCE_SHLS,
+    VIDEO_SOURCE_FHLS,
     VIDEO_SOURCE_UNKNOWN
     
 } ;

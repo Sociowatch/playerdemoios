@@ -11,7 +11,8 @@
 @property(nonatomic, assign) CGSize size;
 @property(nonatomic, strong) NSString *strFlavor;
 @property(nonatomic, strong) NSString *strLabel;
+@property(nonatomic, assign) BOOL isSecurePlayer;
 
-+ (Stream *)createStream:(NSString *) url withBitrate:(NSInteger)bitrate withSize:(CGSize) theSize withFlavor:(NSString *)flavor withLabel:(NSString *) label;
++ (Stream *)createStream:(NSString *) url withBitrate:(NSInteger) bitrate withSize:(CGSize) theSize withFlavor:(NSString *) flavor withLabel:(NSString *) label withSlikeSecure:(BOOL)isSecure;
 
 @end

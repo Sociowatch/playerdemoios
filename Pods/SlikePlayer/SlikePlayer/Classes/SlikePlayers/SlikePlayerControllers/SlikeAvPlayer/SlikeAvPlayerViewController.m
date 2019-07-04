@@ -209,6 +209,10 @@
 - (void)updateMediaActons:(SlikePlayerState)state dataPayload:(NSDictionary *)payload {
     
     if(state == SL_START) {
+        if(_isUserPaused)
+        {
+            [self.playerView pause];
+        }
         self.isMediaReStart =  NO;
         [self setVideoPlaceHolder:NO];
         
@@ -340,7 +344,7 @@
     } else  if(state ==  SL_REPLAY) {
         
         if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
-            [self _showAlertViewForOffline:YES];
+            [self _showAlertViewForOffline:YES hasEmptyBuffer:NO];
             [self _sendNetworkErrorMessage];
             return;
         }
@@ -438,7 +442,7 @@
         
         if (weekSelf.isAppEnteredInBackground && ![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
             
-            [weekSelf _showAlertViewForOffline:YES];
+            [weekSelf _showAlertViewForOffline:YES hasEmptyBuffer:NO];
             weekSelf.isAppEnteredInBackground = NO;
             [weekSelf _sendNetworkErrorMessage];
             return;
@@ -536,7 +540,7 @@
 }
 
 - (void)play:(BOOL)isUserInitiated {
-    
+   
     if (!_isAutoPlayEnable) {
         //Make the variable TRUE so that it should be called only on startup
         _isAutoPlayEnable = YES;
@@ -549,8 +553,7 @@
     }
     else {
         
-        if(_isUserPaused && !isUserInitiated) return;
-        
+        if(_isUserPaused && !isUserInitiated && !_isNetworkWindowPresented) return;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.playerView play];
             self.isUserPaused = NO;
@@ -838,7 +841,9 @@
     } else {
         
         SlikeDLog(@"AV PLAYER LOG:stopVideoWithCompletion - Without Error");
-        
+        if (_isNetworkWindowPresented) {
+            [self removeErrorAlert];
+        }
         _playerCurrentState = SL_COMPLETED;
         NSUInteger duration = [self getDuration];
         NSDictionary *playerData = @{kSlikeCurrentPositionKey:@(duration), kSlikeDurationKey:@(duration)};
@@ -1003,17 +1008,22 @@
         NSError *playingError = [notification.userInfo objectForKey:@"data"];
         if(playingError) {
             
-            if(playingError.code == SlikeServiceErrorM3U8FilerError) {
+            if(playingError.code == SlikeServiceErrorM3U8FileError) {
+                NSError *systemError = [notification.userInfo objectForKey:@"systemError"];
+                if (systemError) {
+                    NSLog(@"System Errors =>%@", [systemError localizedDescription]);
+                }
+                
                 return;
                 
             } else if(playingError.code == SlikeServiceErrorNoNetworkAvailable) {
-                
+
                 NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
                 if (playingError) {
                     [payload setObject:playingError forKey:@"data"];
                 }
-                [self _showAlertViewForOffline:YES];
-                [self _sendPlayerStatus:SL_ERROR withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:payload];
+                [self _showAlertViewForOffline:YES hasEmptyBuffer:YES];
+                [self _sendNetworkErrorMessage];
                 return;
                 
             } else {
@@ -1127,7 +1137,7 @@
     SlikeDLog(@"AV PLAYER LOG: playMovieStreamWithObject");
     self.isAppAlreadyDestroyed = NO;
     [self resetVariables];
-
+    
     _isAutoPlayEnable = YES;
     _loadingIndicator.hidden=YES;
     _loadingIndicator.alpha=0.0;
@@ -1271,7 +1281,9 @@
  */
 - (void)callPlayVideo:(NSString *)m3u8URL {
     //For routue player
-    if([self.slikeConfig.streamingInfo hasVideo:VIDEO_SOURCE_HLS])
+    if([self.slikeConfig.streamingInfo hasVideo:VIDEO_SOURCE_HLS] ||
+       [self.slikeConfig.streamingInfo hasVideo:VIDEO_SOURCE_FHLS] ||
+       [self.slikeConfig.streamingInfo hasVideo:VIDEO_SOURCE_SHLS])
     {
         m3u8URL = [m3u8URL stringByReplacingOccurrencesOfString:@"http" withString:@"123"];
     }
@@ -1289,9 +1301,21 @@
     }
     NSURL *m3u8 = [NSURL URLWithString:m3u8URL];
     SlikeDLog(@"AV PLAYER LOG: Loading URL %@", m3u8URL);
+    
     [[SlikeDeviceSettings sharedSettings] setM3U8HostValue:[m3u8 host]];
     self.playerView.isLiveStream = self.slikeConfig.streamingInfo.isLive;
+    BOOL _isSecure = [self.slikeConfig.streamingInfo isSlikeStreamSecure:self.slikeConfig];
+    if(!_isSecure) {
+        NSString *sub = [m3u8 lastPathComponent];
+        if([sub isEqualToString:@"slike.m3u8"]) {
+            _isSecure =  YES;
+        }
+    }
+    self.playerView.isSecure = _isSecure;
     [self.playerView initialisePlayerWithPlaylist:m3u8 withStartPos:_nTimeCode];
+    if (self.slikeConfig) {
+        [self.playerView setAllowsAirPlay:self.slikeConfig.enableAirPlay];
+    }
 }
 
 /**
@@ -1583,11 +1607,12 @@
 - (void)_createSlikeCustomControlUI {
     
     SlikeMediaPlayerControl *slikeControlView = [[[NSBundle slikeNibsBundle] loadNibNamed:NSStringFromClass([SlikeMediaPlayerControl class]) owner:self options:nil] lastObject];
-    slikeControlView.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
     slikeControlView.backgroundColor = [UIColor clearColor];
     slikeControlView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:slikeControlView];
+    slikeControlView.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
     self.slikeConfig.customControls = slikeControlView;
+    [slikeControlView layoutIfNeeded];
 }
 
 /**
@@ -1595,6 +1620,9 @@
  @param isSet -
  */
 - (void)setVideoPlaceHolder:(BOOL)isSet {
+    if (_isNetworkWindowPresented) {
+        [self pause:NO];
+    }
     [self.posterImage setPlaceHolderImage:isSet configModel:self.slikeConfig withPlayerView:_playerView];
 }
 
@@ -1715,21 +1743,29 @@
 /**
  Show the Offline message.
  */
-- (void)_showAlertViewForOffline:(BOOL)enableReload {
+- (void)_showAlertViewForOffline:(BOOL)enableReload hasEmptyBuffer:(BOOL)bufferEmpty {
     
     [self setVideoPlaceHolder:YES];
     [self _sendStatusToControls:SL_HIDECONTROLS];
-    if (_isNetworkWindowPresented) {
+    if (_isNetworkWindowPresented && bufferEmpty) {
+         [self pause:NO];
+         [self _sendStatusToControls:SL_HIDECONTROLS];
         return;
     }
-    
     [self pause:NO];
     self.slikeAlertView = [SlikePlayerErrorView slikePlayerErrorView];
     UIView *parentView = (UIView *)self.view;
     [parentView addSubviewWithContstraints:_slikeAlertView];
     
+
     __block SlikePlayerErrorView* weakAlert = _slikeAlertView;
+   if(self.slikeConfig.isNoNetworkCloseControlEnable)
+   {
+       [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:_isFullScreen withReloadEnable:enableReload];
+   }else
+   {
     [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:self.slikeConfig.isNoNetworkCloseControlEnable withReloadEnable:enableReload];
+   }
     _isNetworkWindowPresented = YES;
     
     [self _removeBiratesUI];
@@ -1751,7 +1787,8 @@
     };
     weakAlert.closeButtonBlock = ^ {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.slikeAlertView removeAlertViewWithAnimation:YES];
+            self.slikeAlertView.closeButton.hidden =  YES;
+            //[self.slikeAlertView removeAlertViewWithAnimation:YES];
             [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_CLOSE dataPayload:@{kSlikeADispatchEventToParentKey: @(YES)} slikePlayer:nil];
         });
     };
@@ -1763,20 +1800,34 @@
 /**
  Remove the Player . Also dealloc all the Associated resources
  */
-- (void)removePlayer {
-    
+-(void)sendPlayerForceCloseEvent
+{
     [[EventManager sharedEventManager] dispatchEvent:ACTIVITY playerState:SL_PLAYER_DISTROYED dataPayload:@{} slikePlayer:self];
     [self _sendPlayerStatus:SL_ENDED withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:@{}];
+    
+}
+- (void)removePlayer {
     
     if([self.playerView isPlayerExist]) {
         [self pause:NO];
     }
+    
+    [self sendPlayerForceCloseEvent];
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+
+   
     [self.playerView stopVideo:YES];
     
     __weak typeof(self) _self = self;
+    
     [self _removeCustomControls:^{
+       
         [_self cleanup];
         _self.progressInfo=nil;
+        
+        
     }];
     
 #ifdef __SLIKE_ORIENTATION_WITH_VIEW_CONTROLLER__
@@ -1815,12 +1866,14 @@
         }
         _playerContainer=nil;
     }
+            });
 }
 
 
 - (void)_removeCustomControls:(void(^)(void))completed {
     if (self.slikeConfig && self.slikeConfig.customControls) {
         if ([NSThread isMainThread]) {
+            [self removeSafelyCustomControls];
             completed();
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1950,4 +2003,15 @@
         [self.slikeGestureUI listenForGestureEvents:NO];
     }
 }
+
+- (BOOL)isAudioSessionUsingAirplayOutputRoute {
+    AVAudioSession* audioSession = [AVAudioSession sharedInstance];
+    AVAudioSessionRouteDescription* currentRoute = audioSession.currentRoute;
+    for (AVAudioSessionPortDescription* outputPort in currentRoute.outputs){
+        if ([outputPort.portType isEqualToString:AVAudioSessionPortAirPlay])
+            return true;
+    }
+    return false;
+}
+
 @end

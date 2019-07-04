@@ -114,6 +114,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
 @property (assign, nonatomic) BOOL isNextCardVissible;
 @property (assign, nonatomic) NSInteger cardFecthTime;
 @property (assign, nonatomic) BOOL coachMarkVissible;
+@property (strong, nonatomic) MPVolumeView *airPlayView;
 
 @end
 
@@ -146,6 +147,35 @@ static NSInteger kDraggingViewBottomOffset = 5;
     _nextCardButton.userInteractionEnabled = YES;
     self.alpha =1.0;
     _coachMarkVissible = NO;
+
+}
+
+ //Add Airplay options if the aiplay devices is available
+- (void)checkForAirPlayOptions {
+    
+    if (self.airPlayView && [_airPlayView superview]) {
+        [_airPlayView removeFromSuperview];
+        self.airPlayView = nil;
+    }
+    self.airPlayView = [[MPVolumeView alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    _airPlayView.showsVolumeSlider = NO;
+    [_viewAirPlayContainer addSubview:_airPlayView];
+    _viewAirPlayContainer.hidden = NO;
+    _airPlayView.contentMode = UIViewContentModeScaleAspectFill;
+    _viewAirPlayContainer.backgroundColor = [UIColor clearColor];
+}
+
+- (void)hideAirPlayMode {
+    if (self.airPlayView && [_airPlayView superview]) {
+        [_airPlayView removeFromSuperview];
+        self.airPlayView = nil;
+    }
+}
+
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self setInitialPosition];
 }
 
 - (void)setupPreviewDraggingProgressView {
@@ -410,12 +440,17 @@ static NSInteger kDraggingViewBottomOffset = 5;
             }
             else  if(playerState ==  SL_START) {
                 
+                if (self.mediaConfig.enableAirPlay) {
+                    [self checkForAirPlayOptions];
+                } else {
+                    [self hideAirPlayMode];
+                }
+                
                 self.nextCardButton.userInteractionEnabled = YES;
                 [self hideControlsIfAutoPlayDesibale:NO];
                 NSArray *bitratesArray = [[SlikeSharedDataCache sharedCacheManager] cachedBitratesModels];
                 
-                if ([bitratesArray count] == 2 && self.mediaConfig.isBitrateControl)
-                {
+                if ([bitratesArray count] == 2 && self.mediaConfig.isBitrateControl) {
                     self.btnBitrate.hidden = YES;
                     self.birateWidthConstraints.constant = 0;
                     [self layoutIfNeeded];

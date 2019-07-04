@@ -150,7 +150,9 @@
     if(previousState == SL_COMPLETED && status == SL_ENDED) {
         return;
     }
-    
+    if(previousState == SL_ENDED) {
+        return;
+    }
     previousState=status;
     
     SlikeDLog(@"strSS ===>>> : %@", self.slikeconfig.streamingInfo.strSS);
@@ -760,6 +762,11 @@
         finalRequestString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",eventModel.playerEventModel.urts, eventModel.playerEventModel.uopts];
         analyticsString = [NSString stringWithFormat:@"%@%@",analyticsString,finalRequestString];
     }
+    
+    if(ENABLE_LOG)
+    {
+        NSLog(@"analyticsString %@",analyticsString);
+    }
     [self processAnalyticsRequest:analyticsString];
 }
 
@@ -787,6 +794,8 @@
     
     NSString *analyticsString = [NSString stringWithFormat:@"type=%@&k=%@&ch=%@&tpr=%@&vid=%@&at=%@&ss=%@&ts=%@&pt=%ld&stt=%ld&tb=%@%@",eventModel.playerEventModel.type, self.slikeconfig.mediaId, self.slikeconfig.channel,self.slikeconfig.product,self.slikeconfig.vendorID,
                                  eventModel.playerEventModel.eventType, self.slikeconfig.streamingInfo.strSS, self.slikeconfig.streamingInfo.strTS, (long)eventModel.playerEventModel.playerType, (long)eventModel.playerEventModel.currentPlayer,self.slikeconfig.business,[self.slikeconfig toString]];
+   
+    NSLog(@"%@",analyticsString);
     
     [self processAnalyticsRequest:analyticsString];
 }
@@ -836,9 +845,8 @@
 - (void)_processRumbleAnalytics:(EventModel *)eventModel {
     
     NSLog(@"_processRumbleAnalytics - %ld", (long)eventModel.playerEventModel.playerState);
-    
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
-    
+    [self _processEmbededAnalytics:eventModel];
 }
 
 @end

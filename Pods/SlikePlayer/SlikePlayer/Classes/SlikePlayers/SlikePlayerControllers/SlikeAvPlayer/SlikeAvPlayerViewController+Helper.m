@@ -15,10 +15,7 @@
  Add Player Observer
  */
 - (void)registerPlayerObservers {
-    
-   // [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifications:) name:SlikePlayerPlaybackStateReadyNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifications:) name:SlikePlayerPlaybackStatePlayNotification object:nil];
@@ -55,13 +52,10 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotifications:) name:SlikePlayerPlaybackStateSeekUpdateNotification object:nil];
     
-    
 }
 
 - (void)unRegisterPlayerObservers {
-
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SlikePlayerPlaybackStateReadyNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SlikePlayerPlaybackStatePlayNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SlikePlayerPlaybackStateStartNotification object:nil];

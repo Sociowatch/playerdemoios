@@ -40,7 +40,7 @@
         _currentPlayerType = SlikePlayerTypeUnknown;
         
         //Fill in empty MutableArray into the dictVideos see VideoSourceType count => 6
-        for(NSInteger index = 0; index < 14; index++) {
+        for(NSInteger index = 0; index < 18; index++) {
             NSMutableArray *arr = [NSMutableArray array];
             [self.dictVideos setObject:arr forKey:[self getVideoSourceTypeStringByEnum:(VideoSourceType)index]];
         }
@@ -167,18 +167,22 @@
     
     NSMutableArray *videosList = [self getVideosListByType:videoType];
     
-    if(videoType != VIDEO_SOURCE_YT &&
-       videoType != VIDEO_SOURCE_DM &&
-       videoType != VIDEO_SOURCE_RUMBLE &&
+    //Looking for the URL prefix and if they are missing then need to add it
+    if(videoType != VIDEO_SOURCE_YT && videoType != VIDEO_SOURCE_DM && videoType != VIDEO_SOURCE_RUMBLE &&
        [strSource rangeOfString:@"http:"].location == NSNotFound &&
-       [strSource rangeOfString:@"https:"].location == NSNotFound)
-       strSource = [NSString stringWithFormat:@"https:%@", strSource];
+       [strSource rangeOfString:@"https:"].location == NSNotFound) {
+        strSource = [NSString stringWithFormat:@"https:%@", strSource];
+    }
     
-    Stream * stream = [Stream createStream:strSource withBitrate:nBitrates withSize:theSize withFlavor:strFlavor withLabel:strLabel];
+    //Create the stream with the bitrates
     
-    if(videoType == VIDEO_SOURCE_HLS && videosList.count == 0) {
+    Stream * stream = [Stream createStream:strSource withBitrate:nBitrates withSize:theSize withFlavor:strFlavor withLabel:strLabel withSlikeSecure:videoType == VIDEO_SOURCE_SHLS ? YES : NO];
+    
+    //Video is HLS or the FHLS
+    if((videoType == VIDEO_SOURCE_HLS || videoType == VIDEO_SOURCE_FHLS) && videosList.count == 0) {
         stream.strLabel = @"Auto";
-        [self loadHLS:strSource];
+        //Download  contents
+        [self downloadHLSContents:strSource withType:videoType];
     }
     
     BOOL isReady =  NO;
@@ -289,6 +293,12 @@
     } else if(_currentVideoSource == VIDEO_SOURCE_GIF_MP4) {
         return VIDEO_PLAYER_MP4;
     }
+    else if(_currentVideoSource == VIDEO_SOURCE_FHLS) {
+        return VIDEO_PLAYER_FHLS;
+    }
+    else if(_currentVideoSource == VIDEO_SOURCE_SHLS) {
+        return VIDEO_PLAYER_SHLS;
+    }
     return VIDEO_PLAYER_NOT_DEFINED;
 }
 
@@ -313,6 +323,8 @@
     if(videoSource == VIDEO_SOURCE_VEBLR) return @"url";
     if(videoSource == VIDEO_SOURCE_RUMBLE) return @"rumble";
     if(videoSource == VIDEO_SOURCE_MEME) return @"meme";
+    if(videoSource == VIDEO_SOURCE_SHLS) return @"shls";
+    if(videoSource == VIDEO_SOURCE_FHLS) return @"fhls";
     
     return @"hls";
 }
@@ -358,23 +370,23 @@
  Has Bitartes available for video types
  @return - TRUE|FALSE
  */
-- (BOOL) hasBitratesAvailable:(VideoSourceType) videoType {
+- (BOOL)hasBitratesAvailable:(VideoSourceType) videoType {
     NSString *strType = [self getVideoSourceTypeStringByEnum:videoType];
     NSMutableArray *arr = (NSMutableArray *) [self.dictVideos objectForKey:strType];
     return arr.count > 1;
 }
 
 /**
- Load HLS
+ Download HLS contents.
  */
-- (void) loadHLS:(NSString *) str {
+- (void)downloadHLSContents:(NSString *)str withType:(VideoSourceType)videoType{
     
     __block typeof(self) blockSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [SlikeUtilities parsem3u8:str withCompletionBlock:^(id obj, NSError *error) {
             if(obj)
             {
-                NSArray *videosList = [self getVideosListByType:VIDEO_SOURCE_HLS];
+                NSArray *videosList = [self getVideosListByType:videoType];
                 
                 NSMutableArray *arr = (NSMutableArray *) obj;
                 NSMutableArray *arrMain =  [NSMutableArray array];
@@ -427,7 +439,7 @@
                         strLabel = [SlikeUtilities formattedBandWidth:nBitrate];
                     }
                     
-                    [blockSelf updateStreamSource:[dict objectForKey:@"url"] withBitrates:nBitrate withFlavor:arrFlavors.count > nIndex ? [arrFlavors objectAtIndex:nIndex] : @"" withSize:theSize withLabel:strLabel ofType:VIDEO_SOURCE_HLS];
+                    [blockSelf updateStreamSource:[dict objectForKey:@"url"] withBitrates:nBitrate withFlavor:arrFlavors.count > nIndex ? [arrFlavors objectAtIndex:nIndex] : @"" withSize:theSize withLabel:strLabel ofType:videoType];
                 }
             }
         }];
@@ -454,6 +466,8 @@
     if([strName isEqualToString:@"url" ]) return VIDEO_SOURCE_VEBLR;
     if([strName isEqualToString:@"rumble" ]) return VIDEO_SOURCE_RUMBLE;
     if([strName isEqualToString:@"meme" ]) return VIDEO_SOURCE_MEME;
+    if([strName isEqualToString:@"shls" ]) return VIDEO_SOURCE_SHLS;
+    if([strName isEqualToString:@"fhls" ]) return VIDEO_SOURCE_FHLS;
     
     return VIDEO_SOURCE_HLS;
 }
@@ -466,14 +480,16 @@
  @param nIndex - Index
  @return - Stream
  */
-- (Stream *)getStream:(VideoSourceType)videoType atIndex:(NSInteger) nIndex {
+- (Stream *)getStream:(VideoSourceType)videoType atIndex:(NSInteger)nIndex {
     
     NSArray *videosList = [self getVideosListByType:videoType];
     if(videosList.count == 0) return nil;
     
     Stream *stream = [videosList objectAtIndex:nIndex];
     if(stream && videoType == VIDEO_SOURCE_HLS && videosList.count <= 1) {
-        [self loadHLS:stream.strURL];
+        [self downloadHLSContents:stream.strURL withType:videoType];
+    } else  if(stream && videoType == VIDEO_SOURCE_FHLS && videosList.count <= 1) {
+        [self downloadHLSContents:stream.strURL withType:videoType];
     }
     currentStream = stream;
     _currentVideoSource = videoType;
@@ -483,6 +499,7 @@
 
 /**
  Get the Stream for the video source type
+ Method will be called on the basis of user prority
  
  @param videoType - Video Source Type
  @param strBitrate - Bitrate
@@ -507,19 +524,13 @@
             }
         }
     }
-    
+    Stream *stream = [self getStreamByUserAction:videoType];
+    if(stream) return stream;
     SlikeDLog(@"%@",strBitrate);
-    if(videoType == VIDEO_SOURCE_HLS && !strBitrate && ([strBitrate isEqualToString:@""] || [strBitrate isEqualToString:@"none"])) {
-        Stream *stream = [self getStream:VIDEO_SOURCE_HLS atIndex:0];
-        if(!stream) stream = [self getStream:VIDEO_SOURCE_MP4 atIndex:0];
-        return stream;
-    }
     
     NSInteger nBitrate = [strBitrate integerValue];
     NSArray *videosList = [self getVideosListByType:videoType];
     NSInteger nIndex, nLen = videosList.count;
-    
-    Stream *stream;
     for(nIndex = nLen - 1; nIndex >= 0; nIndex--) {
         
         stream = [videosList objectAtIndex:nIndex];
@@ -529,9 +540,40 @@
             return stream;
         }
     }
+    stream = [self getStreamByUserAction:videoType];
+    return stream;
+}
+
+
+/**
+ Get the Media Stream as per user choice
+ 
+ @param videoType - Video Source type
+ @return - Media Stream
+ */
+- (Stream*)getStreamByUserAction:(VideoSourceType)videoType {
     
-    if(videoType == VIDEO_SOURCE_HLS) {
+    Stream * stream = nil;
+    if(videoType == VIDEO_SOURCE_SHLS) {
+        
+        stream = [self getStream:VIDEO_SOURCE_SHLS atIndex:0];
+        
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_FHLS atIndex:0];
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_HLS atIndex:0];
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_MP4 atIndex:0];
+    }
+    else if(videoType == VIDEO_SOURCE_FHLS) {
+        stream = [self getStream:VIDEO_SOURCE_FHLS atIndex:0];
+        
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_SHLS atIndex:0];
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_HLS atIndex:0];
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_MP4 atIndex:0];
+    }
+    else if(videoType == VIDEO_SOURCE_HLS) {
         stream = [self getStream:VIDEO_SOURCE_HLS atIndex:0];
+        
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_SHLS atIndex:0];
+        if(!stream) stream = [self getStream:VIDEO_SOURCE_FHLS atIndex:0];
         if(!stream) stream = [self getStream:VIDEO_SOURCE_MP4 atIndex:0];
     }
     else {
@@ -539,7 +581,6 @@
     }
     return stream;
 }
-
 /**
  Set the Video Surce Type
  @param videoSource - Video Source type
@@ -584,7 +625,14 @@
         
     } else if([configModel.streamingInfo getCurrentVideoSource] == VIDEO_SOURCE_MEME) {
         streamType = @"mime" ;
+        
+    } else if([configModel.streamingInfo getCurrentVideoSource] == VIDEO_SOURCE_SHLS) {
+        streamType = @"shls" ;
+        
+    } else if([configModel.streamingInfo getCurrentVideoSource] == VIDEO_SOURCE_FHLS) {
+        streamType = @"fhls" ;
     }
+    
     return streamType;
 }
 
@@ -597,29 +645,67 @@
  */
 + (NSString *)slikeMediaUrl:(SlikeConfig *)slikeConfig {
     
-    NSString *mediaURL = nil;
-    mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_HLS byQuality:@""].strURL;
-    if(mediaURL && mediaURL!=nil && mediaURL.length >0)
-    return mediaURL;
-     if(!mediaURL) {
-     mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_MP4 byQuality:@""].strURL;
-     } else {
-     return mediaURL;
-     }
-     
-     if(!mediaURL) {
-     mediaURL = [slikeConfig.streamingInfo getURL:AUDIO_SOURCE_MP3 byQuality:@""].strURL;
-     } else {
-     return mediaURL;
-     }
-     
-     if(!mediaURL) {
-     mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_DASH byQuality:@""].strURL;
-     } else {
-     return mediaURL;
-     }
-     return mediaURL;
+    VideoSourceType preferedType = slikeConfig.preferredVideoType;
     
+    NSString *mediaURL = nil;
+    //Get the Video as per  user preference
+    if(preferedType == VIDEO_SOURCE_SHLS ||
+       preferedType == VIDEO_SOURCE_FHLS ||
+       preferedType == VIDEO_SOURCE_HLS ||
+       preferedType == VIDEO_SOURCE_MP4) {
+        
+        mediaURL = [slikeConfig.streamingInfo getURL:preferedType byQuality:@""].strURL;
+        if(mediaURL != nil && mediaURL.length > 0) {
+            return mediaURL;
+        }
+    }
+    
+    //We did not find the stream URL. So need look on the Priority basis
+    return [[self class] lookForStreamOnPriorityBasis:slikeConfig];
+}
+
+- (BOOL )isSlikeStreamSecure:(SlikeConfig *)slikeConfig {
+    
+    VideoSourceType preferedType = slikeConfig.preferredVideoType;
+   Stream *stream = [slikeConfig.streamingInfo getStreamByUserAction:preferedType];
+    return stream.isSecurePlayer;
+}
+
+//May be used as public method to get the stream URL 
++ (NSString *)lookForStreamOnPriorityBasis:(SlikeConfig *)slikeConfig {
+    
+    NSString *mediaURL = nil;
+    mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_SHLS byQuality:@""].strURL;
+    if(mediaURL != nil && mediaURL.length >0) {
+        return mediaURL;
+    }
+    
+    mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_FHLS byQuality:@""].strURL;
+    if(mediaURL !=nil && mediaURL.length >0) {
+        return mediaURL;
+    }
+    
+    mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_HLS byQuality:@""].strURL;
+    if(mediaURL!=nil && mediaURL.length >0) {
+        return mediaURL;
+    }
+    
+    mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_MP4 byQuality:@""].strURL;
+    if(mediaURL!=nil && mediaURL.length >0) {
+        return mediaURL;
+    }
+    
+    mediaURL = [slikeConfig.streamingInfo getURL:AUDIO_SOURCE_MP3 byQuality:@""].strURL;
+    if(mediaURL!=nil && mediaURL.length >0) {
+        return mediaURL;
+    }
+    
+    mediaURL = [slikeConfig.streamingInfo getURL:VIDEO_SOURCE_DASH byQuality:@""].strURL;
+    if(mediaURL!=nil && mediaURL.length >0) {
+        return mediaURL;
+    }
+    
+    return mediaURL;
 }
 
 /**
@@ -720,43 +806,50 @@
 - (void)downloadTileImageAndUpdateModel:(NSString *)tileImageUrlStr {
     
     [[SlikeNetworkManager defaultManager] getImageForURL:[NSURL URLWithString:tileImageUrlStr] completion:^(UIImage *image, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
-        if(!error) {
+        
+        //dispatch_async(dispatch_get_main_queue(), ^{
             
-            NSMutableArray *previewsImage = [[NSMutableArray alloc]init];
-            CGFloat width = self.thumbnailsInfoModel.thumbWidth;
-            CGFloat height = self.thumbnailsInfoModel.thumbHight;
-            
-            CGFloat xPos = 0.0, yPos = 0.0;
-            for (int yIndex = 0; yIndex < self.thumbnailsInfoModel.rows ; yIndex++) {
-                xPos = 0.0;
+            if(!error) {
                 
-                for (int xIndex = 0; xIndex < self.thumbnailsInfoModel.columns; xIndex++) {
-                    CGRect rect = CGRectMake(xPos, yPos, width, height);
-                    CGImageRef cImage = CGImageCreateWithImageInRect([image CGImage],  rect);
-                    if (cImage) {
-                        
-                        UIImage *dImage = [[UIImage alloc] initWithCGImage:cImage];
-                        NSData *imageData = UIImageJPEGRepresentation(dImage,0.6);
-                        UIImage *compressedImage = [UIImage imageWithData:imageData];
-                        [previewsImage addObject:compressedImage];
-                        CGImageRelease(cImage);
-                        
-                        
+                NSMutableArray *previewsImage = [[NSMutableArray alloc]init];
+                CGFloat width = self.thumbnailsInfoModel.thumbWidth;
+                CGFloat height = self.thumbnailsInfoModel.thumbHight;
+                
+                CGFloat xPos = 0.0, yPos = 0.0;
+                for (int yIndex = 0; yIndex < self.thumbnailsInfoModel.rows ; yIndex++) {
+                    xPos = 0.0;
+                    
+                    for (int xIndex = 0; xIndex < self.thumbnailsInfoModel.columns; xIndex++) {
+                        CGRect rect = CGRectMake(xPos, yPos, width, height);
+                        CGImageRef cImage = CGImageCreateWithImageInRect([image CGImage],  rect);
+                        if (cImage) {
+                            CGFloat compressionQuality = 0.6;
+                            UIImage *dImage = [[UIImage alloc] initWithCGImage:cImage];
+                            NSData *imageData = UIImageJPEGRepresentation(dImage,compressionQuality);
+                            if (imageData) {
+                                UIImage *compressedImage = [UIImage imageWithData:imageData];
+                                if (compressedImage) {
+                                    [previewsImage addObject:compressedImage];
+                                }
+                            }
+                            
+                            CGImageRelease(cImage);
+                        }
+                        xPos += width;
                     }
-                    xPos += width;
+                    yPos += height;
                 }
-                yPos += height;
+                //Add all the thumb images into model
+                [self.thumbnailsInfoModel.thumbImages addObjectsFromArray:previewsImage];
+                self.thumbnailsInfoModel.currentTiledIndex++;
+                [self updateMediaThumbnails];
+            } else {
+                
+                if ([self.thumbnailsInfoModel.thumbImages count] ==0) {
+                    self.downloadingInProcess = NO;
+                }
             }
-            //Add all the thumb images into model
-            [self.thumbnailsInfoModel.thumbImages addObjectsFromArray:previewsImage];
-            self.thumbnailsInfoModel.currentTiledIndex++;
-            [self updateMediaThumbnails];
-        } else {
-            
-            if ([self.thumbnailsInfoModel.thumbImages count] ==0) {
-                self.downloadingInProcess = NO;
-            }
-        }
+       // });
     }];
 }
 

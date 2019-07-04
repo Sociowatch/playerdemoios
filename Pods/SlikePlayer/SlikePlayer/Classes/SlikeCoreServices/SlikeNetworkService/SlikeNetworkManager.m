@@ -756,6 +756,7 @@ static void TWEndNetworkActivity() {
 - (void)requestURL:(NSString *)aUrl withMethod:(NetworkHTTPMethod) method withCompletionBlock:(SlikeNetworkManagerCompletionBlock) completionBlock {
     
     SlikeDLog(@"%@", aUrl);
+    aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:aUrl] type:method completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -951,42 +952,7 @@ static void TWEndNetworkActivity() {
             }
         }
         
-        if([NSThread mainThread]) {
-            /*
-            //Before Send end event
-            if(nStatus == 4)
-            {
-                if(analyticInfo.config.isPostrollEnabled == OFF)
-                {
-                    [self callSendToServer:121 withPlayer:player withConfigModel:analyticInfo.config withPD:nPlayTimeCol-nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
-                        if(result) {
-                        }
-                    }];
-                }
-            }
-
-            */
-            [self callSendToServer:nStatus withPlayer:player withConfigModel:analyticInfo.config withPD:nPlayTimeCol-nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
-                if(result) {
-                }
-            }];
-           /*
-            if(nStatus == 1)
-            {
-                if(analyticInfo.config.isPrerollEnabled == OFF)
-                {
-                    [self callSendToServer:120 withPlayer:player withConfigModel:analyticInfo.config withPD:nPlayTimeCol-nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
-                        if(result) {
-                        }
-                    }];
-                }
-            }
-           */
-            
-            nPlayTimeCol = 0;
-            nBufferTimeCol = 0;
-            
-        } else {
+        {
             dispatch_async(dispatch_get_main_queue(), ^ {
                 
                 //Before Send end event
@@ -1177,6 +1143,7 @@ static void TWEndNetworkActivity() {
         
         if((streamDuration - streamPostion) < 100) {
             streamPostion = streamDuration;
+            NSLog (@"%ld", (long)streamPostion);
         }
         
         if(streamDuration < 0) {
@@ -1188,6 +1155,7 @@ static void TWEndNetworkActivity() {
         streamDuration = duration;
         
     }
+    
     float vol = [self getTheDeviceVolume];
     BOOL playerVolume = NO ;
     
@@ -1197,6 +1165,7 @@ static void TWEndNetworkActivity() {
     } else {
         playerVolume = YES;
     }
+
     __block  NSString *analyticInfo = @"";
     BOOL isPlayerStatusForPostRollOff = NO;
     if(playerStatus == 121)
@@ -1217,6 +1186,7 @@ static void TWEndNetworkActivity() {
         analyticInfo = [NSString stringWithFormat:@"%@&skpr=1",analyticInfo];
     }
     
+
     if(config.isPostrollEnabled == OFF)
     {
         analyticInfo = [NSString stringWithFormat:@"%@&skps=1",analyticInfo];
@@ -1238,6 +1208,8 @@ static void TWEndNetworkActivity() {
                  analyticInfo = [NSString stringWithFormat:@"%@&adt=3&adr=-1",analyticInfo];
              }
     }
+
+  
     if(replayCount>0) {
         replayCount = 1;
         analyticInfo = [NSString stringWithFormat:@"%@&rpc=%ld",analyticInfo,(long)replayCount];
@@ -1249,9 +1221,10 @@ static void TWEndNetworkActivity() {
     } else {
         analyticInfo = [NSString stringWithFormat:@"%@&rid=%@",analyticInfo,rid];
     }
-    
-    SlikeDLog(@"Sanajay Analytics %@",analyticInfo);
-    
+    if(ENABLE_LOG)
+    {
+    NSLog(@"Sanajay Analytics %@",analyticInfo);
+    }
     if(playerStatus == 1)
     {
         if([SlikeSharedDataCache sharedCacheManager].cssId && [[SlikeSharedDataCache sharedCacheManager].cssId  length] >0)
@@ -1259,6 +1232,8 @@ static void TWEndNetworkActivity() {
             analyticInfo = [NSString stringWithFormat:@"%@&css=%@",analyticInfo,[SlikeSharedDataCache sharedCacheManager].cssId];
         }
         NSString *aUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,analyticInfo];
+        aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
         //SlikeDLog(@"AURL %@" , aUrl);
         double CurrentTimeNew = CACurrentMediaTime();
         nTotalPlayedTimestamp = CurrentTimeNew;
@@ -1581,16 +1556,15 @@ static void TWEndNetworkActivity() {
         if([strData isValidString]) {
             
             NSString *aUrl = [NSString stringWithFormat:@"%@multistats?%@", strAnalyticsBaseURL,[SlikeUtilities endcodeAndFormatString:strData]];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             NSString* webStringURL = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-#pragma clang diagnostic pop
             
             NSURL* url = [NSURL URLWithString:webStringURL];
             
             [self removeAnalyticFileFromLocal];
-            //SlikeDLog(@"urlurlurlurlurl-> %@",url);
-            
+            if(ENABLE_LOG)
+            {
+            NSLog(@"urlurlurlurlurl-> %@",url);
+            }
             [[SlikeNetworkManager defaultManager] requestURL:url type:NetworkHTTPMethodPOST completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
                 
                 SlikeDLog(@"status code -> %ld",(long)statusCode);
@@ -1795,6 +1769,8 @@ static void TWEndNetworkActivity() {
 - (void)serverPingStatus :(NSInteger) status withCompletionBlock:(SlikeNetworkManagerCompletionBlock) completionBlock {
     
     NSString *aUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,@"check"];
+     aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:aUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         if (statusCode == 200) {
@@ -1850,7 +1826,10 @@ static void TWEndNetworkActivity() {
     NSString *analyticInfoString = [NSString stringWithFormat:@"adstats?%@%@", analyticInfo, [[SlikeDeviceSettings sharedSettings] getSlikeAnalyticsCache]];
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",baseUrl, analyticInfoString];
-    SlikeDLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
+    if(ENABLE_LOG)
+    {
+        NSLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
+    }
     
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
@@ -1864,7 +1843,7 @@ static void TWEndNetworkActivity() {
                 NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 if(string) {
                     
-                    SlikeDLog(@"Pretch/ad response  - %@ ", string);
+                    SlikeDLog(@"Prefetch/ad response  - %@ ", string);
                     //[self writeAnalyticsInDocumnet:analyticInfo];
                     completionBlock(string, nil);
                 }

@@ -221,11 +221,29 @@
  @return - Bitrate Model
  */
 - (NSArray *)cachedBitratesModels {
+    if(_isEncrypted)
+    {
+        return [_xStreamList bitrateObjets];
+    }else
+    {
     return _bitratesArray;
+    }
 }
 
 - (BOOL)isBitratesAvailableForStream {
+    if(_isEncrypted)
+    {
+        if([_xStreamList count] >0)
+        {
+            return YES;
+        }else
+        {
+            return NO;
+        }
+    }else
+    {
     return [_bitratesArray count] >0 ? YES :NO ;
+    }
 }
 
 - (void)resetSlikeBitratesModel {

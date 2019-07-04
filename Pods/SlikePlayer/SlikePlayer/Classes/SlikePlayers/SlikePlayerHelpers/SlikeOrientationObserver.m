@@ -23,8 +23,6 @@
 @property (nonatomic, weak) UIViewController *mainParent;
 @property (assign, nonatomic) UIDeviceOrientation cacheOrientation;
 @property (assign, nonatomic) CGPoint iPadOriginalPoint;
-
-
 @end
 
 @implementation SlikeOrientationObserver
@@ -271,6 +269,9 @@
     }
     
     if ( _orientationWillChange ) _orientationWillChange(self, self.isFullScreen);
+    if (!_backWindowColor) {
+        _backWindowColor = [UIColor blackColor];
+    }
     
     if (self.fullScreenWindow == nil) {
 
@@ -298,7 +299,7 @@
         _fullScreenWindow.backgroundColor = _backWindowColor;
         
         _iPadOriginalPoint = [_playerParent.view convertPoint:_fullScreenWindow.frame.origin toView:parent.view];
-
+        
         _fullScreen = YES;
         __weak typeof(self) _self = self;
         [UIView animateKeyframesWithDuration:0.3
@@ -317,10 +318,12 @@
         _fullScreen =  NO;
         __weak typeof(self) _self = self;
         [self animatedNormalScreenWithDuration:0.3 animation:^(UIViewController *parent) {
-            _self.fullScreenWindow.frame = _self.dummyView.frame;;
+            _self.fullScreenWindow.frame = _self.dummyView.frame;
+
+            if ( _self.orientationChanged ) _self.orientationChanged(self, _self.fullScreen);
         } completion:^(BOOL finished) {
             
-             if ( _self.orientationChanged ) _self.orientationChanged(self, _self.fullScreen);
+            
         }];
     }
 }
@@ -330,12 +333,12 @@
     UIViewController *parent = _playerParent;
     _fullScreenWindow.frame = _mainWindow.bounds;
     /*[UIView animateWithDuration:duration delay:0 options:(UIViewAnimationOptionTransitionCrossDissolve) animations:^{
-        if (animation)
-            animation(_self.mainParent);
-        
-    } completion:^(BOOL finished) {
-         [_self _resetiPadNormal:parent];
-    }];*/
+     if (animation)
+     animation(_self.mainParent);
+     
+     } completion:^(BOOL finished) {
+     [_self _resetiPadNormal:parent];
+     }];*/
     [UIView animateKeyframesWithDuration:duration
                                    delay:0        options:UIViewKeyframeAnimationOptionLayoutSubviews
                               animations:^{
@@ -355,18 +358,31 @@
 
 
 - (void)_resetiPadNormal:(UIViewController *) parent {
-                                  [parent.view removeFromSuperview];
-                                  _fullScreenWindow.rootViewController = nil;
-                                  [_mainParent addChildViewController:parent];
-                                  [_containerView addSubview:parent.view];
-                                  parent.view.frame = _dummyView.frame;
-                                  [parent didMoveToParentViewController:_mainParent];
-                                  [_mainWindow makeKeyAndVisible];
-                                  [_dummyView removeFromSuperview];
-                                  _dummyView = nil;
-                                  _fullScreenWindow = nil;
-                                  _containerView = nil;
-                                  _mainParent = nil;
+    
+    __weak typeof(self) _self = self;
+    _dummyView.alpha = 0.0;
+    [UIView animateWithDuration:0.0 animations:^(void){
+        parent.view.alpha = 0;
+        [parent.view removeFromSuperview];
+        [_self.mainParent addChildViewController:parent];
+        [_self.containerView addSubview:parent.view];
+        parent.view.frame = _self.dummyView.frame;
+        [parent didMoveToParentViewController:_self.mainParent];
+        [_self.mainWindow makeKeyAndVisible];
+        [_self.dummyView removeFromSuperview];
+        
+        [_self.mainParent.view sendSubviewToBack:_self.containerView];
+        [_self.containerView bringSubviewToFront:parent.view];
+        parent.view.alpha = 1;
+        
+        _self.dummyView = nil;
+        _self.fullScreenWindow = nil;
+        _self.containerView = nil;
+        _self.mainParent = nil;
+        _self.fullScreenWindow.rootViewController = nil;
+  
+    }];
+   
     
 }
 
@@ -377,7 +393,7 @@
 
 - (void)_updateOrentationChangeForIPad {
     
-
+    
     if ( _rotationCondition ) {
         if ( !_rotationCondition(self) )
             return;

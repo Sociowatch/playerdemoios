@@ -7,7 +7,8 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, SlikeAdProvider) {
-    IMA = 0x0,
+    IMA = 1,
+    COLOMBIA,
     FAN
 };
 

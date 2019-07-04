@@ -1,6 +1,6 @@
 {
   "name": "SlikePlayer",
-  "version": "2.4.5",
+  "version": "2.5.0",
   "summary": "SlikePlayer",
   "description": "Please refer to example demo and README.md for details of implementation.",
   "homepage": "http://timesinternet.in",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://bitbucket.org/times_internet/slikeplayer-ios.git",
-    "tag": "2.4.5"
+    "tag": "2.5.0"
   },
   "platforms": {
     "ios": "9.0"

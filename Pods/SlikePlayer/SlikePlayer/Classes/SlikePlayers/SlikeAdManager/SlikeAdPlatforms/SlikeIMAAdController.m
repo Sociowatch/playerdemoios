@@ -307,6 +307,7 @@
             errCode = @"900";
         }
     }
+    NSLog(@"%@", errDescription);
     
 //    NSDictionary * payload = @{
 //                               kSlikeAdErrMessageKey:errMessage,

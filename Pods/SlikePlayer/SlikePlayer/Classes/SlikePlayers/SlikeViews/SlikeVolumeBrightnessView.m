@@ -96,7 +96,6 @@
             return;
         }
         self.progressView.progress = progress;
-        NSLog(@"Progress=> %@", progressStr);
     } else {
         self.progressView.progress = progress;
     }

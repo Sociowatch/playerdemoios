@@ -16,6 +16,8 @@
 @property (nonatomic, strong) AVPlayer * _Nullable player;
 @property (nonatomic, assign) NSInteger nCurrentTime;
 @property (nonatomic, assign) BOOL isLiveStream;
+@property (nonatomic, assign) BOOL isSecure;
+
 /**
  Set the bitrate for current stream
  
@@ -139,8 +141,11 @@
  @return - Duration
  */
 - (NSUInteger)getPlayerDuration;
-
 - (void)resetAvPlayer;
+
+// Utility Methods
+- (void)setAllowsAirPlay:(BOOL)allowsAirPlay;
+- (BOOL)allowsAirPlay;
 
 @end
 

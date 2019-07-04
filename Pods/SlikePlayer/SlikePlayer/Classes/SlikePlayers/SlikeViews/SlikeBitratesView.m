@@ -123,6 +123,61 @@
  */
 - (void)presentAvailableBitratesForStream {
     
+    if([SlikeSharedDataCache sharedCacheManager].isEncrypted)
+    {
+        
+        NSLog(@"%@",[SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets);
+        
+        if([SlikeSharedDataCache sharedCacheManager].currentStreamBitrate == SlikeMediaBitrateAuto)
+        {
+            self.autoBtn.backgroundColor = SLIKE_BTN_SLECTED_RGBA(216.0, 216.0, 216.0, 1.0);
+            [self.autoBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }else  if([SlikeSharedDataCache sharedCacheManager].currentStreamBitrate == SlikeMediaBitrateLow)
+        {
+            self.lowBtn.backgroundColor = SLIKE_BTN_SLECTED_RGBA(216.0, 216.0, 216.0, 1.0);
+            [self.lowBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }
+        else  if([SlikeSharedDataCache sharedCacheManager].currentStreamBitrate == SlikeMediaBitrateMedium)
+        {
+            self.mediumBtn.backgroundColor = SLIKE_BTN_SLECTED_RGBA(216.0, 216.0, 216.0, 1.0);
+            [self.mediumBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }
+        else  if([SlikeSharedDataCache sharedCacheManager].currentStreamBitrate == SlikeMediaBitrateHigh)
+        {
+            self.hightBtn.backgroundColor = SLIKE_BTN_SLECTED_RGBA(216.0, 216.0, 216.0, 1.0);
+            [self.hightBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }
+        else
+        {
+            self.autoBtn.backgroundColor = SLIKE_BTN_SLECTED_RGBA(216.0, 216.0, 216.0, 1.0);
+            [self.autoBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }
+        
+    [self.autoBtn setTitle:[self.configModel.qualityName[0] uppercaseString] forState:UIControlStateNormal];
+    [self.lowBtn setTitle:[self.configModel.qualityName[1] uppercaseString] forState:UIControlStateNormal];
+    [self.mediumBtn setTitle:[self.configModel.qualityName[2] uppercaseString] forState:UIControlStateNormal];
+    [self.hightBtn setTitle:[self.configModel.qualityName[3] uppercaseString] forState:UIControlStateNormal];
+        if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >2)
+        {
+            self.autoBtn.hidden=  NO;
+            self.lowBtn.hidden=  NO;
+            self.mediumBtn.hidden=  NO;
+            self.hightBtn.hidden=  NO;
+        }
+        else if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >1)
+        {
+            self.autoBtn.hidden=  NO;
+            self.lowBtn.hidden=  NO;
+            self.mediumBtn.hidden=  NO;
+        }
+        else if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >1)
+        {
+            self.autoBtn.hidden=  NO;
+            self.lowBtn.hidden=  NO;
+        }
+    }
+    else
+    {
     NSArray *bitRateArray = [[SlikeSharedDataCache sharedCacheManager] cachedBitratesModels];
     SlikeMediaBitrate currentBitRateType = [SlikeSharedDataCache sharedCacheManager].currentStreamBitrate;
     
@@ -188,6 +243,7 @@
                 }
             }
         }
+    }
     }
 }
 

@@ -193,4 +193,6 @@
 - (void)downloadInitialMediaThumbnails;
 
 - (void)getThimbnailFromTiledImage:(NSInteger)currentPosition withCompletionBlock:(void (^)(UIImage *image))completion;
+
+- (BOOL )isSlikeStreamSecure:(SlikeConfig *)slikeConfig;
 @end

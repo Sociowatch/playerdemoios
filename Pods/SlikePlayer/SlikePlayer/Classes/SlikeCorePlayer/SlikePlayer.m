@@ -6,6 +6,7 @@
 //  Copyright © 2016 BBDSL. All rights reserved.
 //
 
+#import "SlikePlayerDecision.h"
 #import "SlikePlayer.h"
 #import "DMMainViewController.h"
 #import "SlikeFBViewController.h"
@@ -416,14 +417,14 @@ static NSString *const kAllowTracking = @"allowTracking";
     if((configModel.mediaId == nil || [configModel.mediaId isEqualToString:@""]) && configModel.streamingInfo) {
         return YES;
     }
-
+    
     if(block) {
         block(MEDIA, SL_ERROR, [StatusInfo initWithError:WRONG_CONFIGARATION]);
     }
     
     [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, WRONG_CONFIGARATION)];
     return NO;
-
+    
 }
 
 /**
@@ -455,103 +456,102 @@ static NSString *const kAllowTracking = @"allowTracking";
 }
 
 
-- (void)_openSlikePlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openSlikePlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[SlikeAvPlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[SlikeAvPlayerViewController alloc] initWithNibName:@"PlayerView" bundle:myBundle];
+        self.slikePlayer = [[SlikeAvPlayerViewController alloc] initWithNibName:@"PlayerView" bundle:rsBundle];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-- (void)_openGIFPlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openGIFPlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[SlikeGifPlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[SlikeGifPlayerViewController alloc] initWithNibName:@"GifPlayerView" bundle:myBundle];
+        self.slikePlayer = [[SlikeGifPlayerViewController alloc] initWithNibName:@"GifPlayerView" bundle:rsBundle];
         [_slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-- (void)_openMemePlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openMemePlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[SlikeMemePlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[SlikeMemePlayerViewController alloc] initWithNibName:@"SlikeMemePlayerView" bundle:myBundle];
+        self.slikePlayer = [[SlikeMemePlayerViewController alloc] initWithNibName:@"SlikeMemePlayerView" bundle:rsBundle];
         [_slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-- (void)_openRumblePlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openRumblePlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[SlikeRumblePlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[SlikeRumblePlayerViewController alloc] initWithNibName:@"SlikeRumblePlayer" bundle:myBundle];
+        self.slikePlayer = [[SlikeRumblePlayerViewController alloc] initWithNibName:@"SlikeRumblePlayer" bundle:rsBundle];
         [_slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-- (void)_openWeblrPlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openWeblrPlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[SlikeWebPlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[SlikeWebPlayerViewController alloc] initWithNibName:@"SlikeWebPlayer" bundle:myBundle];
+        self.slikePlayer = [[SlikeWebPlayerViewController alloc] initWithNibName:@"SlikeWebPlayer" bundle:rsBundle];
         [_slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-
-- (void)_openDailyMotionPlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openDailyMotionPlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[DMMainViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[DMMainViewController alloc] initWithNibName:@"DMPlayerView" bundle:myBundle];
+        self.slikePlayer = [[DMMainViewController alloc] initWithNibName:@"DMPlayerView" bundle:rsBundle];
         [_slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-- (void)_openYoutubePlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openYoutubePlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     if ([self isPlayerAlreadyExists:[NewYTViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[NewYTViewController alloc] initWithNibName:@"NewYTView" bundle:myBundle];
+        self.slikePlayer = [[NewYTViewController alloc] initWithNibName:@"NewYTView" bundle:rsBundle];
         [self.slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
 }
 
-- (void)_openFacebookPlayer:(SlikeConfig *)configModel myBundle:(NSBundle *)myBundle parent:(id)parent eventBlock:(onChange)block {
+- (void)_openFacebookPlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
     
     if ([self isPlayerAlreadyExists:[SlikeFBViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
         [self stopPlayer];
-        self.slikePlayer = [[SlikeFBViewController alloc] initWithNibName:@"SlikeFBView" bundle:myBundle];
+        self.slikePlayer = [[SlikeFBViewController alloc] initWithNibName:@"SlikeFBView" bundle:rsBundle];
         [self.slikePlayer setNativeControl:false];
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
@@ -563,41 +563,64 @@ static NSString *const kAllowTracking = @"allowTracking";
  @param parent - Parent Window
  @param block  - Player Status Block
  */
-- (void)_playVideoWithInfo:(SlikeConfig *)configModel inParent:(id)parent withProgressHandler:(onChange) block {
+- (void)_playVideoWithInfo:(SlikeConfig *)configModel inParent:(id)parent withProgressHandler:(onChange)block {
     
-    BOOL isVideoIsDisabled = [self _checkIfVideoIsDisabledForCurrentRegion:configModel withParent:parent withBlock:block];
-    
-    if (isVideoIsDisabled) {
+    if([self _checkIfVideoIsDisabledForCurrentRegion:configModel withParent:parent withBlock:block]) {
         return;
     }
     
-    NSBundle *myBundle = [NSBundle slikeNibsBundle];
-    if([configModel.streamingInfo hasVideo:VIDEO_SOURCE_FB]) {
-        [self _openFacebookPlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+    if (configModel.preferredVideoType == VIDEO_SOURCE_UNKNOWN) {
+        //Set the Prefered video type. Parent App has not set the prefered type. Need to identify from the
+        //Streaming info
+        configModel.preferredVideoType = [SlikePlayerDecision getChosenVideoType:configModel.streamingInfo];
     }
-    else if([configModel.streamingInfo hasVideo:VIDEO_SOURCE_YT]) {
-        [self _openYoutubePlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+    
+    NSBundle *slikeBundle = [NSBundle slikeNibsBundle];
+    
+    if ([SlikePlayerDecision checkIfAvPlayerCanHandle:configModel]) {
+        [self _openSlikePlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
     }
-    else if([configModel.streamingInfo hasVideo:VIDEO_SOURCE_DM]) {
-        [self _openDailyMotionPlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+    else if(configModel.preferredVideoType == VIDEO_SOURCE_FB) {
+        [self _openFacebookPlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
     }
-    else if([configModel.streamingInfo hasVideo:VIDEO_SOURCE_VEBLR]) {
-        [self _openWeblrPlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+    else if(configModel.preferredVideoType == VIDEO_SOURCE_YT) {
+        [self _openYoutubePlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
     }
-    else if([configModel.streamingInfo hasVideo:VIDEO_SOURCE_RUMBLE]) {
-        [self _openRumblePlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+    else if(configModel.preferredVideoType == VIDEO_SOURCE_DM) {
+        [self _openDailyMotionPlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
+    }
+    else if(configModel.preferredVideoType == VIDEO_SOURCE_VEBLR) {
+        [self _openWeblrPlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
+    }
+    else if(configModel.preferredVideoType == VIDEO_SOURCE_RUMBLE ) {
+        [self _openRumblePlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
     }
     else if((configModel.preferredVideoType == VIDEO_SOURCE_MEME) &&
-       [configModel.streamingInfo hasVideo:VIDEO_SOURCE_MEME]) {
-      [self _openMemePlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+            [configModel.streamingInfo hasVideo:VIDEO_SOURCE_MEME]) {
+        [self _openMemePlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
     }
     else if((configModel.preferredVideoType == VIDEO_SOURCE_GIF_MP4) && (
-                                                                    [configModel.streamingInfo hasVideo:VIDEO_SOURCE_GIF_MP4] || [configModel.streamingInfo hasVideo:VIDEO_SOURCE_MP4])) {
-        [self _openGIFPlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+                                                                         [configModel.streamingInfo  hasVideo:VIDEO_SOURCE_GIF_MP4] || [configModel.streamingInfo hasVideo:VIDEO_SOURCE_MP4])) {
+        [self _openGIFPlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
+    }
+    else if(configModel.preferredVideoType == VIDEO_SOURCE_VUCLIP) {
+        if([SlikePlayerDecision checkIfAlternativePlayerCanHandle:configModel]) {
+            [self _openSlikePlayer:configModel resourceBundle:slikeBundle parent:parent eventBlock:block];
+        } else {
+            [self _throwVideoNotSupportedMessage:configModel inParent:parent withProgressHandler:block];
+        }
     }
     else {
-        [self _openSlikePlayer:configModel myBundle:myBundle parent:parent eventBlock:block];
+        [self _throwVideoNotSupportedMessage:configModel inParent:parent withProgressHandler:block];
     }
+}
+
+- (void)_throwVideoNotSupportedMessage:(SlikeConfig *)configModel inParent:(id)parent withProgressHandler:(onChange)block {
+    
+    if(block) {
+        block(MEDIA, SL_ERROR, [StatusInfo initWithError:NOT_SUPPORTED]);
+    }
+    [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceVideoNotSupported, NOT_SUPPORTED)];
 }
 
 /**
@@ -746,7 +769,7 @@ static NSString *const kAllowTracking = @"allowTracking";
     self.parentView = parent;
     _currentPlaylistIndex = currrentIndex;
     _nextCardIndex = currrentIndex;
-
+    
     [[SlikeSharedDataCache sharedCacheManager]updatePlylistIndex:currrentIndex];
     SlikeConfig *slikeConfigModel = _playlistArray[currrentIndex];
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -787,7 +810,7 @@ static NSString *const kAllowTracking = @"allowTracking";
  */
 - (NSInteger)previousSlikeConfigIndex {
     _slikePlayItemIndex = -1;
-
+    
     if ([self _hasPreviousVideo]) {
         --_currentPlaylistIndex;
         _slikePlayItemIndex = 0;
@@ -867,10 +890,10 @@ static NSString *const kAllowTracking = @"allowTracking";
             if (currentPosition && duration && _playerCurrentPosition >0  && _playerDuration>0) {
                 NSInteger remaingTime = _playerDuration - _playerCurrentPosition;
                 if (remaingTime <= _cardFecthTime  && remaingTime >0) {
-//                    NSLog(@"NextVideo => %ld", (long)self->_currentPlaylistIndex);
-//                    NSLog(@"NextVideo => Duration- %ld", _playerDuration);
-//                    NSLog(@"NextVideo => Current- %ld", _playerCurrentPosition);
-//                    
+                    //                    NSLog(@"NextVideo => %ld", (long)self->_currentPlaylistIndex);
+                    //                    NSLog(@"NextVideo => Duration- %ld", _playerDuration);
+                    //                    NSLog(@"NextVideo => Current- %ld", _playerCurrentPosition);
+                    //
                     [self fetchNextStreamInfo];
                 }
             }
@@ -1042,7 +1065,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 {
     [self downloadSlikeData:configModel resultBlock:^(id slikeResponseModel, NSError *parseError) {
         
-       completionBlock(configModel, parseError);
+        completionBlock(configModel, parseError);
     }];
 }
 @end
@@ -1182,7 +1205,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 
 /**
  Set the ids for tracking the evnets
-
+ 
  */
 - (void)setIdsForAnalyticsEvents:(NSString *)gaId withCS_publisherId:(NSString*)cs_publisherId
 {

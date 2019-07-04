@@ -52,7 +52,7 @@
     self.isShareControl = YES;
     self.isNextControl = NO;
     self.isPreviousControl = NO;
-    self.preferredVideoType = VIDEO_SOURCE_HLS;
+    self.preferredVideoType = VIDEO_SOURCE_UNKNOWN;
     self.strLatLong = @"";
     self.country = @"";
     self.state = @"";
@@ -94,6 +94,7 @@
     _isBitrateControl = YES;
     _enableCoachMark = NO;
     self.isNoNetworkCloseControlEnable =  NO;
+    _enableAirPlay = YES;
 
 }
 

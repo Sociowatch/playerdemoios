@@ -389,7 +389,6 @@
     } else {
         
         [self parseNormalTypeVideo:streamDict withConfigModel:slikeConfigModel resultBlock:^(StreamingInfo *updatedStreamInfo, BOOL parseError)  {
-            
             if (parseError) {
                 completionBlock(nil,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, @"Video is not available"));
                 return;
@@ -397,11 +396,7 @@
                 slikeStreamModel = updatedStreamInfo;
             }
         }];
-       
     }
-    
-   
-    
     NSString *preEnabledString = [configDict stringForKey:@"pre"];
     if([preEnabledString isEqualToString:@"-1"] && preEnabledString) {
         slikeStreamModel.preRollEnabled = YES;
@@ -413,7 +408,7 @@
     } else {
         slikeStreamModel.vendorName = [streamDict stringOrEmptyStringForKey:@"vendor_name"];
     }
-
+    
     NSString *postEnabledString = [configDict stringForKey:@"post"];
     if(postEnabledString && [preEnabledString isEqualToString:@"0"]) {
         slikeStreamModel.postRollEnabled = YES;
@@ -530,7 +525,7 @@
     
     BOOL isError = NO;
     StreamingInfo *streamInfo = [[StreamingInfo alloc] init];
-    [streamInfo setVideoSoureceType:VIDEO_SOURCE_HLS];
+    
     
     NSString * idString = [streamDict stringForKey:@"_id"];
     if (idString) {
