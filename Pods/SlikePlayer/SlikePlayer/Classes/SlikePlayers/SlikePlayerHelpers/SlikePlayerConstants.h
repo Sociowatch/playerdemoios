@@ -126,3 +126,7 @@ OBJC_EXTERN NSString * const kSlikeADispatchEventToParentKey;
 
 OBJC_EXTERN NSString * const kSlikeConfigModelForNextItemKey;
 
+//Audio Properties
+OBJC_EXTERN NSString * const kSlikeAudioConfigModelKey;
+OBJC_EXTERN NSString * const kSlikeAudioItemInfoKey;
+

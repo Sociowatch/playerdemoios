@@ -11,11 +11,12 @@
 #import "ISlikePlayerControl.h"
 #import "StreamingInfo.h"
 
+/// <#Description#>
 @interface SlikeConfig : NSObject
 
 /**
  Create config With Default Values.
-
+ 
  @param mediaId - Slike Id & should not be empty
  @param autoPlay - Auto play Video
  @return - Config and can be update
@@ -71,11 +72,17 @@
 - (id)initWithInfo:(StreamingInfo *)streamInfo withSection:(NSString *)videoSection withMSId:(NSString *)videoMsId;
 /**
  Making this property true means there are no force orientations.Changing the orientation will do nothing untill clicking on the full screen button. Clicking on Button will make screen Full/Normal.
-
+ 
  Note: It will work only if property is YES and Device type is iPad
  By Default: NO for all IOS device type
  */
 @property(nonatomic,assign) BOOL orientationTypeiPad;
+
+/**
+ Orientation will be disabled
+ By Default: FALSE
+ */
+@property(nonatomic, assign) BOOL disableOrientation;
 
 
 /**
@@ -217,6 +224,7 @@
  Default : FALSE
  */
 @property(nonatomic,assign) BOOL adPrefetchEnable;
+
 
 /*
  * Properties for setting and getting player controlls
@@ -477,7 +485,7 @@
 
 /**
  *  Title for bitrates. You can change the label name. You can change the names only not the count of array.
-    Default: @[@"Auto", @"Low", @"Medium", @"High"];
+ Default: @[@"Auto", @"Low", @"Medium", @"High"];
  */
 @property(nonatomic, strong) NSArray *qualityName;
 
@@ -503,9 +511,57 @@
 @property(nonatomic,assign) BOOL enableCoachMark;
 /**
  isNoNetworkCloseCloseControl Default value is YES.
-*/
+ */
 @property(nonatomic, assign) BOOL isNoNetworkCloseControlEnable;
 
+/**
+ Enable close button for Alert . Alert will be shown at startup while validating the media
+ //Default : YES
+ */
+@property(nonatomic, assign) BOOL enableCloseButtonForAlert;
 
+@property(nonatomic, assign) BOOL resumeDuckAds;
+
+@property(nonatomic, assign) NSInteger cuePointPolling;
+
+@property(nonatomic, assign) NSInteger cueExpTime;
+
+@property(nonatomic, assign) NSInteger minCueTrigTime;
+//mili seonds
+@property(nonatomic, assign) NSInteger syncTimeDiff;
+
+@property(nonatomic, assign) BOOL isInitialPlayerMute;
+
+@property(nonatomic, assign) NSInteger timeInterverForPauseHandle;
+@property(nonatomic, assign) NSInteger polTimerIncreaseAfterSpecficTime;
+@property(nonatomic, assign) NSInteger liveErrorPollingInterval;
+@property(nonatomic, assign) NSInteger liveErrorPollingIntialInterval;
+
+
+/**
+ Whether user can download the contents
+ // download available, default & value not available in API- key means - offline not available
+ */
+@property(nonatomic, assign) BOOL canDownload;
+
+/**
+ Storage limit for user
+ 90, // % storage required for download
+ */
+@property(nonatomic, assign) NSInteger storagelimit;
+
+/**
+ Items limit for user
+ //0- unlimited, any other number would be the limit for download. If this node is not available in API-key means unlimited
+ */
+@property(nonatomic, assign) NSInteger trackLimit;
+
+// Ad class methood
+@property(nonatomic, strong) NSArray *externalAdArray;
+
+//For Caching the manifest data. By Default:- YES
+//Making this property YES does not guarantee for cache
+//It depends upon Server Config for that media
+@property(nonatomic, assign) BOOL enableManifestCache;
 
 @end

@@ -39,6 +39,7 @@
 #import "SlikePlayerConstants.h"
 #import "SlikeAdManager.h"
 #import "SlikeAnalytics.h"
+#import "SLManifestlessDataCache.h"
 
 static NSString *const kAllowTracking = @"allowTracking";
 @interface SlikePlayer()  <EventManagerProtocol> {
@@ -85,7 +86,8 @@ static NSString *const kAllowTracking = @"allowTracking";
         _cardFecthTime = 5;
         //It's value will be  0 =>Previous |1 => Next | -1 =>None
         _slikePlayItemIndex = -1;
-        
+        _autoChangeNextMedia = YES;
+        [[SLManifestlessDataCache sharedManifestCache]resetMediaCache];
         [self resetPlaylist];
     }
     
@@ -122,7 +124,14 @@ static NSString *const kAllowTracking = @"allowTracking";
  Stop the CUrrent Player
  */
 - (void)stopPlayer {
+    if ([NSThread isMainThread]) {
     [self releaseSlikePlayer];
+    }else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self releaseSlikePlayer];
+            });
+        }
 }
 
 /**
@@ -191,7 +200,7 @@ static NSString *const kAllowTracking = @"allowTracking";
     if (error.code == SlikeServiceErrorNoNetworkAvailable) {
         [self.slikeAlertView setErrorMessage:[error localizedDescription] withCloseEnable:config.isNoNetworkCloseControlEnable withReloadEnable:YES];
     } else {
-        [self.slikeAlertView setErrorMessage:[error localizedDescription] withCloseEnable:YES withReloadEnable:NO];
+        [self.slikeAlertView setErrorMessage:[error localizedDescription] withCloseEnable:config.enableCloseButtonForAlert withReloadEnable:NO];
     }
     //});
     __block SlikePlayerErrorView* weakAlert = _slikeAlertView;
@@ -410,7 +419,8 @@ static NSString *const kAllowTracking = @"allowTracking";
  */
 - (BOOL)validateConfigModel:(SlikeConfig *)configModel parentController:(id)parent withProgressHandler:(onChange) block {
     
-    if(configModel.mediaId &&  [configModel.mediaId length]>2) {
+    
+    if(configModel.mediaId  && CHECK_SAFE_STRING(configModel.mediaId) &&  [configModel.mediaId length]>2) {
         return YES;
     }
     
@@ -568,6 +578,7 @@ static NSString *const kAllowTracking = @"allowTracking";
     if([self _checkIfVideoIsDisabledForCurrentRegion:configModel withParent:parent withBlock:block]) {
         return;
     }
+    
     
     if (configModel.preferredVideoType == VIDEO_SOURCE_UNKNOWN) {
         //Set the Prefered video type. Parent App has not set the prefered type. Need to identify from the
@@ -747,6 +758,8 @@ static NSString *const kAllowTracking = @"allowTracking";
     if (self.slikePlayer) {
         
         [_slikePlayer removePlayer];
+        
+        [[EventManager sharedEventManager]unregisterEvent:self.slikePlayer];
         self.slikePlayer = nil;
         _videoViewParent =  nil;
         _playlistArray = nil;
@@ -840,11 +853,12 @@ static NSString *const kAllowTracking = @"allowTracking";
 #pragma mark - EventManagerProtocol
 - (void)update:(SlikeEventType)eventType playerState:(SlikePlayerState)playbackState dataPayload:(NSDictionary *)payload slikePlayer:(id<ISlikePlayer>)player {
     
-    if (eventType == MEDIA && [_playlistArray count]>0) {
+    if (eventType == MEDIA && [_playlistArray count]>0 && _autoChangeNextMedia) {
         
         if (playbackState == SL_START) {
             _startObserving = YES;
         }
+        
         if (playbackState == SL_COMPLETED && _startObserving) {
             
             _startObserving = NO;
@@ -1068,6 +1082,11 @@ static NSString *const kAllowTracking = @"allowTracking";
         completionBlock(configModel, parseError);
     }];
 }
+
+- (void)subscribeCues:(id<ICueHandler>)cueHandler {
+    [SlikeSharedDataCache sharedCacheManager].cueHandler = cueHandler;
+}
+
 @end
 
 #pragma mark - SDK
@@ -1132,7 +1151,22 @@ static NSString *const kAllowTracking = @"allowTracking";
 {
     [SlikeSharedDataCache sharedCacheManager].isGDPREnable =  isGDPREnabled;
 }
-
+/// set Ad Priority  array if any other wise set nil;
+/// @param adPriority array like [NSArray arrayWithObjects:@"SL_FAN", @"SL_IMA", nil];
+/// @param isSoftCncl YES  if reset all ad pass NO
+-(void)setAdPriority:(NSArray*)adPriority withSoftCancellation:(BOOL)isSoftCncl
+{
+   
+    if(!isSoftCncl)
+    {
+       [[SlikeAdManager sharedInstance] cleanupAdManager:^{
+       }];
+    }
+    
+    [SlikeSharedDataCache sharedCacheManager].adPriority = adPriority;
+   
+    
+}
 /**
  For internal invocation only.
  

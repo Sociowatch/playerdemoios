@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SlikeAdStatusInfo.h"
+#import "LiveStatusMDO.h"
 
 @interface StatusInfo : NSObject
 @property(nonatomic, assign) NSInteger buffer;
@@ -16,6 +17,8 @@
 @property(nonatomic, assign) NSInteger duration;
 @property(nonatomic, assign) NSInteger muted;
 @property(nonatomic, strong) SlikeAdStatusInfo *adStatusInfo;
+@property(nonatomic, strong) LiveStatusMDO *liveStatusMDO;
+@property(nonatomic, strong) id mediaAssetInfo;
 
 + (StatusInfo *)initWithError:(NSString *) strError;
 + (StatusInfo *)initWithBuffer:(NSInteger) buffer withPosition:(NSInteger) position withDuration:(NSInteger) duration muteStatus:(NSInteger) muted;

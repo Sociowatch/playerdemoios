@@ -5,6 +5,7 @@
 //  Created by TIL on 29/11/16.
 //  Copyright © 2016 BBDSL. All rights reserved.
 //
+// SDK Version 2.7.7.2
 
 #import <UIKit/UIKit.h>
 #import "ISlikePlayer.h"
@@ -40,6 +41,12 @@
  
  */
 + (instancetype)sharedSlikePlayerWithPlaylist:(NSArray *)playlist;
+
+/**
+ Media will be changed automatically when previous media completes. It works only with playlist
+ By Default: TRUE
+ */
+@property(nonatomic, assign) BOOL autoChangeNextMedia;
 
 /**
  Player Instance
@@ -98,6 +105,7 @@
 -(void)hideControls;
 
 @property (nonatomic, strong) id<ISlikeCast> slikeCast;
+- (void)subscribeCues:(id<ICueHandler>)cueHandler;
 
 @end
 
@@ -133,6 +141,12 @@
  @param isGDPREnabled value true if enable else false
  */
 -(void)setGDPAEnabled:(BOOL)isGDPREnabled;
+
+
+/// set Ad Priority  array if any other wise set nil;
+/// @param adPriority array [NSArray arrayWithObjects:@"SL_FAN", @"SL_IMA", nil];
+/// @param isSoftCncl YES  if reset all ad pass NO
+-(void)setAdPriority:(NSArray*)adPriority withSoftCancellation:(BOOL)isSoftCncl;
 
 /**
  Add the Analytics Info

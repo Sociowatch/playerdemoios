@@ -5,11 +5,14 @@
 #import "SlikeServiceError.h"
 #import "SlikeNetworkMonitor.h"
 #import "SlikeAssetLoaderDelegate.h"
+#import "SlikeCueManager.h"
 
 typedef void (^SLJVideoPlayerBlock)();
 
-@interface PlayerView() {
+
+@interface PlayerView() <AVPlayerItemLegibleOutputPushDelegate> {
     NSDate *dtVideoLoadTime;
+    CMTimeRange _timeRange;
 }
 @property (nonatomic, strong) AVPlayerItem *playerItem;
 @property (nonatomic, strong) NSTimer *timer;
@@ -26,6 +29,10 @@ typedef void (^SLJVideoPlayerBlock)();
 @property (nonatomic, assign) NSInteger playerDuration;
 @property (nonatomic, strong) SlikeAssetLoaderDelegate *assetLoader;
 @property (nonatomic, readwrite) BOOL isSeeking;
+@property (nonatomic, readwrite) BOOL isOffineSeeking;
+@property (nonatomic, strong) AVPlayerItemLegibleOutput * _Nullable streamInfoOutput;
+@property (nonatomic, assign) id<SlikeCueManagerDelegate> cueDelegate;
+
 
 @end
 
@@ -56,7 +63,8 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
     return [AVPlayerLayer class];
 }
 
-- (AVPlayerLayer *)avLayer {
+- (AVPlayerLayer *)avLayer
+{
     return (AVPlayerLayer *)self.layer;
 }
 
@@ -80,6 +88,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
  */
 - (void)initialisePlayerWithPlaylist:(NSURL*)m3u8 withStartPos:(NSInteger)startTime {
     
+    _requireCueEvents = YES;
     _isVideoTypeGif = NO;
     _playerFinish =  NO;
     _nTimeCodeToPlay = startTime;
@@ -93,57 +102,68 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
 - (void)queueUpContentIntoPlayer:(NSURL*)m3u8  {
     
     if(self.isPlayerDestroyed || m3u8==nil) return;
-    
     NSDate *dt = [NSDate date];
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:m3u8 options:nil];
     NSArray *keys = @[SLKVideoPlayerControllerTracksKey, SLKVideoPlayerControllerPlayableKey, SLKVideoPlayerControllerDurationKey];
     self.assetLoader =  [[SlikeAssetLoaderDelegate alloc] init];
     self.assetLoader.isEncrypted = _isSecure;
+    
     [asset.resourceLoader setDelegate:self.assetLoader queue:dispatch_get_main_queue()];
     __weak PlayerView *wself = self;
     
     [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^() {
-        [wself _enqueueBlockOnMainQueue:^{
-            
-            // check the keys
-            for (NSString *key in keys) {
-                NSError *error = nil;
-                AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
-                if (keyStatus == AVKeyValueStatusFailed) {
-                    
-                    NSError *slikeError = [NSError errorWithDomain:SlikeServiceErrorDomain code:SlikeServiceErrorM3U8FileError userInfo:nil];
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStatePlaybackErrorNotification object:nil userInfo:@{@"data":slikeError, @"systemError":error}];
-                    return;
-                }
-            }
-            
-            // check playable
-            if (!asset.playable) {
-                [wself _sendUnknownError];
-                return;
-            }
-            
+        // [wself _enqueueBlockOnMainQueue:^{
+        
+        // check the keys
+        for (NSString *key in keys) {
             NSError *error = nil;
-            AVKeyValueStatus status = [asset statusOfValueForKey:SLKVideoPlayerControllerPlayableKey error:&error];
-            BOOL isLoadSuccess = NO;
-            if (status == AVKeyValueStatusLoaded) {
+            AVKeyValueStatus keyStatus = [asset statusOfValueForKey:key error:&error];
+            if (keyStatus == AVKeyValueStatusFailed) {
                 
-                [SlikeDeviceSettings sharedSettings].nManifestLoadTime = [dt timeIntervalSinceNow] * -1000.0f;
-                self->dtVideoLoadTime = [NSDate date];
-                [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateDurationUpdateNotification object:[NSNumber numberWithLongLong:(long long)asset.duration.value]];
-                isLoadSuccess = YES;
-            } else {
-                [wself _sendUnknownError];
+                NSError *slikeError = [NSError errorWithDomain:SlikeServiceErrorDomain code:SlikeServiceErrorM3U8FileError userInfo:nil];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStatePlaybackErrorNotification object:nil userInfo:@{@"data":slikeError, @"systemError":error}];
                 return;
             }
-            if(isLoadSuccess) {
-                [wself preparePlayer: asset];
-            }
-        }];
+        }
+        
+        // check playable
+        if (!asset.playable) {
+            [wself _sendUnknownError];
+            return;
+        }
+        
+        NSError *error = nil;
+        AVKeyValueStatus status = [asset statusOfValueForKey:SLKVideoPlayerControllerPlayableKey error:&error];
+        BOOL isLoadSuccess = NO;
+        if (status == AVKeyValueStatusLoaded) {
+            
+            [SlikeDeviceSettings sharedSettings].nManifestLoadTime = [dt timeIntervalSinceNow] * -1000.0f;
+            self->dtVideoLoadTime = [NSDate date];
+            [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateDurationUpdateNotification object:[NSNumber numberWithLongLong:(long long)asset.duration.value]];
+            isLoadSuccess = YES;
+        } else {
+            [wself _sendUnknownError];
+            return;
+        }
+        if(isLoadSuccess) {
+            [wself preparePlayer: asset];
+        }
+        // }];
         
     }];
+    
+    /*
+     If status is -1 -> Not Contains
+     1 -> Contains Subtitle other values may  be used for future
+     */
+    [wself.assetLoader setSubtitleBlock:^(NSInteger status) {
+        if (wself.cueDelegate && [wself.cueDelegate respondsToSelector:@selector(streamContainsCueEvents:)]) {
+            [wself.cueDelegate streamContainsCueEvents:status];
+        }
+    }];
 }
+
 
 - (void)_sendUnknownError {
     NSError *slikeError = [NSError errorWithDomain:SlikeServiceErrorDomain code:SlikeServiceErrorM3U8FileError userInfo:nil];
@@ -175,16 +195,27 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
         self.playerItem.preferredPeakBitRate = [[SlikeDeviceSettings sharedSettings] isIPhoneDevice] ? [[SlikeDeviceSettings sharedSettings] getcapLevel] : [[SlikeDeviceSettings sharedSettings] getcapLevel];
     }
     
-    if(self.player == nil) self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
-    else [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
-    
+    _timeRange = kCMTimeRangeInvalid;
+    if(self.player == nil) {
+        self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
+    } else {
+        [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
+    }
     [self updateBitrate];
-    
+    if (_requireCueEvents) {
+        [self _setupItemForMediaTitle];
+    }
     [self.player setActionAtItemEnd:AVPlayerActionAtItemEndPause];
-    self.player.closedCaptionDisplayEnabled = YES;
     [self addPlayerObservers];
     if(self.player == nil)[self setPlayer:self.player];
     SlikeDLog(@"PLAYER: Waiting for content to be ready for playback.  When it is ready, press play to begin.");
+}
+
+- (void)playerItemFailedToPlayToEndTime:(NSNotification *)notification {
+    
+    if (self.streamType == SLKMediaPlayerStreamTypeDVR) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStatePlaybackErrorNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSError errorWithDomain:SlikeServiceErrorDomain code:SlikeServiceMediaFileStoppedPlaying userInfo:notification.userInfo], @"data", nil]];
+    }
 }
 /**
  Called by the AVPlayer that it has completed the Asset sucessfully
@@ -322,16 +353,35 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
     if(!isNetworkReachible && (self.playerItem.isPlaybackBufferEmpty && !self.playerItem.isPlaybackLikelyToKeepUp) && !_videoPaused && !_playerFinish) {
         [self _postNetworkErrorMessage];
     }
-    
     if(!_playerFinish && !_isSeeking) {
         [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateTimeUpdateNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInteger:currentSeconds], @"data", nil]];
     }
 }
 
-- (void)_postNetworkErrorMessage {
-    [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStatePlaybackErrorNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSError errorWithDomain:SlikeServiceErrorDomain code:SlikeServiceErrorNoNetworkAvailable userInfo:@{NSLocalizedDescriptionKey:@"Internet not available."}], @"data", nil]];
+- (BOOL)isVideoCanBePlayed {
+    if (@available(iOS 10.0, *)) {
+        if (self.player.timeControlStatus) {
+            if (self.player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
+                return YES;
+            }
+            return NO;
+        }
+    }
+    return NO;
 }
 
+- (void)resetOfflineSeeking {
+    if(_isOffineSeeking) {
+        [self stopBuffering];
+    }
+    _isOffineSeeking = NO;
+}
+
+- (void)_postNetworkErrorMessage {
+    if (![self isVideoCanBePlayed] && !_isOffineSeeking) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStatePlaybackErrorNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSError errorWithDomain:SlikeServiceErrorDomain code:SlikeServiceErrorNoNetworkAvailable userInfo:@{NSLocalizedDescriptionKey:@"Internet not available."}], @"data", nil]];
+    }
+}
 
 /// Calculate buffer progress
 - (NSTimeInterval)availablePlayableDuration {
@@ -466,10 +516,10 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
                     _isSeeking = YES;
                     [self.player seekToTime:CMTimeMakeWithSeconds(_nTimeCodeToPlay / 1000, 1) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished)
                      {
-                         self.isSeeking = NO;
-                         [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateSeekUpdateNotification object:nil];
-                         self.nTimeCodeToPlay=0;
-                     }];
+                        self.isSeeking = NO;
+                        [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateSeekUpdateNotification object:nil];
+                        self.nTimeCodeToPlay=0;
+                    }];
                     
                 } else
                 {
@@ -540,6 +590,9 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
         SlikeDLog(@"PLAYER: ...Setting observers...");
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerItemDidReachEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:_playerItem];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerItemFailedToPlayToEndTime:) name:AVPlayerItemFailedToPlayToEndTimeNotification object:_playerItem];
+        
         
         [self.player addObserver:self forKeyPath:kSlikePlayerErrorKey options:0 context:nil];
         [self.playerItem addObserver:self forKeyPath:kSlikePlayerStatusKey options:NSKeyValueObservingOptionNew context:nil];
@@ -623,11 +676,21 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
             SlikeDLog(@"PLAYER: seek started");
             [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateSeekStartNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInteger:CMTimeGetSeconds(self.player.currentTime)], @"data", nil]];
             
+            BOOL isNetworkReachible = [[SlikeNetworkMonitor sharedSlikeNetworkMonitor]isNetworkReachible];
+            if (!isNetworkReachible) {
+                _isOffineSeeking = YES;
+                [self performSelector:@selector(resetOfflineSeeking) withObject:self afterDelay:5.0];
+            }
+            
             self.isSeeking = YES;
+            NSLog(@"PLAYER SEEK SECONDS = %f", CMTimeGetSeconds(time));
+            
+            
             [self.player seekToTime:time toleranceBefore:isFastSeek ? kCMTimePositiveInfinity : kCMTimeZero toleranceAfter:isFastSeek ? kCMTimePositiveInfinity : kCMTimeZero completionHandler:^(BOOL finished) {
                 
                 SlikeDLog(@"PLAYER: seek %s", ((finished) ? "completed" : "incomplete"));
                 self.isSeeking = NO;
+                self.isOffineSeeking = NO;
                 [[NSNotificationCenter defaultCenter] postNotificationName:finished ?SlikePlayerPlaybackStateSeekEndNotification :SlikePlayerPlaybackStateSeekFailedNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInteger:CMTimeGetSeconds(self.player.currentTime)], @"data", nil]];
                 
                 self.nCurrentTime = CMTimeGetSeconds(self.player.currentTime);
@@ -743,11 +806,9 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
     if(!self.player || !self.player.currentItem) {
         return 0;
     }
-    
     CGFloat currentTime = CMTimeGetSeconds(self.player.currentItem.currentTime);
     if(currentTime == 0)
         currentTime = self.nCurrentTime;
-    
     return currentTime * 1000;
 }
 /**
@@ -757,7 +818,14 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
 - (NSUInteger)getPlayerDuration {
     if(!self.player || !self.player.currentItem)
         return 0;
-    return CMTimeGetSeconds(self.player.currentItem.duration) * 1000;
+    
+    if (self.streamType == SLKMediaPlayerStreamTypeDVR) {
+        return 1*1000;
+    } else {
+        return CMTimeGetSeconds(self.player.currentItem.duration) * 1000;
+    }
+    
+    return CMTimeGetSeconds(self.timeRange.duration)*1000;
 }
 
 /**
@@ -787,6 +855,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
 - (void)cleanupAVPlayerResources {
     
     if(self.isPlayerDestroyed) return;
+    self.streamInfoOutput = nil;
     self.isPlayerDestroyed = YES;
     if([self isPlayerExist]) {
         [self stopVideo:YES];
@@ -795,14 +864,20 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
     [self stopTimer];
     
     if(self.assetLoader) {
-       // [_assetLoader releaseAssetResources];
+        // [_assetLoader releaseAssetResources];
         self.assetLoader = nil;
     }
     
     self.playerItem = nil;
     [self setPlayer:nil];
     self.player = nil;
-    if(self) [self removeFromSuperview];
+    if(self) {
+        if (_isOffineSeeking) {
+            //If selector is in progress then need to cancel .
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(resetOfflineSeeking) object:nil];
+        }
+        [self removeFromSuperview];
+    }
 }
 
 - (void)stopVideo:(BOOL)cleanVideo {
@@ -828,6 +903,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
         [self stopTimer];
         [self removePlayerObservers];
         [[NSNotificationCenter defaultCenter]postNotificationName:SlikePlayerPlaybackStateStopNotification object:nil];
+        self.streamInfoOutput = nil;
         self.playerItem = nil;
         self.player = nil;
         self.isPlayerDestroyed = NO;
@@ -841,6 +917,11 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
         _bufferingStarted =NO;
         _playerDuration =0;
         _isSeeking = NO;
+        
+        if (_isOffineSeeking) {
+            //If selector is in progress then need to cancel .
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(resetOfflineSeeking) object:nil];
+        }
     }
 }
 
@@ -897,6 +978,138 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
  }
  
  [self performSelector:@selector(handleStalled) withObject:nil afterDelay:0.5];
+ 
+ AVMediaSelectionGroup *mediaSelectionGroup = [_playerItem.asset mediaSelectionGroupForMediaCharacteristic: AVMediaCharacteristicLegible];
+ 
+ NSArray<AVMediaSelection *> *allMediaSelections  = [_playerItem.asset allMediaSelections];
+ NSArray<NSLocale *> *allMediaSelections2  = [_playerItem.asset availableChapterLocales];
+ NSArray<AVAssetTrackGroup *> *trackGroups  = [_playerItem.asset trackGroups];
+ NSArray<AVMetadataItem *> *commonMetadata  = [_playerItem.asset commonMetadata];
+ NSArray<AVMetadataItem *> *metadata  = [_playerItem.asset metadata];
+ AVMediaSelection *preferredMediaSelection  = [_playerItem.asset preferredMediaSelection];
+ NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en"];
+ 
+ for (AVMediaCharacteristic characteristic in asset.availableMediaCharacteristicsWithMediaSelectionOptions){
+ NSLog(@"%@",characteristic);
+ 
+ AVMediaSelectionGroup *group = [asset mediaSelectionGroupForMediaCharacteristic:characteristic];
+ // Print its options.
+ for (AVMediaSelectionOption *option in group.options) {
+ NSLog(@"Option displayName %@:" , [option displayName]);
+ NSLog(@"Option extendedLanguageTag %@:" , [option extendedLanguageTag]);
+ NSLog(@"Option localeIdentifier %@:" , [option locale].localeIdentifier);
+ 
+ }
+ }
+ 
+ NSArray<AVMediaSelectionOption *> *groupOptions =  [AVMediaSelectionGroup mediaSelectionOptionsFromArray:mediaSelectionGroup.options withLocale:locale];
+ if (groupOptions.lastObject) {
+ // [_playerItem selectMediaOption:groupOptions.firstObject inMediaSelectionGroup:mediaSelectionGroup];
+ }
+ 
  }*/
+
+#pragma mark - Implement the subtitle
+- (void)attachCueManager:(id<SlikeCueManagerDelegate>)cueManager {
+    self.cueDelegate = cueManager;
+}
+
+- (void)deattachCueManager {
+    self.cueDelegate = nil;
+}
+
+- (void)_setupItemForMediaTitle {
+    self.streamInfoOutput = [[AVPlayerItemLegibleOutput alloc]init];
+    [self.playerItem addOutput:_streamInfoOutput];
+    self.streamInfoOutput.suppressesPlayerRendering = YES;
+    [self.streamInfoOutput setDelegate:self queue:dispatch_get_main_queue()];
+    [self.player setActionAtItemEnd:AVPlayerActionAtItemEndPause];
+    self.player.closedCaptionDisplayEnabled = YES;
+    self.player.appliesMediaSelectionCriteriaAutomatically = NO;
+}
+
+#pragma mark - AVPlayerItemLegibleOutputPushDelegate
+//Called on Cue Change
+- (void)legibleOutput:(AVPlayerItemLegibleOutput *)output didOutputAttributedStrings:(NSArray<NSAttributedString *> *)strings nativeSampleBuffers:(NSArray *)nativeSamples forItemTime:(CMTime)itemTime {
+    
+    NSMutableString *subTitleString = [[NSMutableString alloc]init];
+    for (NSAttributedString * markupString in strings) {
+        if ([subTitleString length] ==0 ) {
+            [subTitleString appendString:@""];
+        } else {
+            [subTitleString appendString:@"\n"];
+        }
+        [subTitleString appendString:markupString.string];
+    }
+    
+    if ([subTitleString length]>0) {
+        if (self.cueDelegate && [self.cueDelegate respondsToSelector:@selector(processCueEvent: forItemTime:)]) {
+            [self.cueDelegate processCueEvent:subTitleString forItemTime:CMTimeGetSeconds(itemTime)];
+        }
+    }
+}
+-(void)recoverPlayer:(NSURL*)m3u8
+{
+    [self queueUpContentIntoPlayer:m3u8];
+}
+
+- (CMTimeRange)timeRange {
+    
+    // Cached value available. Use it
+    if (CMTIMERANGE_IS_VALID(_timeRange)) {
+        return _timeRange;
+    }
+    
+    AVPlayerItem *playerItem = self.player.currentItem;
+    NSValue *firstSeekableTimeRangeValue = [playerItem.seekableTimeRanges firstObject];
+    NSValue *lastSeekableTimeRangeValue = [playerItem.seekableTimeRanges lastObject];
+    
+    CMTimeRange firstSeekableTimeRange = [firstSeekableTimeRangeValue CMTimeRangeValue];
+    CMTimeRange lastSeekableTimeRange = [lastSeekableTimeRangeValue CMTimeRangeValue];
+    
+    if (! firstSeekableTimeRangeValue || CMTIMERANGE_IS_INVALID(firstSeekableTimeRange)
+        || ! lastSeekableTimeRangeValue || CMTIMERANGE_IS_INVALID(lastSeekableTimeRange)) {
+        return (playerItem.loadedTimeRanges.count != 0) ? kCMTimeRangeZero : kCMTimeRangeInvalid;
+    }
+    
+    CMTimeRange timeRange = CMTimeRangeFromTimeToTime(firstSeekableTimeRange.start, CMTimeRangeGetEnd(lastSeekableTimeRange));
+    
+    // DVR window size too small. Check that we the stream is not an on-demand one first, of course
+    if (CMTIME_IS_INDEFINITE(playerItem.duration) && CMTimeGetSeconds(timeRange.duration) < self.minimumDVRWindowLength) {
+        timeRange = CMTimeRangeMake(timeRange.start, kCMTimeZero);
+    }
+    
+    // On-demand time ranges are cached because they might become unreliable in some situations (e.g. when AirPlay is
+    // connected or disconnected)
+    if (SLK_CMTIME_IS_DEFINITE(playerItem.duration) && SLK_CMTIMERANGE_IS_NOT_EMPTY(timeRange)) {
+        _timeRange = timeRange;
+    }
+    return timeRange;
+}
+
+- (void)setMinimumDVRWindowLength:(NSTimeInterval)minimumDVRWindowLength {
+    if (minimumDVRWindowLength < 0.) {
+        SlikeDLog(@"The minimum DVR window length cannot be negative. Set to 0");
+        _minimumDVRWindowLength = 0.;
+    }
+    else {
+        _minimumDVRWindowLength = minimumDVRWindowLength;
+    }
+}
+
+- (SLKMediaPlayerStreamType)streamType {
+    CMTimeRange timeRange = self.timeRange;
+    if (CMTIMERANGE_IS_EMPTY(timeRange)) {
+        return SLKMediaPlayerStreamTypeLive;
+    }
+    else if (CMTIME_IS_INDEFINITE(self.player.currentItem.duration)) {
+        return SLKMediaPlayerStreamTypeDVR;
+    }
+    else {
+        return SLKMediaPlayerStreamTypeOthers;
+    }
+}
+
+
 
 @end

@@ -47,6 +47,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
 
 @interface SlikeMediaPlayerControl()<CPSliderDelegate, EventManagerProtocol, SlikeCoachmarkViewDelegate> {
 }
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lblTitleXPoint;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewLeadinConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewTraillingConstraint;
@@ -88,6 +89,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
 @property (assign, nonatomic) BOOL isVideoPaused;
 @property (assign, nonatomic) BOOL isSlideing;
 @property (assign, nonatomic) BOOL isLiveStream;
+@property (assign, nonatomic) BOOL isBitrateChange;
 
 @property (assign, nonatomic) NSInteger draggingYposition;
 @property (strong, nonatomic) NSDictionary* payload;
@@ -116,6 +118,9 @@ static NSInteger kDraggingViewBottomOffset = 5;
 @property (assign, nonatomic) BOOL coachMarkVissible;
 @property (strong, nonatomic) MPVolumeView *airPlayView;
 
+@property (nonatomic, weak) IBOutlet UIButton *liveButton;
+@property (nonatomic, readonly) CMTime time;
+
 @end
 
 @implementation SlikeMediaPlayerControl
@@ -128,6 +133,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
 - (void)awakeFromNib {
     [super awakeFromNib];
     
+    _liveButton.alpha = 0;
     _draggingLeftPadding = 20;
     _draggingRightPadding = 10;
     _cardFecthTime = 5;
@@ -147,10 +153,10 @@ static NSInteger kDraggingViewBottomOffset = 5;
     _nextCardButton.userInteractionEnabled = YES;
     self.alpha =1.0;
     _coachMarkVissible = NO;
-
+    
 }
 
- //Add Airplay options if the aiplay devices is available
+//Add Airplay options if the aiplay devices is available
 - (void)checkForAirPlayOptions {
     
     if (self.airPlayView && [_airPlayView superview]) {
@@ -328,6 +334,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
         self.progressBuffering.hidden = NO;
         
     } else {
+        
         [self.btnPlayPause setImage:SlikePlayerButtonSelected(@"player_stop", imageBundle)];
         self.btnBackToLive.hidden = NO;
         self.seekBar.hidden = YES;
@@ -336,17 +343,38 @@ static NSInteger kDraggingViewBottomOffset = 5;
         self.lblCurrentTime.hidden =  YES;
         self.lblDuration.hidden =  YES;
         self.progressBuffering.hidden = YES;
+        
+        _liveButton.alpha = 0;
+        if ([self isMediaTypeDVR]) {
+            [self setControlsForDVR];
+        }
+        if(self.mediaConfig.streamingInfo.currentStream.hasDVR) {
+            _liveButton.alpha = 1;
+            [self updateDVRButtonTitle];
+        }
     }
 }
+
+- (void)setControlsForDVR {
+    self.btnBackToLive.hidden = YES;
+    self.seekBar.hidden = NO;
+    self.lblCurrentTime.hidden =  NO;
+    self.lblDuration.hidden =  NO;
+    self.progressBuffering.hidden = NO;
+}
+
 /**
  Update the controlles state with the config media
  */
 - (void)updateSlikeMediaData {
-    [self updateLiveMediaControl:self.mediaConfig.streamingInfo.isLive];
-    [self updatePlayerConfigControl];
-    
-    if (self.mediaConfig.autorotationMode == SlikeFullscreenAutorotationModeDefault) {
-        _btnFullScreen.hidden = YES;
+    if (self.mediaConfig) {
+        
+        [self updateLiveMediaControl:self.mediaConfig.streamingInfo.isLive];
+        [self updatePlayerConfigControl];
+        
+        if (self.mediaConfig.autorotationMode == SlikeFullscreenAutorotationModeDefault) {
+            _btnFullScreen.hidden = YES;
+        }
     }
 }
 
@@ -354,9 +382,11 @@ static NSInteger kDraggingViewBottomOffset = 5;
     
     if(!self.mediaConfig.isCloseControl) {
         self.btnCloseConstraint.constant = 10.0;
+        self.lblTitleXPoint.constant =  -25.0;
     }else
     {
         self.btnCloseConstraint.constant = 50.0;
+        self.lblTitleXPoint.constant =  10.0;
     }
     
     if (self.mediaConfig) {
@@ -372,7 +402,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
         [self layoutIfNeeded];
     }
     
-    if(!self.mediaConfig.isFullscreenControl) {
+    if(!self.mediaConfig.isFullscreenControl && self.mediaConfig) {
         self.btnFullScreenWidthConstrain.constant = 0.0;
         self.btnFullScreen.hidden =  YES;
     }
@@ -479,14 +509,18 @@ static NSInteger kDraggingViewBottomOffset = 5;
                 [self _updatePlayerStateFromData:playerState payload:payload];
                 // [self slikeLoadingViewAppearance:NO];
             }
-            else if(playerState == SL_PLAYING && self.isLiveStream) {
-                
+            else if(playerState == SL_PLAYING && [self isMediaTypeDVR]) {
+                [self _updatePlayerStateFromData:playerState payload:payload];
             }
             else if(playerState == SL_QUALITYCHANGE) {
+                self->_isBitrateChange =  YES;
                 [self _updatePlayerStateFromData:playerState payload:payload];
                 [self slikeLoadingViewAppearance:YES];
             }
             else if(playerState == SL_SEEKPOSTIONUPDATE && !self.isLiveStream) {
+                [self _updatePlayerStateFromData:playerState payload:payload];
+            }
+            else if(playerState == SL_SEEKPOSTIONUPDATE && [self isMediaTypeDVR]) {
                 [self _updatePlayerStateFromData:playerState payload:payload];
             }
             else if(playerState == SL_BUFFERING) {
@@ -587,10 +621,12 @@ static NSInteger kDraggingViewBottomOffset = 5;
 }
 
 - (void)_updatePlayerStateFromData:(SlikePlayerState)playerState payload:(NSDictionary*)payload {
-    if(self.isSlideing && playerState != SL_SEEKPOSTIONUPDATE) {
+    
+    if (!payload ) {
         return;
     }
-    if (!payload ) {
+    
+    if(self.isSlideing && playerState != SL_SEEKPOSTIONUPDATE) {
         return;
     }
     
@@ -606,6 +642,16 @@ static NSInteger kDraggingViewBottomOffset = 5;
     if (duration !=nil) {
         playerDuration =   [duration integerValue];
     }
+    
+    if ([self isMediaTypeDVR] && playerCurrentPosition) {
+        
+        if((!_isSlideing && self.playerCurrentState == SL_PLAYING) || self.playerCurrentState == SL_COMPLETED) {
+            CMTime time = CMTimeMakeWithSeconds(playerCurrentPosition/1000, NSEC_PER_SEC);
+            [self updateStatusForDVR:time];
+        }
+        return;
+    }
+    
     
     if (currentPosition && duration) {
         NSInteger remaingTime = playerDuration/1000 - playerCurrentPosition/1000;
@@ -682,10 +728,14 @@ static NSInteger kDraggingViewBottomOffset = 5;
 
 - (void)sliderDragged:(UISlider *) sender {
     
+    if ([self isMediaTypeDVR]) {
+        [self updateStatusForDVR:self.time];
+        return;
+    }
+    
     SlikeDLog(@"CONTROLS: Seekbar sliderDragged...");
     _isUserSliding = YES;
     [self _updateDraggingPosition];
-    
     NSDictionary *seekedData = @{kSlikeSeekProgressKey:@(sender.value)};
     [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_SEEKPOSTIONUPDATE dataPayload:seekedData slikePlayer:nil];
 }
@@ -760,8 +810,6 @@ static NSInteger kDraggingViewBottomOffset = 5;
 
 - (void)sliderStopped {
     [self slikeLoadingViewAppearance:YES];
-    
-    // SlikeDLog(@"Seekbar drag stopped. Seeking video...%f", self.seekBar.value);
     NSDictionary *seekedData = @{kSlikeSeekProgressKey:@(self.seekBar.value)};
     [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_SEEKED dataPayload:seekedData slikePlayer:nil];
 }
@@ -907,10 +955,26 @@ static NSInteger kDraggingViewBottomOffset = 5;
         }
     }
 }
-
-- (void)updateTimeLabel:(NSString *)currTime withDuration:(NSString *)strDuration {
+-(void)updateTime
+{
+    _isBitrateChange =  NO;
+}
+- (void)updateTimeLabel:(NSString *)currTime withDuration:(NSString *)strDuration
+{
+    
+    if(_isBitrateChange && [currTime isEqualToString:@"00:00"])
+    {
+        return;
+    }else if(_isBitrateChange && ![currTime isEqualToString:@"00:00"])
+    {
+        [self performSelector:@selector(updateTime) withObject:nil afterDelay:1.0];
+        return;
+    }
+    
     if([currTime length] != 0)
         self.lblCurrentTime.text = currTime;
+    else
+        self.lblCurrentTime.text  =  @"00:00";
     if([strDuration length] != 0)
         self.lblDuration.text = strDuration;
 }
@@ -950,6 +1014,9 @@ static NSInteger kDraggingViewBottomOffset = 5;
 }
 
 - (void)updateSlider:(NSInteger)playerCurrentPos withPlayerDuation:(NSInteger)playerDuration {
+    
+    if(_isBitrateChange || playerCurrentPos < 1000) return;
+    
     float sliderPercentage = 0;
     if(playerCurrentPos!=0) {
         
@@ -994,6 +1061,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
     if (!self.btnReplay.isHidden && self.videoCompleted) {
         return;
     }
+    if(self.playerCurrentState == SL_READY) return;
     
     if (gesture) {
         if ([self showCoachMarkIfRequired]) {
@@ -1011,6 +1079,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
  */
 - (void)_invalidateTimerAndShowControls {
     [self.controlTimer invalidate];
+    if(self.playerCurrentState == SL_READY) return;
     [self showControls];
 }
 
@@ -1156,10 +1225,10 @@ static NSInteger kDraggingViewBottomOffset = 5;
     if (stopPosition) {
         //Not using the payload.
         if ([stopPosition floatValue] < 0) {
-           _draggingProgressView.alpha = 0;
+            _draggingProgressView.alpha = 0;
             [self _invalidateTimerAndHideControls];
         } else {
-           [self slidingStopped:_seekBar];
+            [self slidingStopped:_seekBar];
         }
     }
 }
@@ -1171,7 +1240,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
     if (!_mediaConfig.enableCoachMark) {
         return NO;
     }
-        
+    
     if ([[SlikeDeviceSettings sharedSettings] hasCoachMarkShown] || [self.slikePlayer isAdPlaying]) {
         return NO;
     }
@@ -1204,4 +1273,70 @@ static NSInteger kDraggingViewBottomOffset = 5;
     [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PLAY dataPayload:@{} slikePlayer:nil];
     [self _invalidateTimerAndShowControls];
 }
+
+#pragma mark DVR Stream Implementation
+
+- (IBAction)switchStremDidClicked:(id)sender {
+    [self _invalidateTimerAndHideControls];
+    
+    if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeLive) {
+        [_liveButton setTitle:@"GO TO DVR" forState:UIControlStateNormal];
+        [self.slikePlayer switchToStream:SLKMediaPlayerStreamTypeDVR];
+    } else if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
+        [_liveButton setTitle:@"GO TO LIVE" forState:UIControlStateNormal];
+               [self.slikePlayer switchToStream:SLKMediaPlayerStreamTypeLive];
+    }
+    [self updateSlikeMediaData];
+}
+
+- (void)updateDVRButtonTitle {
+    if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeLive) {
+           [_liveButton setTitle:@"GO TO DVR" forState:UIControlStateNormal];
+       } else if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
+           [_liveButton setTitle:@"GO TO LIVE" forState:UIControlStateNormal];
+    }
+}
+
+
+/// Update position for DVR (SeekBar and Positons label)
+/// @param time - time  data
+
+- (void)updateStatusForDVR:(CMTime)time {
+    [self bringSubviewToFront:_liveButton];
+    if (SLK_CMTIMERANGE_IS_NOT_EMPTY([_slikePlayer getTimeRange]) && SRG_CMTIMERANGE_IS_DEFINITE([_slikePlayer getTimeRange])) {
+        
+        self.seekBar.maximumValue = CMTimeGetSeconds([_slikePlayer getTimeRange].duration);
+        self.seekBar.value = CMTimeGetSeconds(CMTimeSubtract(time, [_slikePlayer getTimeRange].start));
+        
+        if ([self isLiveDVR]) {
+            self.lblDuration.text =@"__:__";
+            self.lblCurrentTime.text =@"__:__";
+        } else {
+            self.lblCurrentTime.text = [SlikeUtilities formatTime:self.seekBar.value];
+            self.lblDuration.text = [SlikeUtilities formatTime:(self.seekBar.maximumValue - self.seekBar.value)];
+        }
+    }
+}
+
+- (CMTime)time {
+    CMTimeRange timeRange = [self.slikePlayer getTimeRange];
+    if (CMTIMERANGE_IS_EMPTY(timeRange)) {
+        return kCMTimeZero;
+    }
+    CMTime relativeTime = CMTimeMakeWithSeconds(self.seekBar.value, NSEC_PER_SEC);
+    return CMTimeAdd(timeRange.start, relativeTime);
+}
+
+/// isDvr Stream is live
+- (BOOL)isLiveDVR {
+    return (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR && (self.seekBar.maximumValue - self.seekBar.value < self.mediaConfig.streamingInfo. liveTolerance));
+}
+
+- (BOOL)isMediaTypeDVR {
+    if (self.mediaConfig && self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
+        return YES;
+    }
+    return NO;
+}
+
 @end

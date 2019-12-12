@@ -157,3 +157,8 @@ NSString * const kSlikePlayPauseByUserKey        = @"playPause_by_user";
 NSString * const kSlikePreviewStartedKey          = @"preview_started";
 NSString * const kSlikePreviewProgressKey         = @"preview_progress";
 NSString * const kSlikePreviewStopKey             = @"preview_stoped";
+
+//Audio Model Properties
+NSString * const kSlikeAudioConfigModelKey                = @"audioConfigModel";
+NSString * const kSlikeAudioItemInfoKey                   = @"audioItemIdKey";
+

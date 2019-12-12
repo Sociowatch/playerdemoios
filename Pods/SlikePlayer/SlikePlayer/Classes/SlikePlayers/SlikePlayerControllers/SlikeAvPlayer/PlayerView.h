@@ -9,6 +9,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SlikeCueManager.h"
+
+
 
 @interface PlayerView : UIView {
 }
@@ -17,6 +20,7 @@
 @property (nonatomic, assign) NSInteger nCurrentTime;
 @property (nonatomic, assign) BOOL isLiveStream;
 @property (nonatomic, assign) BOOL isSecure;
+@property (nonatomic, assign) BOOL requireCueEvents;
 
 /**
  Set the bitrate for current stream
@@ -147,5 +151,34 @@
 - (void)setAllowsAirPlay:(BOOL)allowsAirPlay;
 - (BOOL)allowsAirPlay;
 
+/**
+ Cue Manager for listening the cue events
+ @param cueManager - cue manager
+ */
+- (void)attachCueManager:(id<SlikeCueManagerDelegate>_Nullable)cueManager;
+- (void)deattachCueManager;
+- (void)recoverPlayer:(NSURL*_Nullable)m3u8;
+
+/**
+ *  @name Settings
+ */
+
+/**
+ *  The minimum window length which must be available for a stream to be considered to be a DVR stream, in seconds. The
+ *  default value is 0. This setting can be used so that streams detected as DVR ones because their window is small can
+ *  properly behave as live streams. This is useful to avoid usual related seeking issues, or slider hiccups during
+ *  playback near live conditions, most notably.
+ */
+@property (nonatomic) NSTimeInterval minimumDVRWindowLength;
+
+/**
+ *  The current media time range (might be empty or indefinite).
+ *
+ *  @discussion Use `CMTimeRange` macros for checking time ranges, see `CMTimeRange+SRGMediaPlayer.h`. For DVR
+ *              streams with sliding windows, the range start can vary as the stream is played. For DVR streams
+ *              with fixed start, the duration will vary instead.
+ */
+@property (nonatomic, readonly) CMTimeRange timeRange;
+@property (nonatomic, readonly) SLKMediaPlayerStreamType streamType;
 @end
 

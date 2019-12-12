@@ -8,7 +8,6 @@
 #import "SlikeSharedDataCache.h"
 
 @interface StreamingInfo() {
-    Stream *currentStream;
 }
 @property(nonatomic, strong) NSMutableDictionary *dictVideos;
 @property(nonatomic, assign) VideoSourceType currentVideoSource;
@@ -21,6 +20,8 @@
     
     if (self = [super init]) {
         
+        //for cue point poll
+        _evtUrl = @"";
         _isExternalPlayer =  NO;
         _strThumbe_160 = @"";
         _strTitle = @"";
@@ -38,6 +39,13 @@
         _dictVideos = [NSMutableDictionary dictionary];
         _vendorName = @"slike";
         _currentPlayerType = SlikePlayerTypeUnknown;
+        _liveTolerance = SLKMediaPlayerDefaultLiveTolerance;
+        _mediaStreamType = SLKMediaPlayerStreamTypeOthers;
+        _intl =  NO;
+        _hurl = @"";
+        _containsDVR = NO;
+        _dvrURLString = @"";
+
         
         //Fill in empty MutableArray into the dictVideos see VideoSourceType count => 6
         for(NSInteger index = 0; index < 18; index++) {
@@ -74,7 +82,7 @@
     streamingInfo.adContentsArray = arrAds;
     
     if(strURL) {
-        [streamingInfo updateStreamSource:strURL withBitrates:0 withFlavor:@"" withSize:CGSizeZero withLabel:@"" ofType:sourceType];
+        [streamingInfo updateStreamSource:strURL withBitrates:0 withFlavor:@"" withSize:CGSizeZero withLabel:@"" ofType:sourceType withDVR:nil];
     }
     return streamingInfo;
 }
@@ -154,35 +162,39 @@
 /**
  Update the Current Stream
  
- @param strSource - Source URL
- @param nBitrates - Bitrate
- @param strFlavor - Flavor
- @param theSize - Size
- @param strLabel -
- @param videoType - Video Type
+ @param aSourceURL - Source URL
+ @param aBitrates - Bitrate
+ @param aFlavor - Flavor
+ @param aSize - Size
+ @param aLabel -
+ @param aVideoType - Video Type
  */
-- (void)updateStreamSource:(NSString *) strSource withBitrates:(NSInteger) nBitrates withFlavor:(NSString *) strFlavor withSize:(CGSize) theSize withLabel:(NSString *)strLabel ofType:(VideoSourceType)videoType {
+- (void)updateStreamSource:(NSString *)aSourceURL withBitrates:(NSInteger)aBitrates withFlavor:(NSString *)aFlavor withSize:(CGSize)aSize withLabel:(NSString *)aLabel ofType:(VideoSourceType)aVideoType withDVR:(NSString *)dvrURL {
     
-    if(!strSource) return;
+    if(!aSourceURL) return;
     
-    NSMutableArray *videosList = [self getVideosListByType:videoType];
+    NSMutableArray *videosList = [self getVideosListByType:aVideoType];
     
     //Looking for the URL prefix and if they are missing then need to add it
-    if(videoType != VIDEO_SOURCE_YT && videoType != VIDEO_SOURCE_DM && videoType != VIDEO_SOURCE_RUMBLE &&
-       [strSource rangeOfString:@"http:"].location == NSNotFound &&
-       [strSource rangeOfString:@"https:"].location == NSNotFound) {
-        strSource = [NSString stringWithFormat:@"https:%@", strSource];
+    if(aVideoType != VIDEO_SOURCE_YT && aVideoType != VIDEO_SOURCE_DM && aVideoType != VIDEO_SOURCE_RUMBLE &&
+       [aSourceURL rangeOfString:@"http:"].location == NSNotFound &&
+       [aSourceURL rangeOfString:@"https:"].location == NSNotFound) {
+        aSourceURL = [NSString stringWithFormat:@"https:%@", aSourceURL];
     }
     
+    
     //Create the stream with the bitrates
+    Stream * stream = [Stream createStream:aSourceURL withBitrate:aBitrates withSize:aSize withFlavor:aFlavor withLabel:aLabel withSlikeSecure:aVideoType == VIDEO_SOURCE_SHLS ? YES : NO];
     
-    Stream * stream = [Stream createStream:strSource withBitrate:nBitrates withSize:theSize withFlavor:strFlavor withLabel:strLabel withSlikeSecure:videoType == VIDEO_SOURCE_SHLS ? YES : NO];
-    
+    if (dvrURL && [dvrURL length]>0) {
+        stream.dvrURL = [NSString stringWithFormat:@"%@", dvrURL];
+        stream.hasDVR = YES;
+    }
     //Video is HLS or the FHLS
-    if((videoType == VIDEO_SOURCE_HLS || videoType == VIDEO_SOURCE_FHLS) && videosList.count == 0) {
+    if((aVideoType == VIDEO_SOURCE_HLS || aVideoType == VIDEO_SOURCE_FHLS) && videosList.count == 0) {
         stream.strLabel = @"Auto";
         //Download  contents
-        [self downloadHLSContents:strSource withType:videoType];
+        [self downloadHLSContents:aSourceURL withType:aVideoType withDVR:stream.dvrURL];
     }
     
     BOOL isReady =  NO;
@@ -379,7 +391,7 @@
 /**
  Download HLS contents.
  */
-- (void)downloadHLSContents:(NSString *)str withType:(VideoSourceType)videoType{
+- (void)downloadHLSContents:(NSString *)str withType:(VideoSourceType)videoType withDVR:(NSString *)dvrURL {
     
     __block typeof(self) blockSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -439,7 +451,7 @@
                         strLabel = [SlikeUtilities formattedBandWidth:nBitrate];
                     }
                     
-                    [blockSelf updateStreamSource:[dict objectForKey:@"url"] withBitrates:nBitrate withFlavor:arrFlavors.count > nIndex ? [arrFlavors objectAtIndex:nIndex] : @"" withSize:theSize withLabel:strLabel ofType:videoType];
+                    [blockSelf updateStreamSource:[dict objectForKey:@"url"] withBitrates:nBitrate withFlavor:arrFlavors.count > nIndex ? [arrFlavors objectAtIndex:nIndex] : @"" withSize:theSize withLabel:strLabel ofType:videoType withDVR:dvrURL];
                 }
             }
         }];
@@ -487,11 +499,11 @@
     
     Stream *stream = [videosList objectAtIndex:nIndex];
     if(stream && videoType == VIDEO_SOURCE_HLS && videosList.count <= 1) {
-        [self downloadHLSContents:stream.strURL withType:videoType];
+        [self downloadHLSContents:stream.strURL withType:videoType withDVR:stream.dvrURL];
     } else  if(stream && videoType == VIDEO_SOURCE_FHLS && videosList.count <= 1) {
-        [self downloadHLSContents:stream.strURL withType:videoType];
+        [self downloadHLSContents:stream.strURL withType:videoType withDVR:stream.dvrURL];
     }
-    currentStream = stream;
+    _currentStream = stream;
     _currentVideoSource = videoType;
     return stream;
 }
@@ -535,7 +547,7 @@
         
         stream = [videosList objectAtIndex:nIndex];
         if(nBitrate == stream.nBitrate) {
-            currentStream = stream;
+            _currentStream = stream;
             _currentVideoSource = videoType;
             return stream;
         }
@@ -880,4 +892,27 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+
+/**
+ Current Media Url
+ 
+ @param aPreferedType - Prefered Type
+ @return - Media URL
+ */
+- (NSString *)dvrMediaStream:(VideoSourceType)aPreferedType {
+    
+    if(aPreferedType == VIDEO_SOURCE_SHLS ||
+       aPreferedType == VIDEO_SOURCE_FHLS ||
+       aPreferedType == VIDEO_SOURCE_HLS ||
+       aPreferedType == VIDEO_SOURCE_MP4) {
+        
+       Stream *stream = [self getURL:aPreferedType byQuality:@""];
+        if (stream.hasDVR && stream.dvrURL && [stream.dvrURL length]>0) {
+            return stream.dvrURL;
+        }
+    }
+    return @"";
+}
+
 @end

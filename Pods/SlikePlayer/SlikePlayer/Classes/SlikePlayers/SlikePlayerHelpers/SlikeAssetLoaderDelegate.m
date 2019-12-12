@@ -8,23 +8,21 @@
 #import "SlikeSharedDataCache.h"
 #import "SlikeBitratesModel.h"
 #import "SlikeNetworkInterface.h"
+#import "SPLM3U8ExtXMediaList.h"
+#import "SLManifestlessDataCache.h"
 
-
-NSString * const AVERAGE_BANDWIDTH = @"AVERAGE-BANDWIDTH";
 NSString * const BANDWIDTH = @"BANDWIDTH";
 NSString * const CODECS = @"CODECS";
 NSString * const RESOLUTION = @"RESOLUTION";
-NSString * const RESBASED_DISPLAY = @"ResBasedDisplay";
-NSString * const COMPARATOR = @"comparator";
-NSString * const SLKURL = @"url";
 NSString * const TAG_PLAYLIST = @"#EXTM3U";
 NSString * const TAG_STREAM = @"#EXT-X-STREAM-INF:";
-static NSString  *TAG_KEYSPL = @"#EXT-X-KEY";
-static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
+NSString * const TAG_KEYSPL = @"#EXT-X-KEY";
+NSString * const TAG_STREAMINFSPL = @"#EXT-X-STREAM-INF:";
+NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
 
 @interface SlikeAssetLoaderDelegate() {
 }
-
+@property (assign) BOOL hadMediaTag;
 @end
 
 @implementation SlikeAssetLoaderDelegate {
@@ -35,112 +33,41 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
     if (self = [super init]) {
         
         self.baseURI = @"";
-        self.cacheDir = [SlikeAssetLoaderDelegate cacheDirectory];
-        self.pendingRequests = [NSMutableArray array];
         self.serialQueueAssetLoader = dispatch_queue_create("com.slikeSPL.queueAssetLoader", DISPATCH_QUEUE_SERIAL);
         self.isDecoded = -1;
-            _splitArray =  [self splitArrayFromGlobalString:globalSplitStringSecure];
+        _splitArray =  [self splitArrayFromGlobalString:globalSplitStringSecure];
+        _hadMediaTag = NO;
+        
         
     }
     return self;
 }
 
 #pragma mark - NSURLConnection delegate
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response{
-    self.movieData = [NSMutableData data];
-    self.response = (NSHTTPURLResponse *)response;
-    [self processPendingRequests];
-}
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data{
-    [self.movieData appendData:data];
-    [self processPendingRequests];
-}
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection{
-    [self processPendingRequests];
-    NSString *fileName = [NSURL URLWithString:self.fileUrl].absoluteString.lastPathComponent;
-    NSString *cachedFilePath = [[NSString alloc] initWithFormat:@"%@/%@",self.cacheDir,[fileName componentsSeparatedByString:@"?"].firstObject];
-    BOOL writen = [self.movieData writeToFile:cachedFilePath atomically:YES];
-    if(!writen){
-        NSLog(@"Error");
-    }
-}
-#pragma mark - AVURLAsset resource loading
-- (void)processPendingRequests{
-    NSMutableArray *requestsCompleted = [NSMutableArray array];
-    for (AVAssetResourceLoadingRequest *loadingRequest in self.pendingRequests){
-        [self fillInContentInformation:loadingRequest.contentInformationRequest];
-        BOOL didRespondCompletely = [self respondWithDataForRequest:loadingRequest.dataRequest];
-        if (didRespondCompletely){
-            [requestsCompleted addObject:loadingRequest];
-            [loadingRequest finishLoading];
-        }
-    }
-    [self.pendingRequests removeObjectsInArray:requestsCompleted];
-}
-
-- (void)fillInContentInformation:(AVAssetResourceLoadingContentInformationRequest *)contentInformationRequest{
-    if (contentInformationRequest == nil || self.response == nil){
-        return;
-    }
-    NSString *mimeType = [self.response MIMEType];
-    CFStringRef contentType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)(mimeType), NULL);
-    contentInformationRequest.byteRangeAccessSupported = YES;
-    contentInformationRequest.contentType = CFBridgingRelease(contentType);
-    contentInformationRequest.contentLength = [self.response expectedContentLength];
-}
-
-- (BOOL)respondWithDataForRequest:(AVAssetResourceLoadingDataRequest *)dataRequest{
-    long long startOffset = dataRequest.requestedOffset;
-    if (dataRequest.currentOffset != 0){
-        startOffset = dataRequest.currentOffset;
-    }
-    // Don't have any data at all for this request
-    if (self.movieData.length < startOffset){
-        return NO;
-    }
-    // This is the total data we have from startOffset to whatever has been downloaded so far
-    NSUInteger unreadBytes = self.movieData.length - (NSUInteger)startOffset;
-    // Respond with whatever is available if we can't satisfy the request fully yet
-    NSUInteger numberOfBytesToRespondWith = MIN((NSUInteger)dataRequest.requestedLength, unreadBytes);
-    [dataRequest respondWithData:[self.movieData subdataWithRange:NSMakeRange((NSUInteger)startOffset, numberOfBytesToRespondWith)]];
-    long long endOffset = startOffset + dataRequest.requestedLength;
-    BOOL didRespondFully = self.movieData.length >= endOffset;
-    return didRespondFully;
-}
-
-+ (NSString*) preViewFoundInCacheDirectory:(NSString*) url{
-    NSString *fileName = [NSURL URLWithString:url].absoluteString.lastPathComponent;
-    NSString *cachedFilePath = [[NSString alloc] initWithFormat:@"%@/%@",[SlikeAssetLoaderDelegate cacheDirectory],[fileName componentsSeparatedByString:@"?"].firstObject];
-    if([[NSFileManager defaultManager] fileExistsAtPath:cachedFilePath]){
-        return cachedFilePath;
-    }
-    else{
-        return nil;
-    }
-}
-+ (NSString *)cacheDirectory{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDir = [paths objectAtIndex:0];
-    NSString *videoCacheDir = [NSString stringWithFormat:@"%@/%@",cacheDir,@"Previews"];
-    
-    BOOL isDir = NO;
-    NSError *error;
-    if (! [[NSFileManager defaultManager] fileExistsAtPath:videoCacheDir isDirectory:&isDir] && isDir == NO) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:videoCacheDir withIntermediateDirectories:YES attributes:nil error:&error];
-    }
-    
-    return videoCacheDir;
-}
-
 
 //Slike Task-
 #pragma resource handling----
 - (BOOL)resourceLoader:(AVAssetResourceLoader *)resourceLoader shouldWaitForLoadingOfRequestedResource:(AVAssetResourceLoadingRequest *)loadingRequest {
     NSString *url = loadingRequest.request.URL.absoluteString;
-    if([url containsString:@".ts"]) {
+    
+    if ([url hasPrefix:khlsStreamHttp]) {
+        
+        NSString *hasCachedStream = [[SLManifestlessDataCache sharedManifestCache]cachedStreamForUrl:url];
+        if (hasCachedStream) {
+            NSData *charlieSendData = [hasCachedStream dataUsingEncoding:NSUTF8StringEncoding];
+            [loadingRequest.dataRequest respondWithData:charlieSendData];
+            [loadingRequest finishLoading];
+            return YES;
+            
+        }
         return [self handleSegmentsRequest:loadingRequest];
-    } else if(loadingRequest.dataRequest) {
-        return [self handlePlaylistRequest:loadingRequest];
+        
+    } else {
+        if([url containsString:@".ts"]) {
+            return [self handleSegmentsRequest:loadingRequest];
+        } else if(loadingRequest.dataRequest) {
+            return [self handlePlaylistRequest:loadingRequest];
+        }
     }
     return YES;
 }
@@ -148,10 +75,9 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
 - (BOOL)handlePlaylistRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
     
     NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:loadingRequest.request.URL resolvingAgainstBaseURL:NO];
-    
-    if([urlComponents.scheme isEqualToString:@"123"]) {
+    //Is Secured
+    if([urlComponents.scheme isEqualToString:@"slikehttps"]) {
         urlComponents.scheme = @"https";
-        
     } else {
         urlComponents.scheme = @"http";
     }
@@ -166,44 +92,47 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
         return TRUE;
     }
     
-    if(!self.isEncrypted)
-    {
-        SlikeDLog(@"%lu",(unsigned long)[SlikeSharedDataCache sharedCacheManager].currentStreamBitrate);
+    if(!self.isEncrypted) {
         
-    NSError *error = nil;
-    SPLM3U8PlaylistModel *model = [[SPLM3U8PlaylistModel alloc] initWithURL: [urlComponents URL] error:&error];
-    if(self.baseURI && [self.baseURI isEqualToString:@""])
-    {
-        [self processMasterPlayListData: model.masterPlaylist.originalText];
-    }
-    __block NSString * actualM3U8 = model.mainMediaPl.originalText;
-    NSCharacterSet *newlineCharSet = [NSCharacterSet newlineCharacterSet];
-    NSArray *lines = [actualM3U8 componentsSeparatedByCharactersInSet:newlineCharSet];
-    [lines enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *lineString = (NSString *)obj;
+        NSError *error = nil;
+        SPLM3U8PlaylistModel *model = [[SPLM3U8PlaylistModel alloc] initWithURL: [urlComponents URL] error:&error];
         
-        if ([lineString hasPrefix:TAG_KEYSPL] && [lineString containsString:@"keys.slike.in"]) {
-            self.isEncrypted = YES;
-            actualM3U8 = [actualM3U8 stringByReplacingOccurrencesOfString:lineString
-                                                               withString:@""];
-            
+        if(self.baseURI && [self.baseURI isEqualToString:@""]) {
+            [self processMasterPlayListData: model.masterPlaylist.originalText];
         }
-    }];
+        
+        __block NSString * actualM3U8 = model.mainMediaPl.originalText;
+        NSCharacterSet *newlineCharSet = [NSCharacterSet newlineCharacterSet];
+        NSArray *lines = [actualM3U8 componentsSeparatedByCharactersInSet:newlineCharSet];
+        [lines enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSString *lineString = (NSString *)obj;
+            if ([lineString hasPrefix:TAG_KEYSPL] && [lineString containsString:@"keys.slike.in"]) {
+                self.isEncrypted = YES;
+                actualM3U8 = [actualM3U8 stringByReplacingOccurrencesOfString:lineString
+                                                                   withString:@""];
+            }
+        }];
     }
     
     [SlikeSharedDataCache sharedCacheManager].isEncrypted = self.isEncrypted;
-    if(self.isEncrypted)
-    {
-        [self getActualM3U8:[urlComponents URL] withCompletion:^(NSString *result)
-         {
-             
-             NSData *charlieSendData = [result dataUsingEncoding:NSUTF8StringEncoding];
-             [loadingRequest.dataRequest respondWithData:charlieSendData];
-             [loadingRequest finishLoading];
-             return YES;
-         }];
-    }else
-    {
+    
+    if(self.isEncrypted) {
+        [self getActualM3U8:[urlComponents URL] withCompletion:^(NSString *result) {
+            NSData *charlieSendData = [result dataUsingEncoding:NSUTF8StringEncoding];
+            [loadingRequest.dataRequest respondWithData:charlieSendData];
+            [loadingRequest finishLoading];
+            return YES;
+        }];
+        
+    } else {
+        
+        ///Look for the Cached Manifest file
+        NSString *manifestFile = [[SLManifestlessDataCache sharedManifestCache]cachedManifestForKey:[urlComponents string]];
+        if (manifestFile && [manifestFile length]>0) {
+            [self parsePlaylistString:manifestFile baseUrl:[urlComponents string] loading:loadingRequest];
+            return YES;
+        }
+        
         [[SlikeNetworkInterface sharedNetworkInteface] getHLSStreamDataString:[urlComponents string] withCompletionBlock:^BOOL(NSArray *bitratesArray, NSString *responseString, NSError *error) {
             if (error) {
                 return NO;
@@ -212,6 +141,7 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
             return YES;
         }];
     }
+    
     return YES;
 }
 
@@ -224,6 +154,7 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
     __block NSMutableString * highBitrate = [[NSMutableString alloc] initWithString:TAG_PLAYLIST];
     __block NSMutableString * autoBitrate = [[NSMutableString alloc] initWithString:TAG_PLAYLIST];
     
+    _hadMediaTag = NO;
     NSMutableArray *bitratesModelArray = [[NSMutableArray alloc]init];
     
     [lowBitrate appendString:@"\n"];
@@ -286,11 +217,45 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
                 NSString *streamURL = [self streamRelativeUrl:[lines objectAtIndex:lineIndex] withBase:baseUrl];
                 [highBitrate appendFormat:@"%@\n", streamURL];
             }
+        } else if ([line hasPrefix:TAG_MEDIA] && [line rangeOfString:TAG_MEDIA].location == 0) {
+            _hadMediaTag = YES;
         }
         lineIndex++;
     }
     
     NSInteger validationCons = 5;
+    //Parse the Media List
+    NSError *error = nil;
+    SPLM3U8PlaylistModel *model = [[SPLM3U8PlaylistModel alloc] initWithString:hlsContent baseURL:[NSURL URLWithString:baseUrl] error:&error];
+    
+    if (model && !error && [model.masterPlaylist.xMediaList.subtitleList count]>0 && _hadMediaTag) {
+        
+        NSString *mediaListString = [model.masterPlaylist m3u8MediaListPlanString];
+        if ([lowBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
+            [lowBitrate appendString:mediaListString];
+        }
+        
+        if ([mediumBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
+            [mediumBitrate appendString:mediaListString];
+        }
+        
+        if ([highBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
+            [highBitrate appendString:mediaListString];
+        }
+        
+        if ([autoBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
+            [autoBitrate appendString:mediaListString];
+        }
+        
+        if (self.subtitleBlock) {
+            _subtitleBlock(1);
+        }
+        
+    } else {
+        if (self.subtitleBlock) {
+            _subtitleBlock(0);
+        }
+    }
     
     if ([autoBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
         SlikeBitratesModel* autoBitrateModel =  [[SlikeBitratesModel alloc]init];
@@ -330,26 +295,53 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
     
     [[SlikeSharedDataCache sharedCacheManager]cacheBitratesModel:bitratesModelArray withCurrentBitrate:SlikeMediaBitrateAuto];
     NSData *streamData = [autoBitrate dataUsingEncoding:NSUTF8StringEncoding];
+    NSLog(@"%@", autoBitrate);
     [loadingRequest.dataRequest respondWithData:streamData];
     [loadingRequest finishLoading];
-    
     return TRUE;
     
 }
 
-- (NSString *)streamRelativeUrl:(NSString *)urlString withBase:(NSString *)baseUrlString
-{
-    if ([urlString hasPrefix:@"http"] || [urlString hasPrefix:@"https"])
-    {
-        return urlString;
+- (NSString *)streamRelativeUrl:(NSString *)aStreamUrlString withBase:(NSString *)aMasterUrlString {
+    
+    if ([aStreamUrlString hasPrefix:@"http"] || [aStreamUrlString hasPrefix:@"https"]) {
+        ///Look for the Cached Manifest file
+        NSString *hasCachedStream = [[SLManifestlessDataCache sharedManifestCache]cachedStreamForUrl:aStreamUrlString];
+        if (hasCachedStream) {
+            return [self formatPrefix:aStreamUrlString];
+        }
+        return aStreamUrlString;
     }
-    NSURL *url = [NSURL URLWithString:baseUrlString];
+    
+    NSURL *url = [NSURL URLWithString:aMasterUrlString];
     url = [url URLByDeletingLastPathComponent];
-    return  [[url URLByAppendingPathComponent:urlString] absoluteString];
+    NSString *streamUrlString = [[url URLByAppendingPathComponent:aStreamUrlString] absoluteString];
+    
+    ///Look for the Cached Manifest file
+    NSString *hasCachedStream = [[SLManifestlessDataCache sharedManifestCache]cachedStreamForUrl:streamUrlString];
+    if (hasCachedStream) {
+        return [self formatPrefix:streamUrlString];
+    }
+    return streamUrlString;
 }
+
+- (NSString *)formatPrefix:(NSString *)urlString {
+    NSRange tldr = [urlString rangeOfString:@"://"];
+    if (![urlString hasPrefix:@"//"] && tldr.location != NSNotFound) {
+        urlString = [urlString stringByReplacingCharactersInRange:NSMakeRange(0, tldr.location) withString:khlsStreamHttp];
+    }
+    return urlString;
+}
+
 - (BOOL)handleSegmentsRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
+    
     NSURLRequest *redirect = nil;
-    redirect = [NSURLRequest requestWithURL:[NSURL URLWithString:[[[(NSURLRequest *)[loadingRequest request] URL] absoluteString] stringByReplacingOccurrencesOfString:@"123" withString:@"https"]]];
+    NSString *url = loadingRequest.request.URL.absoluteString;
+    NSRange tldr = [url rangeOfString:@"//"];
+    if (![url hasPrefix:@"http"] && tldr.location != NSNotFound) {
+        url = [url stringByReplacingCharactersInRange:NSMakeRange(0, tldr.location) withString:@"https:"];
+    }
+    redirect = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
     // NOTE: After several hours of digging I found that you CANNOT pass HLS chunks directly
     // to the player. It would be great *if* this was possible because after we download the file
@@ -368,17 +360,18 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
     
     return YES;
 }
--(void) processMasterPlayListData:(NSString*)str
-{
+
+
+- (void)processMasterPlayListData:(NSString*)str {
+    
     NSCharacterSet *newlineCharSet = [NSCharacterSet newlineCharacterSet];
     NSArray *lines = [str componentsSeparatedByCharactersInSet:newlineCharSet];
     [lines enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSString *lineString = (NSString *)obj;
-        if ([lineString hasPrefix:strXSTREAMINFSPL] && [lineString containsString:strXSTREAMINFSPL])
+        if ([lineString hasPrefix:TAG_STREAMINFSPL] && [lineString containsString:TAG_STREAMINFSPL])
         {
             if(lineString && [lineString isKindOfClass:[NSString class]])
             {
-                NSLog(@"lineString %@",lineString);
                 if(self.baseURI && [self.baseURI isEqualToString:@""])
                 {
                     if ([lineString containsString:@"BURL="])
@@ -391,8 +384,9 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
         }
     }];
 }
-- (void)getActualM3U8:(NSURL*)url withCompletion:(BOOL(^)(NSString * result))completionBlock
-{
+
+- (void)getActualM3U8:(NSURL*)url withCompletion:(BOOL(^)(NSString * result))completionBlock {
+    
     //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     dispatch_async(self.serialQueueAssetLoader, ^{
         NSError *error = nil;
@@ -436,39 +430,36 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
     });
 }
 
--(NSString*) getENS:(NSString*)s withBaseURI:(NSString *) strBaseUri
-{
-    if(![s isKindOfClass:[NSString class]] && [s isEqualToString:@""])
-    {
+- (NSString*)getENS:(NSString*)s withBaseURI:(NSString *)strBaseUri {
+    if(![s isKindOfClass:[NSString class]] && [s isEqualToString:@""]) {
         return nil;
-    }
-    else
-    {
-        if(![strBaseUri isKindOfClass:[NSString class]] || strBaseUri == nil)
-        {
+        
+    } else {
+        
+        if(![strBaseUri isKindOfClass:[NSString class]] || strBaseUri == nil) {
             return nil;
         }
+        
         NSString * host = @"";
         NSURL *hostUrl = [NSURL URLWithString:strBaseUri];
         host = [hostUrl host];
         NSArray * hostEntry = [self.baseURI componentsSeparatedByString:@","];
-        if(self.isDecoded == -1)
-        {
-            for(NSString * str in hostEntry)
-            {
-                if([str containsString:host] || [host containsString:str])
-                {
+        
+        if(self.isDecoded == -1) {
+            
+            for(NSString * str in hostEntry) {
+                
+                if([str containsString:host] || [host containsString:str]) {
                     self.isDecoded =  1;
                     break;
                 }
             }
         }
-        // NSLog(@"isExist %ld",self.isDecoded);
-        if(self.isDecoded == 1 || [self.baseURI isEqualToString:@""])
-        {
+        
+        if(self.isDecoded == 1 || [self.baseURI isEqualToString:@""]) {
             NSArray *array =  [s componentsSeparatedByString:@"_"];
-            if(array.count>1)
-            {
+            
+            if(array.count>1) {
                 NSString *mediaSeqStr =  [array objectAtIndex:1];
                 mediaSeqStr = [mediaSeqStr stringByReplacingOccurrencesOfString:@".ts" withString:@""];
                 NSInteger numMediaSeqStr =  [mediaSeqStr integerValue];
@@ -477,38 +468,38 @@ static NSString  *strXSTREAMINFSPL = @"#EXT-X-STREAM-INF:";
                 NSString *combinedStr = [NSString stringWithFormat:@"%@%@%@",[array objectAtIndex:0],salt,[array objectAtIndex:1]];
                 unsigned long result = [combinedStr crc32];
                 NSString *actualTS = [NSString stringWithFormat:@"%@%lu_%@",strBaseUri == nil ? @"" : strBaseUri,result,[array objectAtIndex:1]];
-//                actualTS = [actualTS stringByReplacingOccurrencesOfString:@"low" withString:@"high"];
+                //                actualTS = [actualTS stringByReplacingOccurrencesOfString:@"low" withString:@"high"];
                 SlikeDLog(@"actualTS Encript %@",actualTS);
                 return actualTS;
             }
-        }else
-        {
+            
+        } else {
             NSString *actualTS = [NSString stringWithFormat:@"%@%@",strBaseUri == nil ? @"" : strBaseUri,s];
             SlikeDLog(@"actualTS Not  %@",actualTS);
             return actualTS;
         }
     }
+    
     return @"";
 }
--(NSString*)getValueFromList:(int)indx
-{
-    if(_splitArray.count > indx)
-    {
-        return [_splitArray objectAtIndex:indx];
-    }else
-    {
+
+- (NSString*)getValueFromList:(int)aIndex {
+    if(_splitArray.count > aIndex) {
+        return [_splitArray objectAtIndex:aIndex];
+    } else {
         return @"";
     }
 }
--(NSArray*)splitArrayFromGlobalString:(NSString*)rawString
-{
+
+- (NSArray*)splitArrayFromGlobalString:(NSString*)aRawString {
     int j = 0;
     NSMutableArray * subStringArray =  [NSMutableArray array];
     for (int i = 1; i < 101; i++) {
-        [subStringArray addObject:[rawString substringWithRange:NSMakeRange(j,32)]];
+        [subStringArray addObject:[aRawString substringWithRange:NSMakeRange(j,32)]];
         j = j + 32;
     }
     return subStringArray;
 }
+
 @end
 

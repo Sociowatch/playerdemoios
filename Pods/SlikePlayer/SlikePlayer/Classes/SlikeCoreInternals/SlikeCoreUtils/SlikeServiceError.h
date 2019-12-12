@@ -23,7 +23,13 @@ typedef NS_ENUM(NSInteger, SlikeServiceError) {
     SlikeServiceErrorNetworkConnectionLost = 9999,
     SlikeServiceErrorNoNetworkAvailable = -9999,
     SlikeServiceErrorM3U8FileError = -99999,
-    SlikeServiceVideoNotSupported = -999
+    SlikeServiceVideoNotSupported = -999,
+    SlikeServiceMediaFileStoppedPlaying = -11866,///CoreMediaErrorDomain
+    //Offline messages
+    SlikeServiceDownloadingError = -3000,
+    SlikeServiceDownloadMissingInfoError = -3001,
+    SlikeServiceDownloadMissingURLError = -3002,
+    
 };
 /**
  *  Domain for media player errors.

@@ -19,5 +19,5 @@
 /**
  Remove All the Acquired Resources
  */
-- (void)removeAdsComponents;
+- (void)removeAdsComponents:(void (^)(void))completionBlock;
 @end

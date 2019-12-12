@@ -33,6 +33,7 @@
 @property (nonatomic, assign) BOOL isAdPrefetched;
 @property (nonatomic, strong) NSString *pfid;
 @property (nonatomic, assign) NSInteger adProviderType;
+@property (nonatomic, assign) BOOL extranlAdFail;
 
 
 @end

@@ -1,57 +1,37 @@
 PODS:
-  - ComScore (5.8.5):
-    - ComScore/Dynamic (= 5.8.5)
-  - ComScore/Dynamic (5.8.5)
-  - FBAudienceNetwork (5.4.0):
-    - FBSDKCoreKit/Basics
-  - FBSDKCoreKit/Basics (5.0.2)
-  - GoogleAds-IMA-iOS-SDK (3.6.1)
-  - GoogleAnalytics (3.17.0)
-  - slike-ios-sdk-analytics (2.1.9):
-    - ComScore (~> 5.5)
-    - GoogleAnalytics (~> 3)
-    - SlikePlayer
-  - SlikePlayer (2.5.0):
+  - FBAudienceNetwork (5.6.0):
+    - FBSDKCoreKit/Basics (>= 5.6.0)
+  - FBSDKCoreKit/Basics (5.8.0)
+  - GoogleAds-IMA-iOS-SDK (3.10.1)
+  - SlikePlayer (2.7.7.2):
     - FBAudienceNetwork
-    - GoogleAds-IMA-iOS-SDK (~> 3.6.1)
+    - GoogleAds-IMA-iOS-SDK (~> 3.10.1)
 
 DEPENDENCIES:
-  - slike-ios-sdk-analytics (from `https://bitbucket.org/times_internet/slike-ios-sdk-analytics.git`, tag `2.1.9`)
-  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.5.0`)
+  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.7.7.2`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
-    - ComScore
+  https://github.com/CocoaPods/Specs.git:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - GoogleAds-IMA-iOS-SDK
-    - GoogleAnalytics
 
 EXTERNAL SOURCES:
-  slike-ios-sdk-analytics:
-    :git: https://bitbucket.org/times_internet/slike-ios-sdk-analytics.git
-    :tag: 2.1.9
   SlikePlayer:
     :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
-    :tag: 2.5.0
+    :tag: 2.7.7.2
 
 CHECKOUT OPTIONS:
-  slike-ios-sdk-analytics:
-    :git: https://bitbucket.org/times_internet/slike-ios-sdk-analytics.git
-    :tag: 2.1.9
   SlikePlayer:
     :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
-    :tag: 2.5.0
+    :tag: 2.7.7.2
 
 SPEC CHECKSUMS:
-  ComScore: e7349d7612401c65cd0bfced9aa68a7c6e31bda9
-  FBAudienceNetwork: c1514860ed6d9ba9f97350f3fbb3ac49556f5e43
-  FBSDKCoreKit: 3e41c402eb64ea7799c71833ff9e5690f27b9c42
-  GoogleAds-IMA-iOS-SDK: 5825cb7d5f6004618527828936a077e118da556e
-  GoogleAnalytics: f42cc53a87a51fe94334821868d9c8481ff47a7b
-  slike-ios-sdk-analytics: e4d04803b661989e6d24918f7a62e8c5712eb87c
-  SlikePlayer: ae9ffbc7c48f8d55ca8067d25b904c448290a2d7
+  FBAudienceNetwork: 1ea63543665445a3a5b4a059e8210a343b6ab3c1
+  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+  GoogleAds-IMA-iOS-SDK: 0e37ab83b22075ad631a70dcba9528cb246c92bf
+  SlikePlayer: e9ccbc0097979b6f9756a8922881cfa86243546d
 
-PODFILE CHECKSUM: 67cc88f5985ee3526e57c1e5d196866c8e345104
+PODFILE CHECKSUM: e2567c53417b64c6045fd6df28f74826d9cf4d38
 
-COCOAPODS: 1.7.0.beta.3
+COCOAPODS: 1.8.4

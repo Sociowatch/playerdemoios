@@ -16,6 +16,7 @@
 #import "SlikeUtilities.h"
 #import "SlikeSharedDataCache.h"
 #import "NSString+Advanced.h"
+#import "SLCueMDO.h"
 
 static NSString *const kDownloadCachePathname = @"SlikeDownloadCache";
 const char *const kETAGExtAttributeName  = "etag";
@@ -133,6 +134,11 @@ static void TWEndNetworkActivity() {
 {
     strBaseURL =  [[SlikeSharedDataCache sharedCacheManager]slikeBaseUrlString];
     strAnalyticsBaseURL = [[SlikeSharedDataCache sharedCacheManager]slikeAnalyticsBaseURLString];
+    //strAnalyticsBaseURL =  @"http://devslike.indiatimes.com:8081/";
+}
+-(void)updateAnalyticURLsBase:(NSString*)an
+{
+    strAnalyticsBaseURL = an;
     //strAnalyticsBaseURL =  @"http://devslike.indiatimes.com:8081/";
 }
 #pragma mark - Public methods
@@ -293,26 +299,26 @@ static void TWEndNetworkActivity() {
                     completionHandler:^(NSData *data,
                                         NSURLResponse *response,
                                         NSError *error) {
-                        
-                        if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-                            NSInteger statusCode = [(NSHTTPURLResponse*)response statusCode];
-                            NSDictionary *header = [(NSHTTPURLResponse*)response allHeaderFields];
-                            
-                            if (statusCode == 304) {  // Not Modified - our cached stuff is fresh enough
-                                completion(NO);
-                            } else if (statusCode == 301) { // Moved Permanently HTTP Forward
-                                NSURL *forwardURL = [NSURL URLWithString:header[@"Location"]];
-                                [self isDownloadNecessaryForURL:forwardURL completion:completion];
-                            } else if (statusCode == 200) {
-                                completion(YES);
-                            } else {
-                                completion(NO);
-                            }
-                        } else {
-                            completion(NO);
-                        }
-                        
-                    }] resume];
+            
+            if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                NSInteger statusCode = [(NSHTTPURLResponse*)response statusCode];
+                NSDictionary *header = [(NSHTTPURLResponse*)response allHeaderFields];
+                
+                if (statusCode == 304) {  // Not Modified - our cached stuff is fresh enough
+                    completion(NO);
+                } else if (statusCode == 301) { // Moved Permanently HTTP Forward
+                    NSURL *forwardURL = [NSURL URLWithString:header[@"Location"]];
+                    [self isDownloadNecessaryForURL:forwardURL completion:completion];
+                } else if (statusCode == 200) {
+                    completion(YES);
+                } else {
+                    completion(NO);
+                }
+            } else {
+                completion(NO);
+            }
+            
+        }] resume];
     }
 }
 
@@ -388,74 +394,74 @@ static void TWEndNetworkActivity() {
                 completionHandler:^(NSData *data,
                                     NSURLResponse *response,
                                     NSError *connectionError) {
-                    
-                    TWEndNetworkActivity();
-                    NSError *resError = connectionError;
-                    
-                    if(!self->_urlSession) {
-                        resError = SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorRequestCanceled, [NSDictionary dictionaryWithObjectsAndKeys:@"Information", @"message", @"Cancelled.", @"description", nil]);
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (completion) {
-                                completion(nil,nil,NO, SlikeServiceErrorRequestCanceled, resError);
-                            }
-                        });
-                        return;
-                    }
-                    
-                    NSInteger statusCode = 0;
-                    if ([response respondsToSelector:@selector(statusCode)]) {
-                        statusCode = [(NSHTTPURLResponse*)response statusCode];
-                    }
-                    
-                    if (statusCode >= 400) {
-                        NSMutableDictionary *errorUserInfo = [NSMutableDictionary dictionary];
-                        errorUserInfo[@"HTTP statuscode"] = @(statusCode);
-                        if (connectionError) {
-                            errorUserInfo[@"underlying error"] = connectionError;
-                        }
-                        
-                        resError = SlikeServiceCreateErrorWithDomain(NSURLErrorDomain, statusCode, errorUserInfo);
-                    }
-                    
-                    NSDictionary* headers = [(NSHTTPURLResponse *)response allHeaderFields];
-                    if([headers objectForKey:@"geo"] && [[headers objectForKey:@"geo"] isKindOfClass:[NSString class]]) {
-                        [[SlikeDeviceSettings sharedSettings] setGeoCountry:[headers objectForKey:@"geo"]];
-                    }
-                    
-                    NSString *filepath = [self cachedFilePathForURL:url];
-                    if (data) {
-                        // for some strange reasons,NSDataWritingAtomic does not override in some cases
-                        NSFileManager* filemanager = [[NSFileManager alloc] init];
-                        [filemanager removeItemAtPath:filepath error:nil];
-                        [data writeToFile:filepath options:NSDataWritingAtomic error:nil];
-                        
-                        NSError *readError = nil;
-                        data = [NSData dataWithContentsOfFile:filepath
-                                                      options:NSDataReadingMappedIfSafe
-                                                        error:&readError];
-                        
-                        if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-                            NSDictionary *header = [(NSHTTPURLResponse*)response allHeaderFields];
-                            NSString *etag = header[@"Etag"];
-                            NSString *lastmodified = header[@"Last-Modified"];
-                            if (etag) {
-                                // store the eTag - we use it to check later if the content has been modified
-                                [self setETag:etag forCachedFilepath:filepath];
-                            } else if (lastmodified) {
-                                [self setLastModified:lastmodified forCachedFilepath:filepath];
-                            }
-                        }
-                    }
-                    [self removeRequestedURL:url];
-                    if (completion) {
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            completion(data,filepath,NO, statusCode,resError);
-                        });
-                        
-                    }
-                }] resume];
+        
+        TWEndNetworkActivity();
+        NSError *resError = connectionError;
+        
+        if(!self->_urlSession) {
+            resError = SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorRequestCanceled, [NSDictionary dictionaryWithObjectsAndKeys:@"Information", @"message", @"Cancelled.", @"description", nil]);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completion) {
+                    completion(nil,nil,NO, SlikeServiceErrorRequestCanceled, resError);
+                }
+            });
+            return;
+        }
+        
+        NSInteger statusCode = 0;
+        if ([response respondsToSelector:@selector(statusCode)]) {
+            statusCode = [(NSHTTPURLResponse*)response statusCode];
+        }
+        
+        if (statusCode >= 400) {
+            NSMutableDictionary *errorUserInfo = [NSMutableDictionary dictionary];
+            errorUserInfo[@"HTTP statuscode"] = @(statusCode);
+            if (connectionError) {
+                errorUserInfo[@"underlying error"] = connectionError;
+            }
+            
+            resError = SlikeServiceCreateErrorWithDomain(NSURLErrorDomain, statusCode, errorUserInfo);
+        }
+        
+        NSDictionary* headers = [(NSHTTPURLResponse *)response allHeaderFields];
+        if([headers objectForKey:@"geo"] && [[headers objectForKey:@"geo"] isKindOfClass:[NSString class]]) {
+            [[SlikeDeviceSettings sharedSettings] setGeoCountry:[headers objectForKey:@"geo"]];
+        }
+        
+        NSString *filepath = [self cachedFilePathForURL:url];
+        if (data) {
+            // for some strange reasons,NSDataWritingAtomic does not override in some cases
+            NSFileManager* filemanager = [[NSFileManager alloc] init];
+            [filemanager removeItemAtPath:filepath error:nil];
+            [data writeToFile:filepath options:NSDataWritingAtomic error:nil];
+            
+            NSError *readError = nil;
+            data = [NSData dataWithContentsOfFile:filepath
+                                          options:NSDataReadingMappedIfSafe
+                                            error:&readError];
+            
+            if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                NSDictionary *header = [(NSHTTPURLResponse*)response allHeaderFields];
+                NSString *etag = header[@"Etag"];
+                NSString *lastmodified = header[@"Last-Modified"];
+                if (etag) {
+                    // store the eTag - we use it to check later if the content has been modified
+                    [self setETag:etag forCachedFilepath:filepath];
+                } else if (lastmodified) {
+                    [self setLastModified:lastmodified forCachedFilepath:filepath];
+                }
+            }
+        }
+        [self removeRequestedURL:url];
+        if (completion) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(data,filepath,NO, statusCode,resError);
+            });
+            
+        }
+    }] resume];
 }
 
 #pragma mark - Private Getter
@@ -828,10 +834,10 @@ static void TWEndNetworkActivity() {
         
         if(nStatus == 105)
         {
-           // [self sendDataForVideoRequest:nStatus withConfigModel:analyticInfo.config];
+            // [self sendDataForVideoRequest:nStatus withConfigModel:analyticInfo.config];
             nPlayTimeCol = 0;
             nBufferTimeCol = 0;
-//            return;
+            //            return;
         }
         
         nPlayTimeCol += analyticInfo.nTotalPlayedDuration;
@@ -929,7 +935,7 @@ static void TWEndNetworkActivity() {
             {
                 mediaUrl = [mediaUrl md5];
             }
-         
+            
             streamingInfo.strID = [NSString stringWithFormat:@"%@.%@",videoType,mediaUrl];
         }
         
@@ -957,18 +963,18 @@ static void TWEndNetworkActivity() {
                 
                 //Before Send end event
                 /*
-                if(nStatus == 4)
-                {
-                    if(analyticInfo.config.isPostrollEnabled == OFF)
-                    {
-                        [self callSendToServer:121 withPlayer:player withConfigModel:analyticInfo.config withPD:self->nPlayTimeCol-self->nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:self->nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
-                            if(result) {
-                            }
-                        }];
-                    }
-                }
-                */
-
+                 if(nStatus == 4)
+                 {
+                 if(analyticInfo.config.isPostrollEnabled == OFF)
+                 {
+                 [self callSendToServer:121 withPlayer:player withConfigModel:analyticInfo.config withPD:self->nPlayTimeCol-self->nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:self->nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
+                 if(result) {
+                 }
+                 }];
+                 }
+                 }
+                 */
+                
                 
                 [self callSendToServer:nStatus withPlayer:player withConfigModel:analyticInfo.config withPD:self->nPlayTimeCol-self->nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:self->nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
                     if(result)
@@ -976,16 +982,16 @@ static void TWEndNetworkActivity() {
                     }
                 }];
                 /*
-                if(nStatus == 1)
-                {
-                    if(analyticInfo.config.isPrerollEnabled == OFF)
-                    {
-                        [self callSendToServer:120 withPlayer:player withConfigModel:analyticInfo.config withPD:self->nPlayTimeCol-self->nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:self->nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
-                            if(result) {
-                            }
-                        }];
-                    }
-                }
+                 if(nStatus == 1)
+                 {
+                 if(analyticInfo.config.isPrerollEnabled == OFF)
+                 {
+                 [self callSendToServer:120 withPlayer:player withConfigModel:analyticInfo.config withPD:self->nPlayTimeCol-self->nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:self->nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
+                 if(result) {
+                 }
+                 }];
+                 }
+                 }
                  */
                 self->nPlayTimeCol = 0;
                 self->nBufferTimeCol = 0;
@@ -998,7 +1004,10 @@ static void TWEndNetworkActivity() {
 - (void)sendAdLogToServer:(SlikeConfig *) config withStatus:(NSInteger)nStatus withAdID:(NSString *)adID withAdCampaign:(NSString *)strID withRetryCount:(NSInteger)retryCount withMediaDuration:(NSInteger) dur withMediaPosition:(NSInteger)pos withAdDuration:(NSInteger)adDur andWithAdPosition:(NSInteger) adPos DeviceVolume:(BOOL)isOn DeviceVolumeLevel:(float)vl adMoreInformation:(NSString*)adMoreInfo adLoadError:(NSString*)errDespriction addType:(NSInteger)adt strIu:(NSString*)iu strAdResion:(NSString*)adResionType withPreFetchInfo:(BOOL)isPreFetched withPFID:(NSString*)pfid withAdProvider:(NSString*)adProvider withCompletionBlock:(SlikeNetworkManagerCompletionBlock) completionBlock {
     
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
-    
+    if(pfid && [pfid length]>0)
+    {
+        isPreFetched =  YES;
+    }
     //To do
     //Need to fixed s after colambiya
     if(strAnalyticsBaseURL != nil && strAnalyticsBaseURL.length == 0) return;
@@ -1051,10 +1060,10 @@ static void TWEndNetworkActivity() {
         {
             
             analyticInfo = [NSString stringWithFormat:@"adstats?%@vai=%@&src=%ld&k=%@&atl=%ld&atc=%ld&vp=%ld&adu=%ld&cp=%ld&rt=%ld&evt=%ld&ci=%@%@&m=%i&err=%@&atr=0&adt=%li&s=%@&vl=%f%@&usid=%@&sg=%@&iu1=%@&iu2=%@&iu3=%@&ha=%@&pf=%d&pfid=%@", self.strPrefix, adID,(long)[self getSrcType:streamingInfo.strID],streamingInfo.strID, atl, atc, (long)pos, (long)adDur, (long)adPos, (long)retryCount, (long)nStatus, strID, [self getVARegularString:config withAdCall:YES],isOn,errDespriction == nil ? @"" : errDespriction,(long)adt,adProvider,vl*100,adMoreInfo,[[SlikeDeviceSettings sharedSettings] getUserSession : config],sg,iu1,iu2,iu3,adResionType,isPreFetched, pfid];
-
+            
         }else
         {
-        analyticInfo = [NSString stringWithFormat:@"adstats?%@vai=%@&k=%@&atl=%ld&atc=%ld&vp=%ld&adu=%ld&cp=%ld&rt=%ld&evt=%ld&ci=%@%@&m=%i&err=%@&atr=0&adt=%li&s=%@&vl=%f%@&usid=%@&sg=%@&iu1=%@&iu2=%@&iu3=%@&ha=%@&pf=%d&pfid=%@", self.strPrefix, adID, streamingInfo.strID, atl, atc, (long)pos, (long)adDur, (long)adPos, (long)retryCount, (long)nStatus, strID, [self getVARegularString:config withAdCall:YES],isOn,errDespriction == nil ? @"" : errDespriction,(long)adt,adProvider,vl*100,adMoreInfo,[[SlikeDeviceSettings sharedSettings] getUserSession : config],sg,iu1,iu2,iu3,adResionType,isPreFetched, pfid];
+            analyticInfo = [NSString stringWithFormat:@"adstats?%@vai=%@&k=%@&atl=%ld&atc=%ld&vp=%ld&adu=%ld&cp=%ld&rt=%ld&evt=%ld&ci=%@%@&m=%i&err=%@&atr=0&adt=%li&s=%@&vl=%f%@&usid=%@&sg=%@&iu1=%@&iu2=%@&iu3=%@&ha=%@&pf=%d&pfid=%@", self.strPrefix, adID, streamingInfo.strID, atl, atc, (long)pos, (long)adDur, (long)adPos, (long)retryCount, (long)nStatus, strID, [self getVARegularString:config withAdCall:YES],isOn,errDespriction == nil ? @"" : errDespriction,(long)adt,adProvider,vl*100,adMoreInfo,[[SlikeDeviceSettings sharedSettings] getUserSession : config],sg,iu1,iu2,iu3,adResionType,isPreFetched, pfid];
         }
     }
     SlikeDLog(@"Ad analyticInfo_Sanajy %@",analyticInfo);
@@ -1091,10 +1100,11 @@ static void TWEndNetworkActivity() {
     
     [SlikeSharedDataCache sharedCacheManager].cssId =  [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:config.mediaId];
     
-    __block  NSString *analyticInfo = [NSString stringWithFormat:@"savelogs?at=%ld&apikey=%@&css=%@&type=init&k=%@",playerStatus,[[SlikeDeviceSettings sharedSettings] getKey],[SlikeSharedDataCache sharedCacheManager].cssId  ,config.mediaId];
+    __block  NSString *analyticInfo = [NSString stringWithFormat:@"savelogs?at=%ld&apikey=%@&css=%@&type=init&k=%@",(long)playerStatus,[[SlikeDeviceSettings sharedSettings] getKey],[SlikeSharedDataCache sharedCacheManager].cssId  ,config.mediaId];
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,analyticInfo];
-    
+   requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1143,7 +1153,7 @@ static void TWEndNetworkActivity() {
         
         if((streamDuration - streamPostion) < 100) {
             streamPostion = streamDuration;
-            NSLog (@"%ld", (long)streamPostion);
+            //NSLog (@"%ld", (long)streamPostion);
         }
         
         if(streamDuration < 0) {
@@ -1165,7 +1175,7 @@ static void TWEndNetworkActivity() {
     } else {
         playerVolume = YES;
     }
-
+    
     __block  NSString *analyticInfo = @"";
     BOOL isPlayerStatusForPostRollOff = NO;
     if(playerStatus == 121)
@@ -1186,7 +1196,7 @@ static void TWEndNetworkActivity() {
         analyticInfo = [NSString stringWithFormat:@"%@&skpr=1",analyticInfo];
     }
     
-
+    
     if(config.isPostrollEnabled == OFF)
     {
         analyticInfo = [NSString stringWithFormat:@"%@&skps=1",analyticInfo];
@@ -1199,17 +1209,17 @@ static void TWEndNetworkActivity() {
     
     if(playerStatus == 120)
     {
-             if(config.isPrerollEnabled == OFF && !isPlayerStatusForPostRollOff)
-             {
-                 analyticInfo = [NSString stringWithFormat:@"%@&adt=1&adr=-1",analyticInfo];
-             }else if(config.isPostrollEnabled == OFF && isPlayerStatusForPostRollOff)
-
-             {
-                 analyticInfo = [NSString stringWithFormat:@"%@&adt=3&adr=-1",analyticInfo];
-             }
+        if(config.isPrerollEnabled == OFF && !isPlayerStatusForPostRollOff)
+        {
+            analyticInfo = [NSString stringWithFormat:@"%@&adt=1&adr=-1",analyticInfo];
+        }else if(config.isPostrollEnabled == OFF && isPlayerStatusForPostRollOff)
+            
+        {
+            analyticInfo = [NSString stringWithFormat:@"%@&adt=3&adr=-1",analyticInfo];
+        }
     }
-
-  
+    
+    
     if(replayCount>0) {
         replayCount = 1;
         analyticInfo = [NSString stringWithFormat:@"%@&rpc=%ld",analyticInfo,(long)replayCount];
@@ -1221,10 +1231,9 @@ static void TWEndNetworkActivity() {
     } else {
         analyticInfo = [NSString stringWithFormat:@"%@&rid=%@",analyticInfo,rid];
     }
-    if(ENABLE_LOG)
-    {
-    NSLog(@"Sanajay Analytics %@",analyticInfo);
-    }
+   
+    //NSLog(@"urlurlurlurlurl-> %@",analyticInfo);
+
     if(playerStatus == 1)
     {
         if([SlikeSharedDataCache sharedCacheManager].cssId && [[SlikeSharedDataCache sharedCacheManager].cssId  length] >0)
@@ -1234,7 +1243,7 @@ static void TWEndNetworkActivity() {
         NSString *aUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,analyticInfo];
         aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-        //SlikeDLog(@"AURL %@" , aUrl);
+        SlikeDLog(@"AURL %@" , aUrl);
         double CurrentTimeNew = CACurrentMediaTime();
         nTotalPlayedTimestamp = CurrentTimeNew;
         
@@ -1261,6 +1270,8 @@ static void TWEndNetworkActivity() {
                                 dict = [dict objectForKey:@"body"];
                             }
                             SlikeDLog(@"Video %@",dict);
+                            SlikeDLog(@"ss = >  %@",[dict stringForKey:@"ss"]);
+
                             if([dict isValidDictonary]) {
                                 
                                 if([dict stringForKey:@"ss"]) {
@@ -1331,7 +1342,7 @@ static void TWEndNetworkActivity() {
         }];
         
     } else {
-       
+        
         [self writeAnalyticsInDocumnet:analyticInfo];
         
         if(nTotalPlayedTimestamp > 0) {
@@ -1380,7 +1391,8 @@ static void TWEndNetworkActivity() {
     if([dict stringForKey:@"ts"]){
         streamingInfo.strTS = [dict stringForKey:@"ts"];
     }
-    if([dict stringForKey:@"interval"]) {
+    if([dict stringForKey:@"interval"])
+    {
         [[SlikeDeviceSettings sharedSettings] setServerPingInterval:[[dict stringForKey:@"interval"] integerValue]];
         
         if([dict objectForKey:@"playstat"]) {
@@ -1482,8 +1494,10 @@ static void TWEndNetworkActivity() {
                     if(errorInformation && errorInformation!=nil && ![errorInformation isKindOfClass:[NSNull class]]) {
                         
                         errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
-                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&&" withString:@"`"];
-                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&" withString:@"`"];
+                    //@Ravi and @utasav and @nialy
+
+//                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&&" withString:@"`"];
+//                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&" withString:@"`"];
                         
                         if(self->strAnalyticsBaseURL != nil && self->strAnalyticsBaseURL.length == 0) return;
                         
@@ -1561,9 +1575,9 @@ static void TWEndNetworkActivity() {
             NSURL* url = [NSURL URLWithString:webStringURL];
             
             [self removeAnalyticFileFromLocal];
-            if(ENABLE_LOG)
+            if(!ENABLE_LOG)
             {
-            NSLog(@"urlurlurlurlurl-> %@",url);
+                //NSLog(@"urlurlurlurlurl-> %@",url);
             }
             [[SlikeNetworkManager defaultManager] requestURL:url type:NetworkHTTPMethodPOST completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
                 
@@ -1661,7 +1675,8 @@ static void TWEndNetworkActivity() {
     NSString *analyticInfoString = [NSString stringWithFormat:@"savelogs?%@%@", analyticInfo, [[SlikeDeviceSettings sharedSettings] getSlikeAnalyticsCache]];
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",baseUrl, analyticInfoString];
-    
+    requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
     SlikeDLog(@"EMBEDED PLAYER- Analytics - %@ ", requestUrl);
     
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
@@ -1769,8 +1784,8 @@ static void TWEndNetworkActivity() {
 - (void)serverPingStatus :(NSInteger) status withCompletionBlock:(SlikeNetworkManagerCompletionBlock) completionBlock {
     
     NSString *aUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,@"check"];
-     aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:aUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         if (statusCode == 200) {
@@ -1826,9 +1841,11 @@ static void TWEndNetworkActivity() {
     NSString *analyticInfoString = [NSString stringWithFormat:@"adstats?%@%@", analyticInfo, [[SlikeDeviceSettings sharedSettings] getSlikeAnalyticsCache]];
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",baseUrl, analyticInfoString];
+   requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
     if(ENABLE_LOG)
     {
-        NSLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
+       // NSLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
     }
     
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
@@ -2050,7 +2067,7 @@ static void TWEndNetworkActivity() {
         }
         else  if([src isEqualToString:@"m3"])
         {
-
+            
         }else  if([src isEqualToString:@"gf"])
         {
         }
@@ -2062,5 +2079,15 @@ static void TWEndNetworkActivity() {
         }
     }
     return v;
+}
+-(void)sentCuePointAnalytics:(SLCueMDO*)model withSlikeConfig:(SlikeConfig*)config
+{
+    if(config == nil || model ==  nil)
+    {
+        return;
+    }
+    NSString *analyticInfo = @"";
+    analyticInfo = [NSString stringWithFormat:@"cue?msgid=%@&ss=%@&ts=%@&k=%@&cm=%d&lt=%ld",model.cueID,config.streamingInfo.strSS,config.streamingInfo.strTS,config.streamingInfo.strID,model.isJson,(long)model.latency];
+    [self writeAnalyticsInDocumnet:analyticInfo];
 }
 @end

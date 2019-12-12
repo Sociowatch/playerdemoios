@@ -14,6 +14,7 @@
     if (self = [super init]) {
         _startPoistion = 0L;
         _adContents = [[NSMutableArray alloc]init];
+        _staticAdContents = [[NSMutableArray alloc]init];
         _skipCounter = 0L;
         _isPlayed = NO;
         _adType = SL_NONE;
@@ -31,6 +32,7 @@
 - (void)addPosition:(NSInteger)start withAdUnit:(SlikeAdsUnit *)adsUnit {
      self.startPoistion = start;
     [self.adContents addObject:adsUnit];
+    [self.staticAdContents addObject:adsUnit];
 }
 
 @end

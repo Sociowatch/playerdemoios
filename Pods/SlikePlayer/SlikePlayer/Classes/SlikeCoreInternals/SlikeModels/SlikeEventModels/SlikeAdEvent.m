@@ -36,6 +36,7 @@
     _errCode = @"";
     _advertiserName = @"";
     _contentType = @"";
+    _extranlAdFail = NO;
     return self;
     
 }

@@ -124,7 +124,7 @@ NSString * const SlikeEventManagerModelKey =
  */
 + (NSString *)formatTime:(NSInteger) elapsedSeconds {
     
-    if(elapsedSeconds <= 0) return @"";
+    if(elapsedSeconds <= 0) return @"00:00";
     NSUInteger h = elapsedSeconds / 3600;
     NSUInteger m = (elapsedSeconds / 60) % 60;
     NSUInteger s = elapsedSeconds % 60;
@@ -382,12 +382,14 @@ NSString * const SlikeEventManagerModelKey =
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     
     strData = [strData stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
-    strData = [strData stringByReplacingOccurrencesOfString:@"&&" withString:@"`"];
-    strData = [strData stringByReplacingOccurrencesOfString:@"&" withString:@"`"];
+    //@Ravi and @utasav and @nialy
     NSString*  formattedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
                                                                                                        NULL,                                                                                                                      (CFStringRef)strData,                                                                                                                      NULL,                                                                                                                      (CFStringRef)@"!*'();:@&=+$,/?%#[]",                                                                                                                      kCFStringEncodingUTF8 ));
 #pragma clang diagnostic pop
+    if(formattedString != nil && [formattedString isKindOfClass:[NSString class]])
+    {
     return formattedString;
+    }else return @"";
     
 }
 
@@ -571,5 +573,21 @@ NSString * const SlikeEventManagerModelKey =
     
     return searchIndex;
 }
+
+/**
+ Convert the dictonary to String
+ @param dictonary - Source Dictonary
+ @return return value description
+ */
+
++ (NSData *)dictToJSONSData:(NSDictionary *)dictonary {
+    
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictonary
+                                                       options:0
+                                                         error:&error];
+    return [[NSData alloc] initWithData:jsonData];
+}
+
 
 @end

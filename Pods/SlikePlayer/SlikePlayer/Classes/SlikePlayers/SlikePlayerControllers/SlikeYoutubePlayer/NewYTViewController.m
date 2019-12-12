@@ -536,7 +536,7 @@
 }
 
 -(BOOL) isFullScreen {
-    return self.playerView;
+    return NO;
 }
 
 - (void)toggleFullScreen {
@@ -607,7 +607,10 @@
 - (void)updateCustomBitrate:(Stream*)obj {
     //DO NOTHING.
 }
-
+- (void)updateCustomBitrateNew:(NSInteger)type
+{
+    
+}
 -(void)hideBitrateChooser {
 }
 //Add These methods
@@ -648,6 +651,10 @@
 
 - (NSString *)currentBitRateURI {
     return  @"";
+}
+-(NSInteger)currentBitRateType
+{
+    return 0;
 }
 -(float) getLoadTimeRange {
     return 0;
@@ -709,5 +716,10 @@
 - (void)getScreenShotAtPosition:(NSInteger)position withCompletionBlock:(void (^)(UIImage *image))completion {
     completion(nil);
 }
+
+- (BOOL)isAdPaused {
+    return NO;
+}
+
 
 @end

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SPLM3U8ExtXStreamInfList.h"
+#import "ISlikePlayer.h"
 
 @class SlikeAdsQueue;
 @class SlikeBitratesModel;
@@ -233,5 +234,24 @@ CSS ID
  */
 @property (nonatomic, strong) SPLM3U8ExtXStreamInfList *xStreamList;
 @property (nonatomic, assign) BOOL isEncrypted;
+@property (nonatomic, weak) id<ICueHandler> cueHandler;
+
+
+
+#pragma mark - Utility Methods for handling Audio
+/**
+ Cache the Config with associated stream information. Can be access through the media Id
+ 
+ @param slikeConfig - Config with associated Stream
+ @param mediaId - Media Id => Associated Data
+ */
+- (void)cacheAudioConfigStream:(SlikeConfig *)slikeConfig forMediaId:(NSString *)mediaId;
+- (SlikeConfig *)cachedAudioConfigStreamForMediaId:(NSString *)mediaId;
+- (BOOL)isCachedAudioConfigStreamForMediaId:(NSString *)mediaId;
+-(SlikeAdsQueue*)setAdPriortyValues:(SlikeAdsQueue*)adInfo;
+@property(nonatomic, assign) BOOL canDownload;
+@property(nonatomic, assign) NSInteger storagelimit;
+@property(nonatomic, assign) NSInteger trackLimit;
+@property(nonatomic,strong) NSArray *adPriority;
 
 @end

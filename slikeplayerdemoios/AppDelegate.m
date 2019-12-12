@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#define apikey @"tnr24ios5a8cg6zu6g"
+#define apikey @"toi371ios5asxo9lozg"
 #import <SlikePlayer/SlikePlayer.h>
 
 @interface AppDelegate ()
@@ -31,6 +31,8 @@
     if ([apikey length]> 0) {
         [[SlikePlayerSettings playerSettingsInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
     }
+//    [[SlikePlayerSettings playerSettingsInstance] setAdPriority:[NSArray arrayWithObjects:@"SL_IMA",@"SL_FAN", nil] withSoftCancellation:YES];
+    
     return YES;
 }
 

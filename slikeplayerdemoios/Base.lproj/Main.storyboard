@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,7 +13,7 @@
                 <navigationController id="0kg-Qy-Vd7" sceneMemberID="viewController">
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="B6L-eW-SC4">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -30,7 +27,7 @@
         <!--Slike Player-->
         <scene sceneID="cCh-rO-yxv">
             <objects>
-                <viewController id="FFq-mn-aIX" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BaseViewController" id="FFq-mn-aIX" customClass="BaseViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Vnp-Kx-Tco"/>
                         <viewControllerLayoutGuide type="bottom" id="NMi-R6-l5R"/>
@@ -40,21 +37,49 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G7W-64-k1M">
-                                <rect key="frame" x="16" y="312.5" width="343" height="42"/>
+                                <rect key="frame" x="16" y="227.5" width="343" height="42"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="Wsn-Uh-y4M"/>
                                 </constraints>
                                 <state key="normal" title="Start Player"/>
                                 <connections>
-                                    <segue destination="3Hl-h7-KSh" kind="push" id="wjN-r7-5K3"/>
+                                    <action selector="startSlikePlayer:" destination="FFq-mn-aIX" eventType="touchUpInside" id="x04-nY-ehA"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dN1-uX-rY1">
+                                <rect key="frame" x="16" y="317" width="343" height="42"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="kvZ-t5-3MB"/>
+                                </constraints>
+                                <state key="normal" title="Start Youtube (slike id)"/>
+                                <connections>
+                                    <action selector="startSlikeYoutube:" destination="FFq-mn-aIX" eventType="touchUpInside" id="Kih-TU-ojP"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1t8-rO-Vna">
+                                <rect key="frame" x="16" y="397" width="343" height="42"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="42" id="mKf-0L-7zt"/>
+                                </constraints>
+                                <state key="normal" title="Start Youtube(youtube Id)"/>
+                                <connections>
+                                    <action selector="directYoutubePlay:" destination="FFq-mn-aIX" eventType="touchUpInside" id="qWo-Wm-U9F"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="G7W-64-k1M" firstAttribute="centerY" secondItem="yLB-h9-8tz" secondAttribute="centerY" id="6Mw-z1-Fbj"/>
+                            <constraint firstItem="dN1-uX-rY1" firstAttribute="trailing" secondItem="1t8-rO-Vna" secondAttribute="trailing" id="2Bu-Jc-Qgn"/>
+                            <constraint firstItem="G7W-64-k1M" firstAttribute="centerY" secondItem="yLB-h9-8tz" secondAttribute="centerY" constant="-85" id="6Mw-z1-Fbj"/>
+                            <constraint firstItem="dN1-uX-rY1" firstAttribute="leading" secondItem="G7W-64-k1M" secondAttribute="leading" id="Hs3-7H-wPj"/>
+                            <constraint firstItem="dN1-uX-rY1" firstAttribute="top" secondItem="G7W-64-k1M" secondAttribute="bottom" constant="47.5" id="UXG-z3-o9l"/>
                             <constraint firstItem="G7W-64-k1M" firstAttribute="leading" secondItem="yLB-h9-8tz" secondAttribute="leadingMargin" id="aLB-iC-PjC"/>
+                            <constraint firstItem="dN1-uX-rY1" firstAttribute="leading" secondItem="1t8-rO-Vna" secondAttribute="leading" id="gtj-1r-EsC"/>
+                            <constraint firstItem="1t8-rO-Vna" firstAttribute="top" secondItem="dN1-uX-rY1" secondAttribute="bottom" constant="38" id="nnF-vG-an0"/>
+                            <constraint firstItem="dN1-uX-rY1" firstAttribute="trailing" secondItem="G7W-64-k1M" secondAttribute="trailing" id="pNO-DH-HtZ"/>
                             <constraint firstItem="G7W-64-k1M" firstAttribute="trailing" secondItem="yLB-h9-8tz" secondAttribute="trailingMargin" id="tah-7e-xRS"/>
                         </constraints>
                     </view>
@@ -67,7 +92,7 @@
         <!--Slike Player-->
         <scene sceneID="aYu-cd-MUG">
             <objects>
-                <viewController id="3Hl-h7-KSh" customClass="DemoViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DemoViewController" id="3Hl-h7-KSh" customClass="DemoViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1bo-Qp-KhT"/>
                         <viewControllerLayoutGuide type="bottom" id="Acz-Va-wIm"/>
@@ -77,14 +102,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HLi-01-mdq">
-                                <rect key="frame" x="0.0" y="64" width="375" height="240"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="240"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="240" id="Jba-Vi-0rS"/>
                                 </constraints>
                             </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XyI-PC-mWT">
-                                <rect key="frame" x="0.0" y="304" width="375" height="363"/>
+                                <rect key="frame" x="0.0" y="240" width="375" height="427"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -109,7 +134,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vau-bj-PpQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-575.20000000000005" y="445.72713643178412"/>
+            <point key="canvasLocation" x="-623" y="473"/>
         </scene>
     </scenes>
 </document>

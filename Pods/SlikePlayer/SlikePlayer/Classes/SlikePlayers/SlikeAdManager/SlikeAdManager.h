@@ -15,6 +15,7 @@ OBJC_EXTERN NSString * const kSlikeAdErrMessageKey;
 OBJC_EXTERN NSString * const kSlikeAdErrCodeKey;
 OBJC_EXTERN NSString * const kSlikeAdAdInfoKey;
 OBJC_EXTERN NSString * const kSlikeAdAdTypeKey;
+OBJC_EXTERN NSString * const kSlikeNormalAdFailKey;
 
 
 @interface SlikeAdManager : NSObject
@@ -31,4 +32,19 @@ OBJC_EXTERN NSString * const kSlikeAdAdTypeKey;
  @param position - PRE-(0)|POST-(-1)|MID
  */
 - (void)showAd:(SlikeConfig *)slikeConfig adContainerView:(UIView *)adsContainer forAdPosition:(NSInteger)position;
+
+
+/**
+ Pause current Media Ad
+ */
+- (void)pauseAd;
+
+/**
+ Resume Media Ad
+ */
+- (void)resumeAd;
+
+- (BOOL)isAdPaused;
+- (void)cleanupAdManager:(void (^)(void))completionBlock;
+-(BOOL)isPreFetchAvailble;
 @end

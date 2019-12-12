@@ -143,16 +143,17 @@
         self.isFirstTimePlay = NO;
     }
     
-    if(status ==  SL_ENDED || status ==  SL_COMPLETED || status == SL_REPLAY) {
+    if(status == SL_REPLAY)
+    {
         [[SlikeDeviceSettings sharedSettings] setVideoRid:configModel.mediaId];
     }
     
-    if(previousState == SL_COMPLETED && status == SL_ENDED) {
+    if(previousState == SL_COMPLETED && status == SL_ENDED && status != SL_START && status != SL_READY && previousState != SL_REPLAY) {
         return;
     }
-    if(previousState == SL_ENDED) {
-        return;
-    }
+//    if(previousState == SL_ENDED) {
+//        return;
+//    }
     previousState=status;
     
     SlikeDLog(@"strSS ===>>> : %@", self.slikeconfig.streamingInfo.strSS);
@@ -184,6 +185,9 @@
     else  if(self.isCompleted && status ==SL_REPLAY)
     {
         [self sendEvent:@"VIDEOREPLAY" Action:[self _getActionForCurrentVideoSource] Label:[self _getLabelForCurrentVideoSource]];
+        
+        [self sendEvent:@"VIDEOREQUEST" Action:[self _getActionForCurrentVideoSource] Label:[self _getLabelForCurrentVideoSource]];
+        
         [self _addComScoreMetaDataVideo:self.slikeconfig PlayerStatus:status];
         
         nTotalBufferDuration = 0;
@@ -231,7 +235,18 @@
         [self _addComScoreMetaDataVideo:self.slikeconfig PlayerStatus:status];
         if(status == SL_START)
         {
-            [self sendEvent:@"VIDEOVIEW" Action:[self _getActionForCurrentVideoSource] Label:[self _getLabelForCurrentVideoSource]];
+            if(_isCompleted)
+                
+            {
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_MSEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                    [self sendEvent:@"VIDEOVIEW" Action:[self _getActionForCurrentVideoSource] Label:[self _getLabelForCurrentVideoSource]];
+                });
+                
+            }else
+            {
+                [self sendEvent:@"VIDEOVIEW" Action:[self _getActionForCurrentVideoSource] Label:[self _getLabelForCurrentVideoSource]];
+            }
         }
     }
     else if(status == SL_PLAYING)
@@ -318,7 +333,7 @@
         self.isCompleted = YES;
     }
     
-    if(nStatus == 1 || nStatus == 2 || nStatus == 10 || nStatus == 8 || nStatus == 7|| isPause) {
+    if(nStatus == 1 || nStatus == 2 || nStatus == 10 || nStatus == 8 || nStatus == 7|| isPause || nStatus == 105) {
         nTotalBufferDuration = 0;
         nTotalPlayedDuration = 0;
         double currentTime = CACurrentMediaTime()*1000;
@@ -411,14 +426,14 @@
     NSString *returnString =  @"";
     if(self.slikeconfig.streamingInfo != nil)
     {
-//        returnString = [NSString stringWithFormat:@"%@/%@/%@/%@",[SlikeUtilities getVideoTitle:self.slikeconfig],self.slikeconfig.streamingInfo.vendorName,self.slikeconfig.streamingInfo.isLive?@"LIVE":@"VOD",[SlikeUtilities formatTime:self.slikeconfig.streamingInfo.nDuration / 1000]];
+        //        returnString = [NSString stringWithFormat:@"%@/%@/%@/%@",[SlikeUtilities getVideoTitle:self.slikeconfig],self.slikeconfig.streamingInfo.vendorName,self.slikeconfig.streamingInfo.isLive?@"LIVE":@"VOD",[SlikeUtilities formatTime:self.slikeconfig.streamingInfo.nDuration / 1000]];
         returnString = [NSString stringWithFormat:@"%@/%@/%@/%ld",[SlikeUtilities getVideoTitle:self.slikeconfig],self.slikeconfig.streamingInfo.vendorName,self.slikeconfig.streamingInfo.isLive?@"LIVE":@"VOD",(long)self.slikeconfig.streamingInfo.nDuration];
-
+        
     }else
     {
         returnString = [NSString stringWithFormat:@"%@/%@/%@/%ld",[SlikeUtilities getVideoTitle:self.slikeconfig],@"",@"",(long)self.slikeconfig.streamingInfo.nDuration];
-
-//        returnString = [NSString stringWithFormat:@"%@/%@/%@/%@",[SlikeUtilities getVideoTitle:self.slikeconfig],@"",@"",[SlikeUtilities formatTime:self.slikeconfig.streamingInfo.nDuration / 1000]];
+        
+        //        returnString = [NSString stringWithFormat:@"%@/%@/%@/%@",[SlikeUtilities getVideoTitle:self.slikeconfig],@"",@"",[SlikeUtilities formatTime:self.slikeconfig.streamingInfo.nDuration / 1000]];
     }
     return returnString;
 }
@@ -710,34 +725,33 @@
     if(eventModel.adEventModel.errCode &&  [eventModel.adEventModel.errCode length]>0)
     {
         returnString = [NSString stringWithFormat:@"%@/%@/%@/%@/%ld/%@/%@/%@",eventModel.adEventModel.adTitle,adSource,eventModel.adEventModel.advertiserName,eventModel.adEventModel.contentType,(long)eventModel.adEventModel.adDuration,eventModel.adEventModel.isSkippable,adType,eventModel.adEventModel.errCode];
-
         
-       // returnString = [NSString stringWithFormat:@"%@/%@/%@/%@/%@/%ld/%@/%@",eventModel.adEventModel.adTitle,adSource,eventModel.adEventModel.advertiserName,eventModel.adEventModel.contentType,adType,(long)eventModel.adEventModel.adDuration,eventModel.adEventModel.isSkippable,eventModel.adEventModel.errCode];
+        
+        // returnString = [NSString stringWithFormat:@"%@/%@/%@/%@/%@/%ld/%@/%@",eventModel.adEventModel.adTitle,adSource,eventModel.adEventModel.advertiserName,eventModel.adEventModel.contentType,adType,(long)eventModel.adEventModel.adDuration,eventModel.adEventModel.isSkippable,eventModel.adEventModel.errCode];
         
     }else
     {
         returnString = [NSString stringWithFormat:@"%@/%@/%@/%@/%ld/%@/%@",eventModel.adEventModel.adTitle,adSource,eventModel.adEventModel.advertiserName,eventModel.adEventModel.contentType,(long)eventModel.adEventModel.adDuration,eventModel.adEventModel.isSkippable,adType];
     }
-    NSLog(@"Aravind Kumar ===> %@",returnString);
     return returnString;
 }
 - (NSString*)_getLabelForCurrentAdSource :(EventModel *)eventModel
+{
+    
+    NSString *returnString =  @"";
+    NSString * section = self.slikeconfig.section;
+    
+    if(section == nil || [section isEqualToString:@""])
     {
-        
-        NSString *returnString =  @"";
-        NSString * section = self.slikeconfig.section;
-        
-        if(section == nil || [section isEqualToString:@""])
-        {
-            section = self.slikeconfig.screenName;
-        }
-        //change later
-        NSString *videoPostion =  @"";
-        NSString *pageTemp =  self.slikeconfig.pageTemplate;
-        pageTemp =  [pageTemp stringByReplacingOccurrencesOfString:@"/" withString:@"."];
-        returnString = [NSString stringWithFormat:@"%@/%@/%@/%@/%@/%@",@"IOS",self.slikeconfig.business,section,pageTemp,videoPostion,self.slikeconfig.isAutoPlay?@"autoplay":@"user-gen"];
-        return returnString;
+        section = self.slikeconfig.screenName;
     }
+    //change later
+    NSString *videoPostion =  @"";
+    NSString *pageTemp =  self.slikeconfig.pageTemplate;
+    pageTemp =  [pageTemp stringByReplacingOccurrencesOfString:@"/" withString:@"."];
+    returnString = [NSString stringWithFormat:@"%@/%@/%@/%@/%@/%@",@"IOS",self.slikeconfig.business,section,pageTemp,videoPostion,self.slikeconfig.isAutoPlay?@"autoplay":@"user-gen"];
+    return returnString;
+}
 //    {
 //
 //
@@ -778,7 +792,7 @@
     
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
     
-    NSString *analyticsString = [NSString stringWithFormat:@"type=%@&k=%@&ch=%@&tpr=%@&vid=%@&at=%@&pd=%ld&ss=%@&du=%ld&ts=%@&pt=%ld&stt=%ld&tb=%@%@", eventModel.playerEventModel.type, self.slikeconfig.mediaId, self.slikeconfig.channel,self.slikeconfig.product,self.slikeconfig.vendorID,eventModel.playerEventModel.eventType, eventModel.playerEventModel.playerPosition,self.slikeconfig.streamingInfo.strSS, (long)eventModel.playerEventModel.playerDuration, self.slikeconfig.streamingInfo.strTS, (long)eventModel.playerEventModel.playerType, eventModel.playerEventModel.currentPlayer,self.slikeconfig.business,[self.slikeconfig toString]];
+    NSString *analyticsString = [NSString stringWithFormat:@"type=%@&k=%@&ch=%@&tpr=%@&vid=%@&at=%@&pd=%ld&ss=%@&du=%ld&ts=%@&pt=%ld&stt=%ld&tb=%@%@", eventModel.playerEventModel.type, self.slikeconfig.mediaId, self.slikeconfig.channel,self.slikeconfig.product,self.slikeconfig.vendorID,eventModel.playerEventModel.eventType, eventModel.playerEventModel.playerPosition,self.slikeconfig.streamingInfo.strSS, (long)eventModel.playerEventModel.playerDuration, self.slikeconfig.streamingInfo.strTS, (long)eventModel.playerEventModel.playerType, (long)eventModel.playerEventModel.currentPlayer,self.slikeconfig.business,[self.slikeconfig toString]];
     
     [self processAnalyticsRequest:analyticsString];
     
@@ -794,7 +808,7 @@
     
     NSString *analyticsString = [NSString stringWithFormat:@"type=%@&k=%@&ch=%@&tpr=%@&vid=%@&at=%@&ss=%@&ts=%@&pt=%ld&stt=%ld&tb=%@%@",eventModel.playerEventModel.type, self.slikeconfig.mediaId, self.slikeconfig.channel,self.slikeconfig.product,self.slikeconfig.vendorID,
                                  eventModel.playerEventModel.eventType, self.slikeconfig.streamingInfo.strSS, self.slikeconfig.streamingInfo.strTS, (long)eventModel.playerEventModel.playerType, (long)eventModel.playerEventModel.currentPlayer,self.slikeconfig.business,[self.slikeconfig toString]];
-   
+    
     NSLog(@"%@",analyticsString);
     
     [self processAnalyticsRequest:analyticsString];

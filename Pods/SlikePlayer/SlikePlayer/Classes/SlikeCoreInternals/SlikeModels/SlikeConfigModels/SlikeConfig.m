@@ -22,6 +22,7 @@
 
 - (void)initializeData {
     
+    self.isInitialPlayerMute =  NO;
     self.isBackGrounPlayEnable =  NO;
     self.isControlDisable = NO;
     self.gca = @"";
@@ -95,7 +96,28 @@
     _enableCoachMark = NO;
     self.isNoNetworkCloseControlEnable =  NO;
     _enableAirPlay = YES;
-
+    _resumeDuckAds = NO;
+    self.enableCloseButtonForAlert = YES;
+    
+    self.cuePointPolling = 3;
+    self.cueExpTime =  13000;
+    self.minCueTrigTime =  11000;
+    self.syncTimeDiff = 10800000;
+    
+    self.timeInterverForPauseHandle = 30.0;
+    self.polTimerIncreaseAfterSpecficTime = 6.0;
+    self.liveErrorPollingInterval = 3.0;
+    self.liveErrorPollingIntialInterval =  10.0;
+    _disableOrientation = NO;
+    
+    //Audio Player
+    _canDownload = false;
+    _storagelimit = 90;
+    _trackLimit = 0;
+    _enableManifestCache = YES;
+    self.externalAdArray =  [NSArray array];
+    
+    
 }
 
 - (id)initWithTitle:(NSString *) strTitle withID:(NSString *) strMediaId withSection:(NSString *) strSection withMSId:(NSString *) strMsId posterImage:(NSString*)strPosterImage {

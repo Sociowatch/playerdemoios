@@ -263,7 +263,10 @@
 - (void)updateCustomBitrate:(Stream*)obj {
     //DO NOTHING.
 }
-
+- (void)updateCustomBitrateNew:(NSInteger)type
+{
+    
+}
 - (void)setNativeControl:(BOOL) isNative {
     self.isNativeControls = isNative;
 }
@@ -271,7 +274,10 @@
 - (NSString*)currentBitRateURI {
     return @"";
 }
-
+-(NSInteger)currentBitRateType
+{
+    return 0;
+}
 - (void)hideBitrateChooser {
 }
 
@@ -299,6 +305,10 @@
 
 - (void)getScreenShotAtPosition:(NSInteger)position withCompletionBlock:(void (^)(UIImage *))completion {
     completion(nil);
+}
+
+- (BOOL)isAdPaused {
+    return NO;
 }
 
 

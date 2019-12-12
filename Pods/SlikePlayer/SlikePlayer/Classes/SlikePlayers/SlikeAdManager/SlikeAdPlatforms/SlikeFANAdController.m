@@ -52,11 +52,12 @@
 #endif
     }
     
-    
     if (self.adView && [self.adView superview]) {
         [_adView removeFromSuperview];
         self.adView=nil;
     }
+    //327541940615355_2332170303485832
+    
     self.adView = [[FBInstreamAdView alloc] initWithPlacementID:_adUnitModel.strAdURL];
     self.adView.autoresizesSubviews = YES;
     self.adView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
@@ -124,16 +125,15 @@
     if (error.localizedDescription) {
         errMessage = error.localizedDescription;
     }
-    NSLog(@"%@",errMessage);
     NSString *errCode = [NSString stringWithFormat:@"%ld", (long)error.code];
-//    NSDictionary *payload = @{
-//                              kSlikeAdDescriptionKey:errMessage,
-//                              kSlikeAdErrCodeKey:errCode,
-//                              };
+    //    NSDictionary *payload = @{
+    //                              kSlikeAdDescriptionKey:errMessage,
+    //                              kSlikeAdErrCodeKey:errCode,
+    //                              };
     NSDictionary *payload = @{
-                              kSlikeAdDescriptionKey:errCode,
-                              kSlikeAdErrCodeKey:errCode,
-                              };
+        kSlikeAdDescriptionKey:errCode,
+        kSlikeAdErrCodeKey:errCode,
+    };
     if (self.eventsDelegate && [self.eventsDelegate respondsToSelector:@selector(slikeAdEventDidReceiveAdEvent:withPayload:)]) {
         [_eventsDelegate slikeAdEventDidReceiveAdEvent:_adEvent withPayload:payload];
     }
@@ -154,16 +154,19 @@
 /**
  Remove all the components
  */
-- (void)removeAdsComponents {
-
-    self.eventsDelegate=nil;
-    if (self.adView) {
-        self.adView.delegate=nil;
-        if ([self.adView superview]) {
-           [_adView removeFromSuperview];
+- (void)removeAdsComponents:(void (^)(void))completionBlock
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.eventsDelegate=nil;
+        if (self.adView) {
+            self.adView.delegate=nil;
+            if ([self.adView superview]) {
+                [self->_adView removeFromSuperview];
+            }
+            self.adView=nil;
         }
-        self.adView=nil;
-    }
+        completionBlock();
+    });
 }
 
 /**
@@ -193,14 +196,14 @@
         
         NSString *errMessage = @"unable to load";
         NSString *errCode = [NSString stringWithFormat:@"%ld", (long)400];
-//        NSDictionary *payload = @{
-//                                   kSlikeAdDescriptionKey:errMessage,
-//                                   kSlikeAdErrCodeKey:errCode,
-//                                  };
+        //        NSDictionary *payload = @{
+        //                                   kSlikeAdDescriptionKey:errMessage,
+        //                                   kSlikeAdErrCodeKey:errCode,
+        //                                  };
         NSDictionary *payload = @{
-                                  kSlikeAdDescriptionKey:errCode,
-                                  kSlikeAdErrCodeKey:errCode,
-                                  };
+            kSlikeAdDescriptionKey:errCode,
+            kSlikeAdErrCodeKey:errCode,
+        };
         if (self.eventsDelegate && [self.eventsDelegate respondsToSelector:@selector(slikeAdEventDidReceiveAdEvent:withPayload:)]) {
             [_eventsDelegate slikeAdEventDidReceiveAdEvent:_adEvent withPayload:payload];
         }
@@ -237,7 +240,7 @@
  */
 - (void)resumeAd {
     if (_isAdPlaying) {
-     
+        
     }
 }
 /**
@@ -245,7 +248,7 @@
  */
 - (void)pauseAd {
     if (_isAdPlaying) {
-     
+        
     }
 }
 

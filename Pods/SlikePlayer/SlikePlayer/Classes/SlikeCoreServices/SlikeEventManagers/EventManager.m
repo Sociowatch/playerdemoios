@@ -158,9 +158,15 @@
         if (eventType == MEDIA) {
             if(state == SL_REPLAY) {
                 self.callBackHandler(MEDIA, SL_READY, progressInfo);
-            } else {
+            }
+            else if(state == SL_MUSIC_ITEM) {
+                StatusInfo *itemInfo = payload[kSlikeAudioItemInfoKey];
+                self.callBackHandler(MEDIA, state, itemInfo);
+            }
+            else {
                 self.callBackHandler(MEDIA, state, progressInfo);
             }
+            
         } else if (eventType == AD) {
             self.callBackHandler(eventType, state, progressInfo);
             

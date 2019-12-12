@@ -26,6 +26,7 @@
   Ad contents Array
  */
 @property(nonatomic, strong) NSMutableArray<SlikeAdsUnit *> *adContents;
+@property(nonatomic, strong) NSMutableArray<SlikeAdsUnit *> *staticAdContents;
 
 /**
  Skip Counter

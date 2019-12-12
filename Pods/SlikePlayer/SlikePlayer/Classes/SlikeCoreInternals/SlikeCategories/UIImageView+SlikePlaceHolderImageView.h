@@ -13,4 +13,6 @@
 
 - (void)setPlaceHolderImage:(BOOL)isSet configModel:(SlikeConfig* )slikeConfig withPlayerView:(UIView *)playerView;
 
+- (void)setThumbImage:(NSString *)thumbURLString;
+
 @end

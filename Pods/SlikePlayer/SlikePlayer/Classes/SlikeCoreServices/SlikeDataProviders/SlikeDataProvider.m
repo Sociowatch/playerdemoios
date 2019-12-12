@@ -288,4 +288,169 @@
     }
 }
 
+#pragma mark -  Audio Data Provider
+#pragma mark - AudioPlaylist Implementation
+/**
+ Download the Audio Playlist Information from the server
+ 
+ @param slikeIds - Slike Ids... Comma Seprated Ids
+ @param completionHandler - Completion handler
+ */
+- (void)downloadAudioPlaylist:(NSString *)slikeIds resultBlock:(SlikeDataProviderCompletionBlock)completionHandler  {
+    
+    NSString *strBaseURL = [[SlikeSharedDataCache sharedCacheManager]slikeBaseUrlString];
+    NSString *downloadUrl = [NSString stringWithFormat:@"%@feed/playerconfig/%@/r001/%@.json", strBaseURL, @"beta", [[SlikeDeviceSettings sharedSettings] getKey]];
+    
+    [self _audioConfigData:downloadUrl resultBlock:^(id configDataDict, NSError *parseError) {
+        
+        if (parseError) {
+            completionHandler(nil, parseError);
+            return;
+        }
+        
+        [self _downloadAudioListData:slikeIds resultBlock:^(NSDictionary * plalistModels, NSError *parseError) {
+            
+            if (parseError) {
+                completionHandler(nil, parseError);
+                return;
+            }
+            
+            [self _synchronizeConfigWithPlaylist:configDataDict withPlaylistJSON:plalistModels resultBlock:completionHandler];
+        }];
+    }];
+}
+
+- (void)_synchronizeConfigWithPlaylist:(NSDictionary *)configDataDict withPlaylistJSON:(NSDictionary *)playlistDataDict resultBlock:(SlikeDataProviderCompletionBlock)completionHandler {
+    
+    //Enumerate the Audio Items
+    NSMutableArray *configsArray = [[NSMutableArray alloc]init];
+    [playlistDataDict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull mediaId, id  _Nonnull streamInfo, BOOL * _Nonnull stop) {
+        
+        // here need to add into cache
+        SlikeConfig *slikeConfig = [[SlikeConfig alloc]init];
+        slikeConfig.mediaId = mediaId;
+        
+        //need to cache it into global cache to make this for stream model
+        NSData *streamData = [SlikeUtilities dictToJSONSData:streamInfo];
+        NSData *configData = [SlikeUtilities dictToJSONSData:configDataDict];
+        
+        [self createAudioConfigModel:configData mediaId:mediaId slikeConfig:slikeConfig streamData:streamData status:nil];
+        [configsArray addObject:slikeConfig];
+        
+    }];
+    
+    completionHandler(configsArray, nil);
+}
+
+- (void)createAudioConfigModel:(NSData *)configData mediaId:(NSString * _Nonnull)mediaId slikeConfig:(SlikeConfig *)slikeConfig streamData:(NSData *)streamData status:(void(^)(BOOL status))result  {
+    
+    if (!slikeConfig || !streamData || !configData) {
+        if (result) {
+            result(FALSE);
+        }
+        return;
+    }
+    
+    [self _updateConfigModelWithConfigData:slikeConfig withConfigData:configData associatedStream:streamData resultBlock:^(StreamingInfo* slikeStreamModel, NSError *parseError) {
+        
+        if (!parseError) {
+            [[SlikeSharedDataCache sharedCacheManager]cacheStream:streamData forMediaId:mediaId];
+            [[SlikeSharedDataCache sharedCacheManager]cacheAudioConfigStream:slikeConfig forMediaId:mediaId];
+            if (result) {
+                result(TRUE);
+            }
+        } else {
+            if (result) {
+                result(FALSE);
+            }
+        }
+    }];
+}
+
+- (void)_updateConfigModelWithConfigData:(SlikeConfig *)configModel withConfigData:(NSData *)configData associatedStream:(NSData *)streamData resultBlock:(SlikeDataProviderCompletionBlock)completionHandler {
+    
+    SlikeDataParser * parser = [SlikeDataParser slikeDataParser];
+    [parser parseAndUpdateSlikeConfig:configModel withJson:configData resultBlock:^(NSDictionary *configDataDict, NSError *parseError) {
+        if (parseError) {
+            completionHandler(nil, parseError);
+            return;
+        }
+        
+        [parser parseStreamDataAndUpdateSlikeConfig:configModel withStreamJson:streamData withConfigJson:configDataDict resultBlock:^(StreamingInfo* slikeStreamModel, NSError *parseError) {
+            
+            if (parseError) {
+                completionHandler(nil, parseError);
+            } else {
+                completionHandler(slikeStreamModel, nil);
+            }
+        }];
+    }];
+}
+
+/**
+ Get the Audio playlist data from the server
+ 
+ @param playlistSuffix - Playlist Suffix
+ @param completionBlock - Completion Block
+ */
+
+- (void)_downloadAudioListData:(NSString *)playlistSuffix resultBlock:(void(^)(id plalistModelsJSON, NSError* errExists))completionBlock {
+    
+    NSString *strBaseURL =  [[SlikeSharedDataCache sharedCacheManager]slikeBaseUrlString];
+    
+    strBaseURL = @"http://devslike.indiatimes.com:8081";
+    NSString *playlistURL = [NSString stringWithFormat:@"%@/feed/playlist?sids=%@", strBaseURL,playlistSuffix];
+    
+    playlistURL = @"http://videoplayer.indiatimes.com/dev/klug-playlist.json";
+    [[SlikeNetworkInterface sharedNetworkInteface]performGetServiceRequest:[NSURL URLWithString:playlistURL] withCompletionBlock:^(id responseData, NSError *error) {
+        
+        if(!error && responseData) {
+            NSDictionary *playlistJsonDict = [SlikeUtilities jsonDataToDictionary:responseData];
+            completionBlock(playlistJsonDict, nil);
+            
+        } else {
+            completionBlock(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+        }
+    }];
+}
+
+/**
+ Get the configuration data for the audio.
+ 
+ @param configURL - Configuration URL
+ @param completionHandler - Completion handler
+ */
+- (void)_audioConfigData:(NSString *)configURL  resultBlock:(SlikeDataProviderCompletionBlock)completionHandler {
+    
+    NSData *slikeConfigData = [[SlikeSharedDataCache sharedCacheManager]cachedSlikeConfigData];
+    
+    if (slikeConfigData) {
+        NSDictionary *configJsonDict = [SlikeUtilities jsonDataToDictionary:slikeConfigData];
+        completionHandler(configJsonDict ,nil);
+        return;
+    }
+    
+    [[SlikeNetworkInterface sharedNetworkInteface]performGetServiceRequest:[NSURL URLWithString:configURL] withCompletionBlock:^(id responseData, NSError *error) {
+        if(!error && responseData) {
+            
+            NSDictionary *configJsonDict = [SlikeUtilities jsonDataToDictionary:slikeConfigData];
+            completionHandler(configJsonDict ,nil);
+            
+            SlikeDataParser * parser = [SlikeDataParser slikeDataParser];
+            NSError *validationError = [parser validateConfigJsonReponse:configJsonDict];
+            
+            if (validationError) {
+                [[SlikeSharedDataCache sharedCacheManager]resetSlikeConfigData];
+                completionHandler(nil, validationError);
+                return ;
+            }
+            
+            [[SlikeSharedDataCache sharedCacheManager]cacheSlikeConfigData:responseData];
+            completionHandler(configJsonDict, nil);
+        } else {
+            completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+        }
+    }];
+}
+
 @end

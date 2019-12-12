@@ -49,6 +49,7 @@
 @property (nonatomic, readwrite) BOOL isPreFetchAD;
 @property (nonatomic, readwrite) BOOL isViewVissible;
 @property (nonatomic, weak) SlikeAdsQueue *adUnitUsed;
+@property (nonatomic, readwrite) BOOL hasAdPaused;
 
 @end
 
@@ -57,6 +58,7 @@ NSString * const kSlikeAdErrMessageKey             = @"errMessage";
 NSString * const kSlikeAdErrCodeKey                = @"errCode";
 NSString * const kSlikeAdAdInfoKey                 = @"adInfo";
 NSString * const kSlikeAdAdTypeKey                 = @"AdType";
+NSString * const kSlikeNormalAdFailKey               = @"NormalAdFail";
 
 
 @implementation SlikeAdManager
@@ -68,7 +70,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         [self _resetAdsValue];
         if ([[SlikeSharedDataCache sharedCacheManager]isPrefetchAllow] && !_isAdLoaded) {
             
-            SlikeDLog(@"ADS LOG: Player has Stoped now need to prefetch: %ld", self.adUnitPos);
+            SlikeDLog(@"ADS LOG: Player has Stoped now need to prefetch: %ld", (long)self.adUnitPos);
             SlikeAdsQueue *slikeAdQueue = [[SlikeSharedDataCache sharedCacheManager]cachedPreloadedAdsContents];
             [self startPrefetchWithDelay:slikeAdQueue];
             
@@ -93,7 +95,11 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         _playerPosition = [currentPosition integerValue];
     }
     NSNumber *duration = [payload numberForKey:kSlikeDurationKey];
-    if (duration !=nil) {
+    if (duration !=nil)
+    {
+        if(_currentAdPos == -1)
+        _playerPosition = self.slikeConfigModel.streamingInfo.nEndTime;
+        else
         _playerDuration =   [duration integerValue];
     }
 }
@@ -140,6 +146,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     _currentAdPos = position;
     _adContainer = adsContainer;
     self.slikeConfigModel = slikeConfig;
+    _hasAdPaused = NO;
     
     if (_isAdInProgress || (_adPlayer != nil && _isAdLoaded && _adContainer == nil)) {
         SlikeDLog(@"ADS LOG: Another ad is in progress, this request is discarded");
@@ -163,12 +170,20 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         
         // Prefetch is there show Ad.
         [self _removeCallBacks];
+        
+        //        BOOL isoutSideArray =  NO;
+        //        if(self.slikeConfigModel.streamingInfo && self.slikeConfigModel.streamingInfo.outSideAd)
+        //        {
+        //        isoutSideArray =  YES;
+        //        }
+        //        if (_adPlayer != nil && _isAdLoaded && _adContainer != nil && !isoutSideArray) {
         if (_adPlayer != nil && _isAdLoaded && _adContainer != nil) {
             
             SlikeDLog(@"ADS LOG: Loaded ad found. trying to play ad");
             if([SlikeSharedDataCache sharedCacheManager].pfid && [[SlikeSharedDataCache sharedCacheManager].pfid length] == 0)
             {
-                [self _sendAdData:SL_READY withPayLoad:nil];
+                NSDictionary *payload =  @{@"adPosition" :@(0)};
+                [self _sendAdData:SL_READY withPayLoad:payload];
             }
             [self _addPlaceHolderViewToContainer];
             //[self _vissibleAdsWindows];
@@ -183,13 +198,13 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
             SlikeDLog(@"ADS LOG: Loaded ad not found. trying to fetch normal ad");
             SlikeAdsQueue *slikeAdsQueue = [self getAdsAtPosition:slikeConfig.streamingInfo.adContentsArray withAdPosition:position];
             
-            if (slikeAdsQueue != nil) {
+            if (slikeAdsQueue != nil && slikeAdsQueue.adContents.count > _adUnitPos) {
                 
-                _adUnitPos = 0;
-                 SlikeAdsUnit *currentAdUnit = slikeAdsQueue.adContents[_adUnitPos];
+//                _adUnitPos = 0;
+                SlikeAdsUnit *currentAdUnit = slikeAdsQueue.adContents[_adUnitPos];
                 _strCampaignID = currentAdUnit.strAdCategory;
-                
-                [self _sendAdData:SL_READY withPayLoad:nil];
+                NSDictionary *payload =  @{@"slikeAdProvider" :  @(currentAdUnit.adProvider),@"adPosition" :@(0)};
+                [self _sendAdData:SL_READY withPayLoad:payload];
                 [self _showAdLoading];
                 [self prefetchAd:slikeAdsQueue withPreFetchAD:FALSE withAdFallback:FALSE];
             }
@@ -209,10 +224,10 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
  */
 //(SlikeAdsQueue slikeAdsQueue, boolean , boolean isAdFallback) {
 - (void)prefetchAd:(SlikeAdsQueue *)slikeAdsQueue withPreFetchAD:(BOOL)isPreFetchAD withAdFallback:(BOOL)isAdFallback {
-
+    
     
     if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible] || slikeAdsQueue == nil  || slikeAdsQueue.adContents == nil || slikeAdsQueue.adContents.count == 0 || _adUnitPos >= slikeAdsQueue.adContents.count) {
-    
+        
         SlikeDLog(@"ADS LOG: Something went wrong : Not able to fetch Ad ");
         
         if (self.adContainer !=nil) {
@@ -221,23 +236,18 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         
         [self _resetAdsValue];
         [self _hideAdLoading];
-        
-//
-//        if ([[SlikeSharedDataCache sharedCacheManager]isPrefetchAllow] && !_isAdLoaded) {
-//            SlikeAdsQueue *slikeAdQueue = [[SlikeSharedDataCache sharedCacheManager]cachedPreloadedAdsContents];
-//            [self startPrefetchWithDelay:slikeAdQueue];
-//        }
-        
         return;
     }
     
     self.isPreFetchAD = isPreFetchAD;
     self.adUnitUsed = slikeAdsQueue;
+    
     SlikeAdsUnit *currentAdUnit = slikeAdsQueue.adContents[_adUnitPos];
     
     if (self.adPlayer) {
-        [_adPlayer removeAdsComponents];
-        _adPlayer=nil;
+        [_adPlayer removeAdsComponents:^{
+            self->_adPlayer=nil;
+        }];
     }
     
     _strCampaignID = currentAdUnit.strAdCategory;
@@ -256,11 +266,9 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         [self.adPlayer fetchAd];
         SlikeDLog(@"ADS LOG: Fetching ads of position : %ld",  (long)self.adUnitPos);
         
-    });
-    
-    
+    });    
     if(_isPreFetchAD) {
-        [self sendPreFetchAnalytic:0 withError:nil];
+        [self sendPreFetchAnalytic:0 withError:nil withAdprovider:currentAdUnit.adProvider];
     }
 }
 
@@ -290,12 +298,12 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     
     SlikeAdsQueue *slikeAdsQueue = (SlikeAdsQueue *)timer.userInfo[@"slikeQueue"];
     if (!self.isAdInProgress) {
-        SlikeDLog(@"ADS LOG: Prefetch requested after some time but, trying to fetch : %ld", self.adUnitPos);
+        SlikeDLog(@"ADS LOG: Prefetch requested after some time but, trying to fetch : %ld", (long)self.adUnitPos);
         [[EventManager sharedEventManager]registerEvent:self];
         [self prefetchAd:slikeAdsQueue withPreFetchAD:YES withAdFallback:NO];
         
     } else {
-        SlikeDLog(@"ADS LOG: Prefetch requested after some time but ad is playing : %ld", self.adUnitPos);
+        SlikeDLog(@"ADS LOG: Prefetch requested after some time but ad is playing : %ld", (long)self.adUnitPos);
     }
 }
 
@@ -317,12 +325,14 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         if (adIdentity == -1) {
             if (adInfo.startPoistion == -1 && adInfo.adType == SL_POST) {
                 SlikeDLog(@"ADS LOG: Prefetch Ad from Config and AdType == POST");
-                return adInfo;
+              SlikeAdsQueue *adInfoNew = [[SlikeSharedDataCache sharedCacheManager] setAdPriortyValues:adInfo];
+                return adInfoNew;
             }
         } else if (adIdentity == 0) {
             if (adInfo.startPoistion == 0 && adInfo.adType == SL_PRE) {
                 SlikeDLog(@"ADS LOG: Prefetch Ad from Config and AdType == PRE");
-                return adInfo;
+                SlikeAdsQueue *adInfoNew  = [[SlikeSharedDataCache sharedCacheManager] setAdPriortyValues:adInfo];
+                return adInfoNew;
             }
         }
         else {
@@ -331,13 +341,13 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     }
     return nil;
 }
-
 - (void)_resetAdsValue {
     
     if (!_isAdLoaded) {
         if (_adPlayer != nil) {
-            [_adPlayer removeAdsComponents];
-            _adPlayer=nil;
+            [_adPlayer removeAdsComponents:^{
+                self->_adPlayer=nil;
+            }];
         }
         
         [self _removeCallBacks];
@@ -354,6 +364,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         self.adContainer=nil;
     }
     _isAdInProgress = NO;
+    _hasAdPaused = NO;
     
 }
 
@@ -405,7 +416,6 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
 
 #pragma mark - SlikeAdPlateformEvents
 - (void)slikeAdEventDidReceiveAdEvent:(SlikeAdEventType)adEvent withPayload:(NSDictionary *)payload {
-    
     if (adEvent == kSlikeAdEventLoaded) {
         
         _isAdLoaded = YES;
@@ -459,7 +469,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         
         [self _resetAdsValue];
         [self _hideAdLoading];
-    
+        
         [[EventManager sharedEventManager]dispatchEvent:AD playerState:SL_CONTENT_RESUME dataPayload:@{kSlikeAdAdTypeKey:@([self _currentAdType])} slikePlayer:nil];
         
         if ([[SlikeSharedDataCache sharedCacheManager]isPrefetchAllow] && !_isAdLoaded) {
@@ -472,14 +482,53 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         [[EventManager sharedEventManager]dispatchEvent:AD playerState:SL_CONTENT_PAUSE dataPayload:@{kSlikeAdAdTypeKey:@([self _currentAdType])} slikePlayer:nil];
     }
     else if (adEvent == kSlikeAdEventLoadingError) {
+        
+        NSLog(@"Ad Error %@",[payload objectForKey:kSlikeAdDescriptionKey]);
+        
         //Plateform is unable to load the contents
         SlikeDLog(@"ADS LOG: AdEventLoadingError");
+        
+        SlikeAdsQueue * que = nil;
+        if(!_isPreFetchAD)
+        {
+            self.adUnitPos ++ ;
+        }
+        if (self.slikeConfigModel.streamingInfo.outSideAd && _adUnitPos == 1 && !_isPreFetchAD)
+        {
+            SlikeDLog(@"%@",self.adUnitUsed.adContents);
+            SlikeDLog(@"_adUnitPos %ld",(long)_adUnitPos);
+            
+            if(self.adUnitUsed.adContents.count > _adUnitPos)
+            {
+                SlikeDLog(@"Aravind YES");
+                que = self.adUnitUsed;
+            }
+        }
+        
         if(_isPreFetchAD)
         {
+            SlikeAdsUnit *currentAdUnit = self.adUnitUsed.adContents[_adUnitPos];
             NSString *err = [payload objectForKey:kSlikeAdDescriptionKey];
-            [self sendPreFetchAnalytic:2 withError:err];
-        }else
+            [self sendPreFetchAnalytic:2 withError:err withAdprovider:currentAdUnit.adProvider];
+        }
+        else if (que != nil && que.adContents.count > 0)
         {
+            //Need to impliment Anlytic here for fail first attemp to cuurent
+            // SlikeAdsUnit *currentAdUnit = self.adUnitUsed.adContents[_adUnitPos];
+            //  NSString *err = [payload objectForKey:kSlikeAdDescriptionKey];
+            // [self sendPreFetchAnalytic:2 withError:err withAdprovider:currentAdUnit.adProvider];
+            NSMutableDictionary *newPayLoad =  [[NSMutableDictionary alloc] initWithDictionary:payload];
+            [newPayLoad setValue:@"1" forKey:@"extranlAdFail"];
+            [self _sendAdData:SL_ERROR withPayLoad:newPayLoad];
+        }
+        else
+        {
+//        if(!_isPreFetchAD)
+//        {
+//            self.adUnitPos =  0;
+//            SlikeDLog(@"Aravind NO wewew ");
+//        }
+            SlikeDLog(@"Aravind NO");
             [self _sendAdData:SL_ERROR withPayLoad:payload];
         }
         [self _adPlateformHasSomeIssue];
@@ -525,24 +574,50 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     
     _isAdInProgress = NO;
     //[self _hideAdsWindows];
+    SlikeAdsQueue * que = nil;
+    if (self.slikeConfigModel.streamingInfo.outSideAd && _adUnitPos == 1 && !_isPreFetchAD)
+    {
+        if(self.adUnitUsed.adContents.count > _adUnitPos)
+        {
+            que = self.adUnitUsed;
+        }
+    }
+    
     if (_adContainer == nil) {
         _adUnitPos++;
         SlikeDLog(@"ADS LOG: Error found : Trying to fetch next ad for future :: %ld", _adUnitPos);
         [self prefetchAd:[[SlikeSharedDataCache sharedCacheManager]cachedPreloadedAdsContents] withPreFetchAD:YES withAdFallback:YES];
         
-    } else {
-        SlikeDLog(@"ADS LOG: Error found : Trying to play video :: %ld", _adUnitPos);
+    }  else if (self.slikeConfigModel.streamingInfo.outSideAd && que != nil) {
+        SlikeDLog(@"ADS LOG: Error found : Trying to fetch next ad for comming outside :: %ld", _adUnitPos);
         
+        SlikeAdsUnit *currentAdUnit = que.adContents[_adUnitPos];
+        _strCampaignID = currentAdUnit.strAdCategory;
+        NSDictionary *payload =  @{@"slikeAdProvider" :  @(currentAdUnit.adProvider),@"adPosition" :@(0)};
+        [self _sendAdData:SL_READY withPayLoad:payload];
+        [self _showAdLoading];
+        [self prefetchAd:que withPreFetchAD:FALSE withAdFallback:FALSE];
+    }
+    else {
+        SlikeDLog(@"ADS LOG: Error found : Trying to play video :: %ld", _adUnitPos);
+        if(self.adUnitUsed.adContents.count > _adUnitPos)
+        {
+      //  SlikeAdsUnit *currentAdUnit = self.adUnitUsed.adContents[_adUnitPos];
+        [[EventManager sharedEventManager]dispatchEvent:AD playerState:SL_CONTENT_RESUME dataPayload:@{kSlikeAdAdTypeKey:@([self _currentAdType]),kSlikeNormalAdFailKey:@1} slikePlayer:nil];
+
+        }else
+        {
+            
         [self _resetAdsValue];
         [self _hideAdLoading];
-
+        
         [[EventManager sharedEventManager]dispatchEvent:AD playerState:SL_CONTENT_RESUME dataPayload:@{kSlikeAdAdTypeKey:@([self _currentAdType])} slikePlayer:nil];
         
         if ([[SlikeSharedDataCache sharedCacheManager]isPrefetchAllow] && !_isAdLoaded) {
             SlikeAdsQueue *slikeAdQueue = [[SlikeSharedDataCache sharedCacheManager]cachedPreloadedAdsContents];
             [self startPrefetchWithDelay:slikeAdQueue];
         }
-        
+        }
     }
 }
 
@@ -570,16 +645,16 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
  */
 - (void)_sendAdData:(NSInteger)status withPayLoad:(NSDictionary*)payload  {
     
-//    if(status ==  SL_LOADED ) {
-//        return;
-//    }
+    //    if(status ==  SL_LOADED ) {
+    //        return;
+    //    }
     
     NSString *adMoreInfo =  @"";
     NSString *adTitle = @"";
     NSString *isSkippable = @"";
     NSString *ad_advertiserName = @"";
     NSString *ad_contentType = @"";
-
+    
     if([payload stringForKey:@"contentType"])
     {
         ad_contentType = [payload stringForKey:@"contentType"];
@@ -588,7 +663,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     {
         adTitle = [payload stringForKey:@"adTitle"];
     }
-  //  NSLog(@"payload = > %@",payload);
+    //  NSLog(@"payload = > %@",payload);
     if([payload stringForKey:@"advertiserName"])
     {
         ad_advertiserName = [payload stringForKey:@"advertiserName"];
@@ -634,7 +709,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     else if(status == SL_START) {
         nStatus = 1;
         thirdPartyStatus = @"ADVIEW";
-
+        
     } else if(status == SL_ERROR) {
         nStatus = 2;
         thirdPartyStatus = @"ADERROR";
@@ -642,37 +717,37 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     {
         [SlikeSharedDataCache sharedCacheManager].pfid =  @"";
         nStatus = 3;
-//        thirdPartyStatus = @"ADVIEW";
+        //        thirdPartyStatus = @"ADVIEW";
     }
     else if(status == SL_Q1)
     {
         nStatus = 4;
         thirdPartyStatus = @"QUARTILE1";
-
+        
     }
     else if(status == SL_Q2)
     {
         nStatus = 5;
         thirdPartyStatus = @"QUARTILE2";
-
+        
     }
     else if(status == SL_Q3)
     {
         nStatus = 6;
         thirdPartyStatus = @"QUARTILE3";
-
+        
     }
     else if(status == SL_COMPLETED)
     {
         [SlikeSharedDataCache sharedCacheManager].pfid =  @"";
         nStatus = 7;
         thirdPartyStatus = @"ADCOMPLETE";
-
+        
     } else if(status == SL_SKIPPED)
     {
         nStatus = 8;
         thirdPartyStatus = @"ADSKIP";
-
+        
     } else if(status == SL_CLICKED)
     {
         nStatus = 9;
@@ -684,7 +759,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
         //position = 0;
         adt=1;
     } else if(_currentAdPos == -1) {
-        //position = self.slikeConfigModel.streamingInfo.nEndTime;
+        _playerPosition = self.slikeConfigModel.streamingInfo.nEndTime;
         adt=3;
     } else {
         //
@@ -712,7 +787,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     }
     
     EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeAVPlayerAd withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
-
+    
     eventModel.slikeConfigModel = self.slikeConfigModel;
     eventModel.adEventModel.advertiserName = ad_advertiserName;
     eventModel.adEventModel.adTitle = adTitle;
@@ -736,10 +811,26 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     eventModel.adEventModel.iu = self.iu;
     eventModel.adEventModel.adResgion = self.ha;
     eventModel.adEventModel.isAdPrefetched = _isPreFetchAD;
-    
-    if([_adPlayer currentAdPlateform] == SlikeAdsPlatformFacebook)
+    if([payload stringForKey:@"extranlAdFail"])
+    {
+        eventModel.adEventModel.extranlAdFail = [[payload stringForKey:@"extranlAdFail"] integerValue];
+    }
+     if([payload stringForKey:@"slikeAdProvider"])
+        {
+        eventModel.adEventModel.adProviderType = [[payload stringForKey:@"slikeAdProvider"] integerValue];
+        }
+    else if(_adPlayer && [_adPlayer currentAdPlateform] == SlikeAdsPlatformIMA)
+          {
+              eventModel.adEventModel.adProviderType =  1;
+          }
+    else if(_adPlayer && [_adPlayer currentAdPlateform] == SlikeAdsPlatformFacebook)
     {
         eventModel.adEventModel.adProviderType =  3;
+        
+    }else
+    {
+        eventModel.adEventModel.adProviderType =  1;
+
     }
     if([SlikeSharedDataCache sharedCacheManager].pfid && [[SlikeSharedDataCache sharedCacheManager].pfid  length]>0) {
         eventModel.adEventModel.pfid = [SlikeSharedDataCache sharedCacheManager].pfid;
@@ -818,21 +909,28 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     [_playerRegistrar setWillResignActive:^(SlikeVideoPlayerRegistrar * _Nonnull registrar) {
         if (weekSelf.adContainer && weekSelf.adPlayer){
             weekSelf.isViewVissible = NO;
-            [weekSelf.adPlayer pauseAd];
+            
+            if (!weekSelf.hasAdPaused) {
+                [weekSelf.adPlayer pauseAd];
+            }
         }
     }];
     
     [_playerRegistrar setDidBecomeActive:^(SlikeVideoPlayerRegistrar * _Nonnull registrar) {
         if (weekSelf.adContainer && weekSelf.adPlayer){
             weekSelf.isViewVissible = YES;
-            [weekSelf.adPlayer resumeAd];
+            if (!weekSelf.hasAdPaused) {
+                [weekSelf.adPlayer resumeAd];
+            }
         }
     }];
     
     [_playerRegistrar setWillEnterForeground:^(SlikeVideoPlayerRegistrar * _Nonnull registrar) {
         if (weekSelf.adContainer && weekSelf.adPlayer){
             weekSelf.isViewVissible = YES;
-            [weekSelf.adPlayer resumeAd];
+            if (!weekSelf.hasAdPaused) {
+                [weekSelf.adPlayer resumeAd];
+            }
         }
     }];
 }
@@ -844,14 +942,15 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
  @param evt - Event Type
  @param error - Error if any
  */
-- (void)sendPreFetchAnalytic:(NSInteger)evt withError:(NSString*)error {
-   
+- (void)sendPreFetchAnalytic:(NSInteger)evt withError:(NSString*)error withAdprovider:(SlikeAdProvider)adProvider{
+    
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
-
+    
     NSString *ss =  @"";
     NSString *videoId = @"";
     NSInteger noss = 1;
     self.ha =  @"1";
+    /*
     if(self.slikeConfigModel)
     {
         videoId =  self.slikeConfigModel.mediaId;
@@ -860,6 +959,7 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
             noss = 0;
         }
     }
+    */
     NSString *analyticInfo =  @"";
     long atl = (long)[SlikeDeviceSettings sharedSettings].nAdLoadTime;
     long atc = (long)[SlikeDeviceSettings sharedSettings].nAdContentLoadTime;
@@ -873,10 +973,10 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
             [SlikeSharedDataCache sharedCacheManager].pfid = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:@"pfid"];
         }
         
-        analyticInfo = [NSString stringWithFormat:@"evt=%ld&k=%@&ss=%@&vp=%ld&pf=%d&ha=%@&noss=%ld&pfid=%@&rt=%ld&mrtad=%ld&atr=0&atl=%ld&atc=%ld&adt=-1&ci=%@&",(long)evt,videoId,ss,(long)self.playerPosition,self.isPreFetchAD,self.ha,(long)noss, [SlikeSharedDataCache sharedCacheManager].pfid,(long)_adUnitPos, (long)[[SlikeSharedDataCache sharedCacheManager] prefetchedAdsCount],atl,atc,_strCampaignID];
+        analyticInfo = [NSString stringWithFormat:@"evt=%ld&k=%@&ss=%@&vp=%ld&pf=%d&ha=%@&noss=%ld&pfid=%@&rt=%ld&mrtad=%ld&atr=0&atl=%ld&atc=%ld&adt=-1&ci=%@&s=%ld&",(long)evt,videoId,ss,(long)self.playerPosition,self.isPreFetchAD,self.ha,(long)noss, [SlikeSharedDataCache sharedCacheManager].pfid,(long)_adUnitPos, (long)[[SlikeSharedDataCache sharedCacheManager] prefetchedAdsCount],atl,atc,_strCampaignID,(long)adProvider];
         
     } else {
-        analyticInfo = [NSString stringWithFormat:@"evt=%ld&k=%@&ss=%@&vp=%ld&pf=%d&ha=%@&noss=%ld&pfid=%@&err=%@&rt=%ld&mrtad=%ld&atr=0&atl=%ld&atc=%ld&adt=-1&ci=%@&",(long)evt,videoId,ss,(long)self.playerPosition,self.isPreFetchAD,self.ha,(long)noss, [SlikeSharedDataCache sharedCacheManager].pfid,error,(long)_adUnitPos,(long)[[SlikeSharedDataCache sharedCacheManager] prefetchedAdsCount],atl,atc,_strCampaignID];
+        analyticInfo = [NSString stringWithFormat:@"evt=%ld&k=%@&ss=%@&vp=%ld&pf=%d&ha=%@&noss=%ld&pfid=%@&err=%@&rt=%ld&mrtad=%ld&atr=0&atl=%ld&atc=%ld&adt=-1&ci=%@&s=%ld&",(long)evt,videoId,ss,(long)self.playerPosition,self.isPreFetchAD,self.ha,(long)noss, [SlikeSharedDataCache sharedCacheManager].pfid,error,(long)_adUnitPos,(long)[[SlikeSharedDataCache sharedCacheManager] prefetchedAdsCount],atl,atc,_strCampaignID,(long)adProvider];
     }
     
     [[SlikeNetworkManager defaultManager] sendPreFetchAnalyticLog:analyticInfo withCompletionBlock:^(id obj, NSError *error) {
@@ -895,4 +995,70 @@ NSString * const kSlikeAdAdTypeKey                 = @"AdType";
     }];
 }
 
+
+- (void)pauseAd {
+    if (self.adContainer && self.adPlayer) {
+        _hasAdPaused = YES;
+        [self.adPlayer pauseAd];
+    }
+}
+
+- (void)resumeAd {
+    if (self.adContainer && self.adPlayer) {
+        _hasAdPaused = NO;
+        [self.adPlayer resumeAd];
+    }
+}
+
+- (BOOL)isAdPaused {
+    if (self.adContainer && self.adPlayer && _hasAdPaused) {
+        return YES;
+    }
+    return NO;
+}
+
+-(BOOL)isPreFetchAvailble
+{
+    return self.isPreFetchAD;
+}
+- (void)cleanupAdManager:(void (^)(void))completionBlock {
+    
+    __weak typeof(self) weekSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [self _removeCallBacks];
+        if (self.adPlaceholder && [self.adPlaceholder superview]){
+            [self.adPlaceholder removeFromSuperview];
+        }
+        self.adPlaceholder = nil;
+        if (self.adContainer) {
+            self.adContainer=nil;
+        }
+        weekSelf.isPreFetchAD = NO;
+        weekSelf.currentAdPostion= 0;
+        weekSelf.currentAdDuration= 0;
+        weekSelf.adUnitPos = 0;
+        weekSelf.isAdInProgress = NO;
+        weekSelf.hasAdPaused = NO;
+        
+        weekSelf.adUnitPos = 0;
+        weekSelf.playerPosition = 0;
+        weekSelf.playerDuration = 0;
+        
+        self->_strCampaignID = @"";
+        weekSelf.ha =  @"-1";
+        weekSelf.iu =  @"";
+        [SlikeSharedDataCache sharedCacheManager].pfid = @"";
+        
+        if (weekSelf.adPlayer != nil) {
+            [weekSelf.adPlayer removeAdsComponents:^ {
+                weekSelf.adPlayer=nil;
+                completionBlock();
+            }];
+            
+        } else {
+            completionBlock();
+        }
+    });
+}
 @end

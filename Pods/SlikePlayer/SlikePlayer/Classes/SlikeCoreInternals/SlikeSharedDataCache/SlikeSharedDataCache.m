@@ -9,6 +9,7 @@
 #import "SlikeAdsQueue.h"
 #import "SlikeBitratesModel.h"
 #import "StreamingInfo.h"
+#import "SlikeAdsUnit.h"
 
 @interface SlikeSharedDataCache() {
 }
@@ -23,6 +24,7 @@
 @property (assign, nonatomic) NSInteger currentPlaylistIndex;
 @property (strong, nonatomic) NSMutableDictionary *cacahedStreams;
 @property (strong, nonatomic) NSString *tileImageURLString;
+@property (strong, nonatomic) NSMutableDictionary *cacahedAudioConfigs;
 @end
 
 @implementation SlikeSharedDataCache
@@ -43,8 +45,9 @@
     self = [super init];
     if (self) {
         
-        _baseURLString = @"http://slike.indiatimes.com/";
-        _analyticsBaseURLString = @"http://slike.indiatimes.com/";
+        _adPriority = nil;
+        _baseURLString = @"https://slike.indiatimes.com/";
+        _analyticsBaseURLString = @"https://slike.indiatimes.com/";
         _pfid = @"";
         _ts = @"";
         _interval = @"0";
@@ -55,8 +58,9 @@
         _cacahedStreams = [[NSMutableDictionary alloc]init];
         _isGDPREnable =  false;
         _cssId =  @"";
-        
         _tileImageURLString = @"http://imgslike.akamaized.net/";
+        _cacahedAudioConfigs = [[NSMutableDictionary alloc]init];
+        _storagelimit = 90;
     }
     
     return self;
@@ -183,8 +187,85 @@
     self.adPrefetchQueue = adPrefetchQueue;
 }
 
-- (SlikeAdsQueue *)cachedPreloadedAdsContents {
+- (SlikeAdsQueue *)cachedPreloadedAdsContents{
+    _adPrefetchQueue =  [self setAdPriortyValues:_adPrefetchQueue];
     return _adPrefetchQueue;
+}
+-(SlikeAdsQueue*)setAdPriortyValues:(SlikeAdsQueue*)adInfo{
+    BOOL isAddNeedtoReplace =  NO;
+    if(_adPriority && [_adPriority isKindOfClass:[NSArray class]] && _adPriority.count >0 )
+    {
+        NSString *adPriotyFirst = @"";
+        NSString *adPriotySecond = @"";
+        NSArray *adPriortyArray = _adPriority;
+        if(adPriortyArray.count >1)
+        {
+            adPriotyFirst =  [adPriortyArray objectAtIndex:0];
+            adPriotySecond =  [adPriortyArray objectAtIndex:1];
+            
+        }else if(adPriortyArray.count >0)
+        {
+            adPriotyFirst =  [adPriortyArray objectAtIndex:0];
+        }
+        NSMutableArray *imaAdArray =  [NSMutableArray array];
+        NSMutableArray *fanAdArray =  [NSMutableArray array];
+        NSMutableArray *adContentArray =  [NSMutableArray array];
+        
+        for(SlikeAdsUnit * adUnit in adInfo.adContents)
+        {
+            if(adUnit.adProvider == IMA)
+            {
+                [imaAdArray addObject:adUnit];
+            }else
+            {
+                [fanAdArray addObject:adUnit];
+            }
+        }
+        
+        if([adPriotyFirst isEqualToString:@"SL_IMA"] && [adPriotySecond isEqualToString:@"SL_FAN"])
+        {
+            isAddNeedtoReplace = YES;
+            [adContentArray addObjectsFromArray:imaAdArray];
+            [adContentArray addObjectsFromArray:fanAdArray];
+        }
+        else if([adPriotyFirst isEqualToString:@"SL_FAN"] && [adPriotySecond isEqualToString:@"SL_IMA"])
+        {
+            isAddNeedtoReplace = YES;
+            [adContentArray addObjectsFromArray:fanAdArray];
+            [adContentArray addObjectsFromArray:imaAdArray];
+        }
+        else if([adPriotyFirst isEqualToString:@"SL_IMA"])
+        {
+            isAddNeedtoReplace = YES;
+            [adContentArray addObjectsFromArray:imaAdArray];
+        }
+        else if([adPriotyFirst isEqualToString:@"SL_FAN"])
+        {
+            isAddNeedtoReplace = YES;
+            [adContentArray addObjectsFromArray:fanAdArray];
+        }
+        else if([adPriotySecond isEqualToString:@"SL_IMA"])
+        {
+            isAddNeedtoReplace = YES;
+            [adContentArray addObjectsFromArray:imaAdArray];
+        }
+        else if([adPriotySecond isEqualToString:@"SL_FAN"])
+        {
+            isAddNeedtoReplace = YES;
+            [adContentArray addObjectsFromArray:fanAdArray];
+        }
+        if(isAddNeedtoReplace)
+            adInfo.adContents = adContentArray;
+    }
+    if(_adPriority && [_adPriority isKindOfClass:[NSArray class]] && _adPriority.count  == 0 )
+    {
+        [adInfo.adContents removeAllObjects];
+        isAddNeedtoReplace =  YES;
+    }
+    if(!isAddNeedtoReplace)
+        adInfo.adContents = adInfo.staticAdContents;
+    
+    return adInfo;
 }
 
 /**
@@ -226,7 +307,7 @@
         return [_xStreamList bitrateObjets];
     }else
     {
-    return _bitratesArray;
+        return _bitratesArray;
     }
 }
 
@@ -242,7 +323,7 @@
         }
     }else
     {
-    return [_bitratesArray count] >0 ? YES :NO ;
+        return [_bitratesArray count] >0 ? YES :NO ;
     }
 }
 
@@ -324,6 +405,7 @@
  */
 - (void)resetCachedStreams {
     [_cacahedStreams removeAllObjects];
+    [_cacahedAudioConfigs removeAllObjects];
 }
 
 - (BOOL)isStreamAlreadyCached:(NSString *)mediaId {
@@ -393,5 +475,31 @@
         _tileImageURLString = tileImageURLString;
     }
 }
+
+
+/**
+ Cache the Stream
+ @param slikeConfig - Stream
+ @param mediaId - Media Id
+ */
+- (void)cacheAudioConfigStream:(SlikeConfig *)slikeConfig forMediaId:(NSString *)mediaId {
+    if (slikeConfig !=nil && [mediaId isValidString]) {
+        [_cacahedAudioConfigs setObject:slikeConfig forKey:mediaId];
+    }
+}
+- (SlikeConfig *)cachedAudioConfigStreamForMediaId:(NSString *)mediaId {
+    if ([mediaId isValidString]) {
+        return _cacahedAudioConfigs[mediaId];
+    }
+    return nil;
+}
+
+- (BOOL)isCachedAudioConfigStreamForMediaId:(NSString *)mediaId {
+    if ([mediaId isValidString]) {
+        return  (_cacahedAudioConfigs[mediaId] == nil) ? NO : YES;
+    }
+    return NO;
+}
+
 
 @end

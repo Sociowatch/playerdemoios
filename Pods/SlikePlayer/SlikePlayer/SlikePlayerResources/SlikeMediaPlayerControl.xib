@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -144,7 +142,7 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vfm-0B-HxO">
                             <rect key="frame" x="0.0" y="587" width="375" height="80"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kfo-gz-q1c">
+                                <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kfo-gz-q1c">
                                     <rect key="frame" x="10" y="44" width="87" height="28"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -182,11 +180,11 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="bottom" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DIz-Ui-MWy">
-                                    <rect key="frame" x="335" y="40" width="40" height="40"/>
+                                    <rect key="frame" x="335" y="47" width="40" height="36"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="40" id="L2a-Py-TMu"/>
-                                        <constraint firstAttribute="height" constant="40" id="vh6-Vh-bDE"/>
+                                        <constraint firstAttribute="height" constant="36" id="vh6-Vh-bDE"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="10" maxY="0.0"/>
@@ -222,15 +220,37 @@
                                     <color key="minimumTrackTintColor" red="0.90980392160000001" green="0.039132167439999997" blue="0.2156862745" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="thumbTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </slider>
+                                <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C5v-8d-2ah">
+                                    <rect key="frame" x="284" y="20" width="81" height="22"/>
+                                    <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="0.80000000000000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="22" id="LPG-o1-LS4"/>
+                                        <constraint firstAttribute="width" constant="81" id="ydy-bt-8fC"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                    <state key="normal" title="GO TO LIVE">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="3"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="switchStremDidClicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="DMR-y7-9Dl"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="Eci-4P-0bs" firstAttribute="leading" secondItem="beT-rU-FOC" secondAttribute="trailing" constant="5" id="3LN-4c-piT"/>
                                 <constraint firstAttribute="bottom" secondItem="Kfo-gz-q1c" secondAttribute="bottom" constant="8" id="6AB-kT-ked"/>
                                 <constraint firstAttribute="trailing" secondItem="DIz-Ui-MWy" secondAttribute="trailing" id="7GS-MS-nqj"/>
                                 <constraint firstItem="UfW-i8-zu1" firstAttribute="leading" secondItem="Eci-4P-0bs" secondAttribute="trailing" constant="5" id="8Q5-og-61B"/>
+                                <constraint firstAttribute="trailing" secondItem="C5v-8d-2ah" secondAttribute="trailing" constant="10" id="8vg-fS-2Ft"/>
                                 <constraint firstItem="Kfo-gz-q1c" firstAttribute="leading" secondItem="Vfm-0B-HxO" secondAttribute="leading" constant="10" id="EjX-MA-hx8"/>
                                 <constraint firstAttribute="bottom" secondItem="UfW-i8-zu1" secondAttribute="bottom" constant="10" id="H8k-OK-tll"/>
-                                <constraint firstAttribute="bottom" secondItem="DIz-Ui-MWy" secondAttribute="bottom" id="Imx-pU-fYs"/>
+                                <constraint firstAttribute="bottom" secondItem="DIz-Ui-MWy" secondAttribute="bottom" constant="-3" id="Imx-pU-fYs"/>
                                 <constraint firstAttribute="bottom" secondItem="Eci-4P-0bs" secondAttribute="bottom" constant="6" id="KaN-Rz-TxO"/>
                                 <constraint firstItem="dOe-dX-hYW" firstAttribute="leading" secondItem="Eci-4P-0bs" secondAttribute="leading" id="NHl-9C-4J1"/>
                                 <constraint firstAttribute="bottom" secondItem="dOe-dX-hYW" secondAttribute="bottom" constant="18" id="Npa-cp-qrw"/>
@@ -238,6 +258,7 @@
                                 <constraint firstAttribute="bottom" secondItem="beT-rU-FOC" secondAttribute="bottom" constant="10" id="ded-5R-bLg"/>
                                 <constraint firstItem="dOe-dX-hYW" firstAttribute="trailing" secondItem="Eci-4P-0bs" secondAttribute="trailing" id="lEP-EO-dJm"/>
                                 <constraint firstAttribute="height" constant="80" id="tVQ-0P-6jc"/>
+                                <constraint firstItem="DIz-Ui-MWy" firstAttribute="top" secondItem="C5v-8d-2ah" secondAttribute="bottom" constant="5" id="yEo-5Q-vXV"/>
                                 <constraint firstItem="DIz-Ui-MWy" firstAttribute="leading" secondItem="UfW-i8-zu1" secondAttribute="trailing" constant="5" id="z4H-Hs-Xn1"/>
                             </constraints>
                         </view>
@@ -464,6 +485,8 @@
                 <outlet property="lblCurrentTime" destination="beT-rU-FOC" id="d1m-0u-a7y"/>
                 <outlet property="lblDuration" destination="UfW-i8-zu1" id="vQ5-db-CeR"/>
                 <outlet property="lblNowPlaying" destination="uXF-CH-5uZ" id="LOD-29-Ne4"/>
+                <outlet property="lblTitleXPoint" destination="Z0F-L8-PIf" id="04q-rV-edn"/>
+                <outlet property="liveButton" destination="C5v-8d-2ah" id="Uek-9M-oHM"/>
                 <outlet property="nextCardButton" destination="Pe9-VA-5Yp" id="ydr-gc-q2Z"/>
                 <outlet property="nextItemImageView" destination="sTv-yN-MSc" id="902-8e-bTB"/>
                 <outlet property="nextItemProgress" destination="BNf-dZ-e5U" id="SpR-Vh-oDN"/>

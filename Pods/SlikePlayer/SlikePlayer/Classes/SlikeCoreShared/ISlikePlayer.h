@@ -15,11 +15,11 @@
 #import "ISlikePlayerControl.h"
 #import "ISlikeCast.h"
 #import "ISlikeAnlytics.h"
+#import "SLCueMDO.h"
 
 //Blocks for listing the player Events
 typedef void(^onChange)(SlikeEventType type, SlikePlayerState name, StatusInfo *statusInfo);
 typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
-
 
 @protocol ISlikePlayer<NSObject>
 
@@ -112,13 +112,11 @@ typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
 - (BOOL)isPlaying;
 
 /**
- 
  Seek video to a particular position
  * @nPosition -  seeked video postion
  * @isUser  - If user is manually seeking then pass YES otherwise NO
  */
 - (void)seekTo:(float) nPosition userSeeked:(BOOL) isUser;
-
 
 /**
  Get Player's full screen status
@@ -222,6 +220,7 @@ typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
  */
 - (NSArray*)showBitrateChooser:(BOOL)isCustom;
 
+- (void)updateCustomBitrateNew:(NSInteger)type;
 /**
  Change the Bitrate for current video
  @param obj - New Bitrate
@@ -232,7 +231,7 @@ typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
  Current Video URL
  */
 - (NSString*)currentBitRateURI;
-
+-(NSInteger)currentBitRateType;
 /**
  Hide the Bitrate Custom View
  */
@@ -244,20 +243,17 @@ typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
  */
 - (void)setVideoPlaceHolder :(BOOL)isSet;
 
-
 /**
  Set the Native controls
  @param isNative - Pass YES to set the native controls
  */
 - (void)setNativeControl:(BOOL) isNative;
 
-
 /**
  Send the custom control event for states
  @param state  - State
  */
 - (void)sendCustomControlEvent:(SlikePlayerState) state;
-
 
 /**
  Set the cast for player
@@ -270,16 +266,49 @@ typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
 - (id<ISlikeCast>) getCast;
 
 /**
- Get the ad Playing information
+ Get the screen shot at perticular position
+ @param position - Time in second
+ @param completion - Completion Block
+ */
+- (void)getScreenShotAtPosition:(NSInteger)position withCompletionBlock:(void (^)(UIImage *image))completion;
 
+@optional
+
+/*
+ Get the Time Ranges. It is used for DVR streams to get the duration.
+ - DVR Stream duration is indifinite
+ - return - Time Range
+ */
+- (CMTimeRange)getTimeRange;
+
+/*
+ Switch stream to DVR vs Live .
+ @param stream - Switch Stream
+ Note: It is used only for DVR/Live not for VOD stream
+ */
+
+- (void)switchToStream:(SLKMediaPlayerStreamType)stream;
+
+/**
+ Get the ad Playing information
+ 
  @return YES if ad Playing otherwise NO
  */
 - (BOOL)isAdPlaying;
+- (BOOL)isAdPaused;
 
 /**
- Get the screen shot at perticular position
- @param position - Time in second
- @param completion - Completion Block 
+ Play audio strem
+ 
+ @param audioTrackArray slike audio array
+ @param itemIndex item index to play in this list;
  */
-- (void)getScreenShotAtPosition:(NSInteger)position withCompletionBlock:(void (^)(UIImage *image))completion;
+- (void)playAudioStreamWithObject:(NSArray<id> *)audioTrackArray startItemIndex:(NSInteger) itemIndex;
+@end
+
+@protocol ICueHandler<NSObject>
+
+@optional
+- (void)onCueData:(SLCueMDO*)model;
+
 @end

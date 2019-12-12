@@ -89,7 +89,22 @@ typedef NS_ENUM(NSInteger, SlikePlayerState ) {
     SL_SEEKPOSTIONUPDATE,
     SL_SET_NEXT_PLAYLIST_DATA,
     SL_HIDE_NEXT_PLAYLIST_DATA,
-    SL_MEDIA_PREVIEWS //Will be Used show the Previews with the Pan Gesture
+    SL_MEDIA_PREVIEWS,//Will be Used show the Previews with the Pan Gesture
+    SL_LIVE_STATES,
+    SL_PLACEHODER_UPDATE,//AUdio Playlist Enums
+    SL_MEDIA_UPDATE,
+    SL_REWIND,
+    SL_SEEKED_NEXT,
+    SL_SEEKED_PREVIOUS,
+    SL_LIST_VIEW,
+    SL_MUSIC_SMALL,
+    SL_MUSIC_FULL,
+    SL_MUSICLIST_UPDATE,
+    SL_MUSICLIST_STOP,
+    SL_MUSIC_ITEM,
+    SL_OFFLINE_CLICK
+    
+    
 };
 
 typedef NS_ENUM(NSInteger, SlikeFullscreenAutoRotationMode ) {

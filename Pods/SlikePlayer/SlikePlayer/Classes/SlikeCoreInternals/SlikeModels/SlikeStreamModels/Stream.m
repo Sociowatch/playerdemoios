@@ -12,6 +12,9 @@
         self.strFlavor = @"";
         self.strLabel = @"";
         self.isSecurePlayer =  NO;
+        self.dvrURL = nil;
+        self.hasDVR = NO;
+
      }
     return self;
 }

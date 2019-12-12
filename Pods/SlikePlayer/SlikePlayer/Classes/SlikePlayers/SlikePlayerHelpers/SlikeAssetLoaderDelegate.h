@@ -7,21 +7,22 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
-@interface SlikeAssetLoaderDelegate : NSObject <AVAssetResourceLoaderDelegate,NSURLSessionDelegate> {
-    
+/*
+If status is -1 -> Not Contains
+              1 -> Contains Subtitle other values may  be used for future
+*/
+typedef void(^PlaylistSubtitleBlock)(NSInteger status);
+
+@interface SlikeAssetLoaderDelegate : NSObject <AVAssetResourceLoaderDelegate> {
 }
-@property (nonatomic, strong) NSMutableData *movieData;
-@property (nonatomic, strong) NSURLConnection *connection;
-@property (nonatomic, strong) NSHTTPURLResponse *response;
-@property (nonatomic, strong) NSMutableArray *pendingRequests;
-@property (nonatomic,strong) NSString *cacheDir;
-@property (nonatomic,strong) NSString *fileName;
-@property (nonatomic,strong) NSString *fileUrl;
-+ (NSString*) preViewFoundInCacheDirectory:(NSString*) url;
-@property(nonatomic,assign) BOOL isEncrypted;
-@property(nonatomic,strong) SPLM3U8PlaylistModel *mainPlayListmodel;
+
+@property (nonatomic, assign) BOOL isEncrypted;
+@property (nonatomic, strong) SPLM3U8PlaylistModel *mainPlayListmodel;
 @property (nonatomic, strong) dispatch_queue_t serialQueueAssetLoader;
-@property (nonatomic,strong) NSString *baseURI;
-@property(nonatomic,assign) NSInteger isDecoded;
-@property(nonatomic,strong) NSArray *splitArray;
+@property (nonatomic, strong) NSString *baseURI;
+@property (nonatomic, assign) NSInteger isDecoded;
+@property (nonatomic, strong) NSArray *splitArray;
+@property (nonatomic, copy)PlaylistSubtitleBlock subtitleBlock;
+
+
 @end

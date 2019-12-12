@@ -153,4 +153,6 @@ OBJC_EXTERN NSString * const SlikeEventManagerModelKey;
  //Note: This algo will work If the collection is sorted in ascending order
  */
 + (NSInteger)getClosestIndexWithInCollection:(NSArray *)collection forSearchValue:(NSNumber *)searchNumber;
+
++ (NSData *)dictToJSONSData:(NSDictionary *)dictonary;
 @end

@@ -656,7 +656,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 }
 
 - (NSString*)getSDKVersion {
-    return  @"2.5.0";
+    return  @"2.7.7.2";
 }
 
 - (void)setPlayerViewArea:(id)parentView {

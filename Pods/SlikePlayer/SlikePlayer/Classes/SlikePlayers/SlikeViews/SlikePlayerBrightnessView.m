@@ -139,7 +139,7 @@ static CGFloat _currentBrightness;
         brightness=  0.01;
     }
     NSString *brightnessStr = [NSString stringWithFormat:@"%.2f", brightness];
-    self.brightnessLabel.text = [NSString stringWithFormat:@"%ld %s", (NSInteger) (brightnessStr.floatValue*100), "%"];
+    self.brightnessLabel.text = [NSString stringWithFormat:@"%ld %s", (long) (brightnessStr.floatValue*100), "%"];
 }
 
 

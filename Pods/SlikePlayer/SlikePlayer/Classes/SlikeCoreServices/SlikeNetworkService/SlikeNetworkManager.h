@@ -138,6 +138,7 @@ typedef BOOL (^SlikePlaylistCompletionBlock)(NSArray *responseArray, NSString *r
 -(void)updateAnalyticURLs;
 
 - (void)sendPreFetchAnalyticLog:(NSString *)analyticInfo  withCompletionBlock:(SlikeNetworkManagerCompletionBlock) completionBlock;
-
+-(void)sentCuePointAnalytics:(SLCueMDO*)model withSlikeConfig:(SlikeConfig*)config;
+-(void)updateAnalyticURLsBase:(NSString*)an;
 @end
 

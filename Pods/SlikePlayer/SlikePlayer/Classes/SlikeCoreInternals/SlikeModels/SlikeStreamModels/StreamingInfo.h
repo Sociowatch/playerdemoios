@@ -11,11 +11,20 @@
 @class SlikeAdsQueue;
 @class SlikeConfig;
 
+static NSTimeInterval const  SLKMediaPlayerDefaultLiveTolerance = 30.;
+
+typedef NS_ENUM(NSInteger, SLKMediaPlayerStreamType) {
+    SLKMediaPlayerStreamTypeOthers = 0,
+    SLKMediaPlayerStreamTypeLive,
+    SLKMediaPlayerStreamTypeDVR
+};
+
 @interface StreamingInfo : NSObject
 
 @property (nonatomic, assign)BOOL preRollEnabled;
 @property (nonatomic, assign)BOOL midRollEnabled;
 @property (nonatomic, assign)BOOL postRollEnabled;
+@property (nonatomic, strong)Stream *currentStream;
 
 @property(nonatomic, strong) NSMutableArray<SlikeAdsQueue*> *adContentsArray;
 @property (nonatomic, assign)SlikePlayerType currentPlayerType;
@@ -41,7 +50,14 @@
 @property(nonatomic, assign) BOOL downloadingInProcess;
 @property(nonatomic, assign) BOOL cachedThumbnails;
 @property(nonatomic,assign) BOOL isExternalPlayer;
+@property(nonatomic, strong) NSString *evtUrl ;
 
+@property(nonatomic, assign) BOOL intl;
+@property(nonatomic, strong) NSString *hurl;
+@property(nonatomic, assign) SLKMediaPlayerStreamType mediaStreamType;
+@property(nonatomic, assign) BOOL containsDVR;
+@property(nonatomic, strong) NSString *dvrURLString;
+@property(nonatomic, assign) BOOL outSideAd;
 
 /**
  Create Stream Instance
@@ -88,14 +104,14 @@
 /**
  Update the Current Stream
  
- @param strSource - Source URL
- @param nBitrates - Bitrate
- @param strFlavor - Flavor
- @param theSize - Size
- @param strLabel -
- @param videoType - Video Type
+ @param aSourceURL - Source URL
+ @param aBitrates - Bitrate
+ @param aFlavor - Flavor
+ @param aSize - Size
+ @param aLabel -
+ @param aVideoType - Video Type
  */
-- (void)updateStreamSource:(NSString *) strSource withBitrates:(NSInteger) nBitrates withFlavor:(NSString *) strFlavor withSize:(CGSize) theSize withLabel:(NSString *)strLabel ofType:(VideoSourceType)videoType;
+- (void)updateStreamSource:(NSString *)aSourceURL withBitrates:(NSInteger)aBitrates withFlavor:(NSString *)aFlavor withSize:(CGSize)aSize withLabel:(NSString *)aLabel ofType:(VideoSourceType)aVideoType withDVR:(NSString *)dvrURL;
 
 /**
  Returns the constant value for each Player Type
@@ -195,4 +211,14 @@
 - (void)getThimbnailFromTiledImage:(NSInteger)currentPosition withCompletionBlock:(void (^)(UIImage *image))completion;
 
 - (BOOL )isSlikeStreamSecure:(SlikeConfig *)slikeConfig;
+
+- (NSString *)dvrMediaStream:(VideoSourceType)aPreferedType;
+
+/**
+ *  Return the tolerance (in seconds) for a DVR stream to be considered being played in live conditions. If the stream
+ *  playhead is located within the last `liveTolerance` seconds of the stream, it is considered to be live. The default
+ *  value is 30 seconds and matches the standard iOS player controller behavior.
+ */
+@property (nonatomic) NSTimeInterval liveTolerance;
+
 @end

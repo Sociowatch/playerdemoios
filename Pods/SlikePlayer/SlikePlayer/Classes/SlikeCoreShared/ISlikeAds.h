@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, SlikeAdsPlatform) {
 
 - (void)playAd;
 - (void)fetchAd;
-- (void)removeAdsComponents;
+- (void)removeAdsComponents:(void (^)(void))completionBlock;
 - (SlikeAdsPlatform)currentAdPlateform;
 
 - (void)resumeAd;

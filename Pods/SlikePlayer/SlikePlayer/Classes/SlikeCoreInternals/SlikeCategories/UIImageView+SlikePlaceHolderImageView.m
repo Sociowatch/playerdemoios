@@ -69,4 +69,14 @@
     });
 }
 
+- (void)setThumbImage:(NSString *)thumbURLString {
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[SlikeNetworkManager defaultManager] getImageForURL:[NSURL URLWithString:thumbURLString] completion:^(UIImage *image, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
+            if(!error) {
+                self.image =image;
+            }
+        }];
+    });
+}
 @end

@@ -380,7 +380,10 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 - (void)updateCustomBitrate:(Stream*)obj {
     //DO NOTHING.
 }
-
+- (void)updateCustomBitrateNew:(NSInteger)type
+{
+    
+}
 - (void)setNativeControl:(BOOL) isNative {
     self.isNativeControls = isNative;
 }
@@ -388,7 +391,10 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 - (NSString*)currentBitRateURI {
     return @"";
 }
-
+-(NSInteger)currentBitRateType
+{
+    return 0;
+}
 - (void)hideBitrateChooser {
 }
 
@@ -420,6 +426,11 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 - (void)getScreenShotAtPosition:(NSInteger)position withCompletionBlock:(void (^)(UIImage *))completion {
     completion(nil);
 }
+
+- (BOOL)isAdPaused {
+    return NO;
+}
+
 
 #pragma mark -
 /**

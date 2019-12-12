@@ -125,9 +125,6 @@
     
     if([SlikeSharedDataCache sharedCacheManager].isEncrypted)
     {
-        
-        NSLog(@"%@",[SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets);
-        
         if([SlikeSharedDataCache sharedCacheManager].currentStreamBitrate == SlikeMediaBitrateAuto)
         {
             self.autoBtn.backgroundColor = SLIKE_BTN_SLECTED_RGBA(216.0, 216.0, 216.0, 1.0);
@@ -253,6 +250,7 @@
  @param sender -
  */
 - (void)bitRateDidClicked:(UIButton *)sender {
+    
     
     NSInteger tag =  sender.tag;
     SlikeMediaBitrate selectedBitrate = SlikeMediaBitrateNone;

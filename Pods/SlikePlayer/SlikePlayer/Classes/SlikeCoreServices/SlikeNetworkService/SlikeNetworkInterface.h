@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SlikeNetworkManager.h"
 
 @interface SlikeNetworkInterface : NSObject
 

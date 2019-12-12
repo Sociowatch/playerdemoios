@@ -14,6 +14,7 @@
 		3D21EE861DF7F8300002132E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D21EE841DF7F8300002132E /* LaunchScreen.storyboard */; };
 		7C3F563D9F4469259C7B5439 /* libPods-slikeplayerdemoios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13F939DEE1708D2759E95DFF /* libPods-slikeplayerdemoios.a */; };
 		A32B4530213FEAD300E999A4 /* DemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A32B452F213FEAD300E999A4 /* DemoViewController.m */; };
+		A374AB6D23694D0C009047AD /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A374AB6C23694D0C009047AD /* BaseViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,9 @@
 		3D21EE871DF7F8300002132E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A32B452E213FEAD300E999A4 /* DemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemoViewController.h; sourceTree = "<group>"; };
 		A32B452F213FEAD300E999A4 /* DemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoViewController.m; sourceTree = "<group>"; };
+		A374AB6B23694D0C009047AD /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
+		A374AB6C23694D0C009047AD /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
+		A39906D822D32B71001A6D51 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C4FC53A0A0EA3AD63DD3DE15 /* Pods-slikeplayerdemoios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-slikeplayerdemoios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,10 +69,12 @@
 		3D21EE751DF7F8300002132E /* classes */ = {
 			isa = PBXGroup;
 			children = (
-				A32B452E213FEAD300E999A4 /* DemoViewController.h */,
-				A32B452F213FEAD300E999A4 /* DemoViewController.m */,
 				3D21EE791DF7F8300002132E /* AppDelegate.h */,
 				3D21EE7A1DF7F8300002132E /* AppDelegate.m */,
+				A374AB6B23694D0C009047AD /* BaseViewController.h */,
+				A374AB6C23694D0C009047AD /* BaseViewController.m */,
+				A32B452E213FEAD300E999A4 /* DemoViewController.h */,
+				A32B452F213FEAD300E999A4 /* DemoViewController.m */,
 				3D21EE7F1DF7F8300002132E /* Main.storyboard */,
 				3D21EE821DF7F8300002132E /* Assets.xcassets */,
 				3D21EE841DF7F8300002132E /* LaunchScreen.storyboard */,
@@ -99,6 +105,7 @@
 		AA540E58A66D5328CB2F399A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A39906D822D32B71001A6D51 /* SystemConfiguration.framework */,
 				13F939DEE1708D2759E95DFF /* libPods-slikeplayerdemoios.a */,
 			);
 			name = Frameworks;
@@ -201,12 +208,10 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ComScore/SCORBundle.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SlikePlayer/SlikePlayerResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SCORBundle.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SlikePlayerResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,12 +226,10 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-frameworks.sh",
-				"${PODS_ROOT}/ComScore/ComScore/dynamic/iOS/ComScore.framework",
-				"${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds/GoogleInteractiveMediaAds.framework",
+				"${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ComScore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleInteractiveMediaAds.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -242,6 +245,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A32B4530213FEAD300E999A4 /* DemoViewController.m in Sources */,
+				A374AB6D23694D0C009047AD /* BaseViewController.m in Sources */,
 				3D21EE7B1DF7F8300002132E /* AppDelegate.m in Sources */,
 				3D21EE781DF7F8300002132E /* main.m in Sources */,
 			);
@@ -371,7 +375,7 @@
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.prime;
+				PRODUCT_BUNDLE_IDENTIFIER = in.til.popkorn;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -390,7 +394,7 @@
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.til.prime;
+				PRODUCT_BUNDLE_IDENTIFIER = in.til.popkorn;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

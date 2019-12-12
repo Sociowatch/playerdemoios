@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface DemoViewController : UIViewController
-
+{
+    
+}
+@property(nonatomic,assign) NSInteger playType;
 @end

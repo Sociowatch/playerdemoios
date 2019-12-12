@@ -95,6 +95,10 @@
 
 - (void)isPerform {
     
+    if (_disableOrientation) {
+        return;
+    }
+    
     [[NSOperationQueue currentQueue] addOperationWithBlock:^{
         // force fullscreen for landscape device rotation
         if (UIDeviceOrientationIsLandscape(self->_deviceOrientation) && !self.fullScreen) {
@@ -111,6 +115,10 @@
 }
 
 - (void)changePlayerSize {
+    if (_disableOrientation) {
+        return;
+    }
+    
     if (_orientationType == SlikeOrientationTypeiPad) {
         return;
     }
@@ -142,6 +150,9 @@
 }
 
 - (void)rotateDevice {
+    if (_disableOrientation) {
+        return;
+    }
     //Need to look if app requires the iPad type orientations
     if (_orientationType == SlikeOrientationTypeiPad) {
         [self _layoutViewForIPadDevice];
@@ -151,6 +162,10 @@
 }
 
 - (void)_layoutViewForIPhoneDevice {
+    
+    if (_disableOrientation) {
+        return;
+    }
     
     if ( _rotationCondition ) { if ( !_rotationCondition(self) ) return; }
     {
@@ -205,6 +220,9 @@
 }
 
 - (void)resetNormal:(UIViewController *) parent {
+    if (_disableOrientation) {
+        return;
+    }
     
     [parent.view removeFromSuperview];
     _fullScreenWindow.rootViewController = nil;
@@ -393,12 +411,15 @@
 
 - (void)_updateOrentationChangeForIPad {
     
+    if (_disableOrientation) {
+        return;
+    }
     
     if ( _rotationCondition ) {
         if ( !_rotationCondition(self) )
             return;
     }
-    
+
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if (UIDeviceOrientationIsValidInterfaceOrientation(orientation)) {
         [self _forceIPadDeviceOrientation:orientation];

@@ -34,6 +34,7 @@
 @property(nonatomic, weak) SlikeAdsUnit *adUnitModel;
 @property(nonatomic, weak)id<SlikeAdPlateformEvents> eventsDelegate;
 @property(nonatomic,readwrite) BOOL isViewVissible;
+@property(nonatomic, assign) NSInteger adTime;
 
 @end
 
@@ -48,6 +49,7 @@
     self.adUnitModel = adModel;
     self.eventsDelegate = delegate;
     self.ha =  @"1";
+    self.adTime = 0;
     return self;
 }
 
@@ -90,6 +92,8 @@
  */
 - (void)requestAdsWithTag:(NSString *)adTagUrl
 {
+    self.adTime = 0;
+    
     SlikeDLog(@"Requesting ad: %@", adTagUrl);
     NSString * q = adTagUrl;
     NSArray * pairs = [q componentsSeparatedByString:@"&"];
@@ -309,17 +313,17 @@
     }
     NSLog(@"%@", errDescription);
     
-//    NSDictionary * payload = @{
-//                               kSlikeAdErrMessageKey:errMessage,
-//                               kSlikeAdErrCodeKey:errCode,
-//                               kSlikeAdDescriptionKey :errDescription
-//                               };
+    //    NSDictionary * payload = @{
+    //                               kSlikeAdErrMessageKey:errMessage,
+    //                               kSlikeAdErrCodeKey:errCode,
+    //                               kSlikeAdDescriptionKey :errDescription
+    //                               };
     NSDictionary * payload = @{
-                               kSlikeAdErrMessageKey:errMessage,
-                               kSlikeAdErrCodeKey:errCode,
-                               kSlikeAdDescriptionKey :errCode
-                               };
-
+        kSlikeAdErrMessageKey:errMessage,
+        kSlikeAdErrCodeKey:errCode,
+        kSlikeAdDescriptionKey :errCode
+    };
+    
     _adEvent = kSlikeAdEventLoadingError;
     if (self.eventsDelegate && [self.eventsDelegate respondsToSelector:@selector(slikeAdEventDidReceiveAdEvent:withPayload:)]) {
         [_eventsDelegate slikeAdEventDidReceiveAdEvent:_adEvent withPayload:payload];
@@ -344,7 +348,7 @@
 
 /// Called when in-app browser is about to close.
 - (void)webOpenerWillCloseInAppBrowser:(NSObject *)webOpener {
-     [[NSNotificationCenter defaultCenter]postNotificationName:kSlikeDesiableOrientationNotification object:nil userInfo:@{@"disable": @(NO)}];
+    [[NSNotificationCenter defaultCenter]postNotificationName:kSlikeDesiableOrientationNotification object:nil userInfo:@{@"disable": @(NO)}];
 }
 
 /// Called when in-app browser finishes closing.
@@ -352,7 +356,7 @@
     if(_isAdPlaying) {
         [self.adsManager resume];
     }
-   
+    
 }
 
 #pragma mark AdsManager Delegates
@@ -362,8 +366,8 @@
     if(mediaTime == 0 && _adMarkStart == 0) {
         _adMarkStart =  1;
         payload = [@{
-                     kSlikeAdAdInfoKey : @"START"
-                     } mutableCopy];
+            kSlikeAdAdInfoKey : @"START"
+        } mutableCopy];
     }
     if(mediaTime > self.slikeConfigModel.adPlayed/1000 && _adMarkAdPlayed == 0) {
         
@@ -386,13 +390,18 @@
     if(adsManager != nil && adsManager.adPlaybackInfo != nil) {
         adTime = adsManager.adPlaybackInfo.currentMediaTime ;
         adDur = adsManager.adPlaybackInfo.totalMediaTime ;
+        if(adDur > 0) self.adTime = adDur;
+        if(_adEvent == kSlikeAdEventCompleted)
+        {
+            adTime = self.adTime ;
+        }
     }
     adTime = adTime*1000;
     adDur = adDur*1000;
     NSDictionary*  payload = @{
-                               @"adPosition" :@(adTime),
-                               @"aDduration" :@(adDur)
-                               };
+        @"adPosition" :@(adTime),
+        @"aDduration" :@(adDur)
+    };
     return payload;
 }
 
@@ -460,10 +469,10 @@
     NSString* errDescription =   [NSString stringWithFormat:@"%ld||%@",(long)error.code,error.message];
     
     NSDictionary *payload = @{
-                              kSlikeAdErrMessageKey:errMessage,
-                              kSlikeAdErrCodeKey:errCode,
-                              kSlikeAdDescriptionKey :errDescription
-                              };
+        kSlikeAdErrMessageKey:errMessage,
+        kSlikeAdErrCodeKey:errCode,
+        kSlikeAdDescriptionKey :errDescription
+    };
     
     if (self.eventsDelegate && [self.eventsDelegate respondsToSelector:@selector(slikeAdEventDidReceiveAdEvent:withPayload:)]) {
         [_eventsDelegate slikeAdEventDidReceiveAdEvent:_adEvent withPayload:payload];
@@ -498,7 +507,7 @@
 /**
  Remove All the Acquired Resources
  */
-- (void)removeAdsComponents {
+- (void)removeAdsComponents:(void (^)(void))completionBlock {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.eventsDelegate = nil;
         if(self.adsManager) {
@@ -511,6 +520,7 @@
             [self.videoAdView removeFromSuperview];
             self.videoAdView=nil;
         }
+        completionBlock();
     });
 }
 
@@ -574,7 +584,7 @@
 
 - (NSMutableDictionary*) _getAdTypeWithCreativeID:(IMAAd *)ad {
     
-   
+    
     NSMutableDictionary *dict =  [NSMutableDictionary dictionary];
     
     if(ad != nil) {

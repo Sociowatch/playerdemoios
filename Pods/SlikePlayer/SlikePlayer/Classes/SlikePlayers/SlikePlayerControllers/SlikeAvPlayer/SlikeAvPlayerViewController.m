@@ -36,11 +36,16 @@
 #import "UIImageView+SlikePlaceHolderImageView.h"
 #import "SlikeVCRotationManager.h"
 #import "SlikeOrientationObserver.h"
+#import "SlikeCueManager.h"
+#import "SlikeLiveErrorHandler.h"
+#import "LiveStatusMDO.h"
+#import "NSLayoutConstraint+SSLayout.h"
+#import "SLTimerVC.h"
+#import "SlikeAdEvent.h"
 
-@interface SlikeAvPlayerViewController () <EventManagerProtocol, SJRotationManagerDelegate> {
+@interface SlikeAvPlayerViewController () <EventManagerProtocol, SJRotationManagerDelegate, SlikeCueManagerDelegate,SlikeLiveErrorHandlerDelegate> {
     id _playerContainer;
 }
-
 @property (nonatomic, readwrite) BOOL hasPlayerObserverAdded;
 @property (nonatomic, readwrite) BOOL isFullScreen;
 @property (nonatomic, readwrite) BOOL isUserPaused;
@@ -55,6 +60,7 @@
 @property (nonatomic, readwrite) BOOL isMediaReStart;
 @property (nonatomic, readwrite) BOOL isAutoPlayEnable;
 @property (nonatomic, readwrite) BOOL isAppEnteredInBackground;
+
 @property (nonatomic, assign) NSInteger mediaStartTime;
 @property (nonatomic, assign) NSInteger cromeCastSeekTime;
 @property (nonatomic, assign) NSInteger nTimeCode;
@@ -72,6 +78,11 @@
 @property (nonatomic, weak)  UIView * parentReferenceView;
 @property (nonatomic, strong) SlikeVCRotationManager *vcRotationManager;
 @property (nonatomic, strong) SlikeOrientationObserver *orentationObserver;
+@property (nonatomic, strong) SlikeCueManager *cueManager;
+@property (nonatomic, strong) SlikeLiveErrorHandler *liveErrorHandler;
+@property (nonatomic, assign) NSInteger eventStatus;
+@property (nonatomic, strong) SLTimerVC *objTimerView;
+@property (nonatomic, assign) NSInteger currentAdType;
 
 @end
 
@@ -91,7 +102,7 @@
 }
 
 - (void)_addConfiguration {
-    
+    self.eventStatus = -2;
     self.isUserPaused = NO;
     [self _addEventsObservers];
     [self _addOrientationObserver];
@@ -122,6 +133,7 @@
     _strNewURL = @"";
     _playerCurrentState = SL_STATE_NONE;
     _progressInfo = nil;
+    self.cueManager= nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,7 +174,22 @@
             
         } else if(eventType == AD) {
             
-            if (playerState == SL_CONTENT_RESUME) {
+            if(payload[kSlikeEventModelKey])
+            {
+                EventModel *eventModel  = payload[kSlikeEventModelKey];
+                if (eventModel && eventModel.adEventModel.extranlAdFail) {
+                    SlikeDLog(@"%d",eventModel.adEventModel.extranlAdFail);
+                    return;
+                }
+            }
+          
+            if (playerState == SL_CONTENT_RESUME)
+            {
+                if(payload[kSlikeNormalAdFailKey])
+                                     {
+                    [self _requestAdForPosition:self->_currentAdType];
+                        return;
+                        }
                 
                 [self _hideAdPlayerContainerView];
                 [self _setAdIsPlaying:NO];
@@ -228,6 +255,7 @@
             [self removeErrorAlert];
         }
     } else if (state == SL_PLAYING) {
+        
         //self.posterImage.alpha = 0.0;
         // TO DO :: Playing come after network --
         //        if ([[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
@@ -268,9 +296,10 @@
             float nPosition = seekedPositionInt;
             __weak typeof(self) weekSelf = self;
             [self _seekTo:nPosition userSeeked:YES completionBlock:^(BOOL finished) {
-                [weekSelf play:NO];
+                if (finished) {
+                    [weekSelf play:NO];
+                }
             }];
-            
         }
     }
 }
@@ -294,7 +323,9 @@
             if(self.slikeConfig.streamingInfo.isLive) {
                 __weak typeof(self) weekSelf = self;
                 [self _seekTo:MAXFLOAT userSeeked:NO completionBlock:^(BOOL finished) {
-                    [weekSelf play:isUserInisiated];
+                    if (finished) {
+                        [weekSelf play:isUserInisiated];
+                    }
                 }];
                 
             } else {
@@ -312,7 +343,7 @@
                 seekedPositionInt =  [seek_progress floatValue];
             }
             float nPosition = [self getDuration]*seekedPositionInt/1000;
-            NSUInteger currentPosition =nPosition*1000;
+            NSUInteger currentPosition = nPosition*1000;
             NSUInteger duration = [self getDuration];
             NSDictionary *playerData = @{kSlikeCurrentPositionKey:@(currentPosition), kSlikeDurationKey:@(duration)};
             
@@ -329,7 +360,7 @@
                 seekedPositionInt =  [seek_progress floatValue];
             }
             float nPosition = [self getDuration]*seekedPositionInt/1000;
-            NSUInteger currentPosition =nPosition*1000;
+            NSUInteger currentPosition = nPosition*1000;
             NSUInteger duration = [self getDuration];
             NSDictionary *playerData = @{kSlikeCurrentPositionKey:@(currentPosition), kSlikeDurationKey:@(duration)};
             
@@ -337,7 +368,9 @@
             
             __weak typeof(self) weekSelf = self;
             [self _seekTo:nPosition userSeeked:YES completionBlock:^(BOOL finished) {
-                [weekSelf play:NO];
+                if (finished) {
+                    [weekSelf play:NO];
+                }
             }];
         }
         
@@ -540,7 +573,15 @@
 }
 
 - (void)play:(BOOL)isUserInitiated {
-   
+    
+    //If ad was there and it was not completed (was in pause state) then need to resume the ad & return form there
+    //Need to resume the ad
+    if (self.slikeConfig.resumeDuckAds && [self isAdPlaying]) {
+        [[SlikeAdManager sharedInstance] resumeAd];
+        return;
+    }
+    
+    
     if (!_isAutoPlayEnable) {
         //Make the variable TRUE so that it should be called only on startup
         _isAutoPlayEnable = YES;
@@ -554,18 +595,22 @@
     else {
         
         if(_isUserPaused && !isUserInitiated && !_isNetworkWindowPresented) return;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.playerView play];
-            self.isUserPaused = NO;
-        });
+        [self.playerView play];
+        self.isUserPaused = NO;
     }
 }
-
 /**
  Pause the video
  @param isUserInitiated - Action is performed by the  user or auto
  */
 - (void)pause:(BOOL)isUserInitiated {
+    
+    //Media has paused. Now need to check if ad is playing and config property has set: YES
+    //Need to pause the ad also
+    if (self.slikeConfig.resumeDuckAds && [self isAdPlaying]) {
+        [[SlikeAdManager sharedInstance] pauseAd];
+    }
+    
     if(_isUserPaused) return;
     self.isUserPaused = isUserInitiated;
     [self.playerView pause];
@@ -582,7 +627,8 @@
  Is Media is in playing mode
  @return - BOOL
  */
-- (BOOL)isPlaying {
+- (BOOL)isPlaying
+{
     return  [self.playerView isPlaying];
 }
 
@@ -619,7 +665,9 @@
     [weekSelf.playerView restart:_mediaStartTime completionBlock:^(BOOL finished) {
         
         [weekSelf _sendPlayerStatus:SL_REPLAY withUserBehavior:SlikeUserBehaviorEventReplay withError:nil withPayload:@{}];
+        
         [weekSelf _sendPlayerStatus:SL_START withUserBehavior:SlikeUserBehaviorEventReplay withError:nil withPayload:@{}];
+        
         [weekSelf _sendStatusToControls:SL_SHOWCONTROLS];
         //Set this
         weekSelf.isVideoSeen = NO;
@@ -627,6 +675,7 @@
         weekSelf.isPlayerLoaded = YES;
         [weekSelf play:NO];
     }];
+    
 }
 
 /**
@@ -658,8 +707,15 @@
     } else {
         
         _isUserSeeked = isUserInitiated;
-        [self.playerView seekPlayerToTime:CMTimeMakeWithSeconds(nPosition, NSEC_PER_SEC) fastSeek:FALSE completionBlock:^(BOOL finished) {
-            
+        float videoDuration = [self getDuration]/1000;
+        
+        CMTime seekPostion = CMTimeMakeWithSeconds(nPosition, NSEC_PER_SEC);
+        //If Seek Postion is greater then the
+        if (nPosition > videoDuration && !self.slikeConfig.streamingInfo.isLive) {
+            seekPostion  = CMTimeMake(nPosition, 1);
+        }
+        
+        [self.playerView seekPlayerToTime:seekPostion fastSeek:FALSE completionBlock:^(BOOL finished) {
             if(self.isPlaybackDone) {
                 weekSelf.isVideoSeen = NO;
                 weekSelf.isPlaybackDone =  NO;
@@ -727,6 +783,9 @@
     return [self.playerView getPlayerMuteStatus];
 }
 
+- (CMTimeRange)getTimeRange {
+    return self.playerView.timeRange;
+}
 /**
  Get the current Controller which is used by media to play
  @return - instance of class
@@ -774,17 +833,69 @@
 - (NSArray*)showBitrateChooser:(BOOL)isCustom {
     
     if(isCustom) {
-        return [self.slikeConfig.streamingInfo getVideosListByType:[self.slikeConfig.streamingInfo getCurrentVideoSource]];
+        NSArray *bitRateArray = [NSArray array];
+        if(![SlikeSharedDataCache sharedCacheManager].isEncrypted)
+        {
+            bitRateArray = [[SlikeSharedDataCache sharedCacheManager] cachedBitratesModels];
+        }else
+        {
+            NSMutableArray *bitratesModelArray =  [[NSMutableArray alloc] init];
+            if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >0)
+            {
+                SlikeBitratesModel* autoBitrateModel =  [[SlikeBitratesModel alloc]init];
+                autoBitrateModel.bitrateName = @"Auto";
+                autoBitrateModel.bitrateUrl = nil;
+                autoBitrateModel.isValid = YES;
+                autoBitrateModel.bitrateType = SlikeMediaBitrateAuto;
+                
+                [bitratesModelArray addObject:autoBitrateModel];
+                SlikeBitratesModel* lowBitrateModel =  [[SlikeBitratesModel alloc]init];
+                lowBitrateModel.bitrateName = @"Low";
+                lowBitrateModel.bitrateUrl = nil;
+                lowBitrateModel.isValid = YES;
+                lowBitrateModel.bitrateType = SlikeMediaBitrateLow;
+                [bitratesModelArray addObject:lowBitrateModel];
+            }
+            if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >1)
+            {
+                SlikeBitratesModel* mediumBitrateModel =  [[SlikeBitratesModel alloc]init];
+                mediumBitrateModel.bitrateName = @"Medium";
+                mediumBitrateModel.bitrateUrl = nil;
+                mediumBitrateModel.isValid = YES;
+                mediumBitrateModel.bitrateType = SlikeMediaBitrateMedium;
+                [bitratesModelArray addObject:mediumBitrateModel];
+            }
+            if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >2)
+            {
+                SlikeBitratesModel* highBitrateModel =  [[SlikeBitratesModel alloc]init];
+                highBitrateModel.bitrateName = @"High";
+                highBitrateModel.bitrateUrl = nil;
+                highBitrateModel.isValid = YES;
+                highBitrateModel.bitrateType = SlikeMediaBitrateHigh;
+                [bitratesModelArray addObject:highBitrateModel];
+            }
+            bitRateArray =  bitratesModelArray;
+        }
+        return bitRateArray;
+        
     } else {
         [self showBitratesPopup];
         return nil;
     }
 }
 
+
 /**
  Get the current Bitrate String
  @return - Bitrate|nil
  */
+-(NSInteger)currentBitRateType
+{
+    SlikeMediaBitrate currentBitRateType = [SlikeSharedDataCache sharedCacheManager].currentStreamBitrate;
+    NSInteger selectType = currentBitRateType;
+    return selectType;
+}
+
 - (NSString *)currentBitRateURI {
     if(self.playerView) {
         return [self.playerView currentPlaybackItemURI];
@@ -798,6 +909,11 @@
 
 -(BOOL)isAdPlaying {
     return _isCurrentlyAdPlaying;
+}
+
+
+- (BOOL)isAdPaused {
+    return [[SlikeAdManager sharedInstance] isAdPaused];
 }
 
 - (void)setCast:(id<ISlikeCast>)cast {
@@ -861,7 +977,7 @@
  @param err - Error
  */
 - (void)errorAndStopMovie:(NSError *) err {
-    [SlikeUtilities showAlert:@"" withTitle:@"Playback failed" withController:self];
+    // [SlikeUtilities showAlert:@"" withTitle:@"Playback failed" withController:self];
     //[self stopVideoWithCompletion:NO];
 }
 
@@ -884,8 +1000,13 @@
             
             [self _sendPlayerStatus:SL_LOADED withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:playerData];
             [self _readyMediaStream];
+            
         }
         
+        if (self.slikeConfig.streamingInfo.currentStream.hasDVR) {
+            [self _hideWaitingIndicator];
+            [self play:NO];
+        }
         [self _layoutPlayerIfNeeded];
         
     } else if([notification.name isEqualToString:SlikePlayerPlaybackStateSeekUpdateNotification]) {
@@ -918,8 +1039,9 @@
         //Dispatching the events
         [self _sendPlayerStatus:_playerCurrentState withUserBehavior:_isUserPaused?SlikeUserBehaviorEventPause:SlikeUserBehaviorEventNone withError:nil withPayload:playerData];
         
-    } else if([notification.name isEqualToString:SlikePlayerPlaybackStateBufferingNotification]) {
-        
+    } else if([notification.name isEqualToString:SlikePlayerPlaybackStateBufferingNotification])
+    {
+        SlikeDLog(@"AV PLAYER LOG Sa: Start Buffering Notification");
         if(_isUserPaused) return;
         if(!self.slikeConfig.isAutoPlay && !_isAutoPlayEnable){
             return;
@@ -927,10 +1049,13 @@
         _playerCurrentState = SL_BUFFERING;
         [self _sendPlayerStatus:_playerCurrentState withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:@{}];
         _nBufferTime += 1000;
+        SlikeDLog(@"AV PLAYER LOG Sa: Start Buffering Notification %ld",(long)_nBufferTime);
+        if(self.liveErrorHandler) [self.liveErrorHandler startPollingTimer:0];
         
     } else if([notification.name isEqualToString:SlikePlayerPlaybackStateBufferingEndedNotification]) {
-        SlikeDLog(@"AV PLAYER LOG: Ended Buffering Notification");
+        SlikeDLog(@"AV PLAYER LOG Sa : Ended Buffering Notification");
         _playerCurrentState = SL_BUFFERING;
+        _nBufferTime = 0;
         [self _sendPlayerStatus:_playerCurrentState withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:@{kSlikeBufferingEndedKey: @(YES)}];
         
     } else if([notification.name isEqualToString:SlikePlayerPlaybackStateStopNotification]) {
@@ -999,6 +1124,7 @@
         if (!_hasPostRollCompleted && !self.slikeConfig.isSkipAds && self.slikeConfig.isPostrollEnabled == ON && !self.slikeConfig.ispr) {
             [self _sendStatusToControls:SL_HIDECONTROLS];
             [self _requestAdForPosition:-1];
+            
         } else {
             [self stopVideoWithCompletion:YES];
         }
@@ -1008,16 +1134,19 @@
         NSError *playingError = [notification.userInfo objectForKey:@"data"];
         if(playingError) {
             
-            if(playingError.code == SlikeServiceErrorM3U8FileError) {
+            if(playingError.code == SlikeServiceMediaFileStoppedPlaying) {
+                [self _sendPlayerStatus:SL_ERROR withUserBehavior:SlikeUserBehaviorEventNone withError:[NSString stringWithFormat:@"%@", playingError.userInfo] withPayload:nil];
+                
+            } else if(playingError.code == SlikeServiceErrorM3U8FileError) {
                 NSError *systemError = [notification.userInfo objectForKey:@"systemError"];
                 if (systemError) {
-                    NSLog(@"System Errors =>%@", [systemError localizedDescription]);
+                    SlikeDLog(@"System Errors =>%@", [systemError localizedDescription]);
                 }
                 
                 return;
                 
             } else if(playingError.code == SlikeServiceErrorNoNetworkAvailable) {
-
+                
                 NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
                 if (playingError) {
                     [payload setObject:playingError forKey:@"data"];
@@ -1027,11 +1156,18 @@
                 return;
                 
             } else {
-                
                 NSDictionary *payload =  [NSDictionary dictionaryWithObjectsAndKeys:@"playback error",@"info", nil];
                 [self _sendPlayerStatus:SL_ERROR withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:payload];
-                SlikeDLog(@"AV PLAYER LOG: playback error");
-                [self stopVideoWithCompletion:NO];
+                if(self.liveErrorHandler)
+                {
+                    self.liveErrorHandler.liveErrorDelegate = self;
+                    [self.liveErrorHandler startPollingTimer:0];
+                    [self _showWaitingIndicator];
+                }else
+                {
+                    SlikeDLog(@"AV PLAYER LOG: playback error");
+                    [self stopVideoWithCompletion:NO];
+                }
                 return;
             }
         }
@@ -1071,15 +1207,17 @@
                     _isVideoSeen =  YES;
                 }
             }
+            SlikeDLog(@"data %@",[notification.userInfo objectForKey:@"data"]);
             
-            if(duration/1000 >[[notification.userInfo objectForKey:@"data"] intValue]) {
-                
+            if(duration/1000 >[[notification.userInfo objectForKey:@"data"] intValue] || self.slikeConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
                 //Dispatch the Event
                 _playerCurrentState = self.isMediaReStart ?SL_START :SL_PLAYING;
+                
                 [self _sendPlayerStatus:_playerCurrentState withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:playerData];
                 
                 if (_playerCurrentState == SL_PLAYING) {
                     [self _sendPlayerStatus:SL_PLAYING withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:@{}];
+                    
                 }
             }
             return;
@@ -1092,11 +1230,20 @@
 
 #pragma mark - Notification Uitility Methods
 - (void)_startMediaStream {
-    
+    if(self.liveErrorHandler)
+    {
+        self.liveErrorHandler.liveErrorDelegate = self;
+        [self.liveErrorHandler startPollingTimer:0];
+    }
     SlikeDLog(@"AV PLAYER LOG: _startMediaStream");
     _playerCurrentState = SL_START;
     [self _sendPlayerStatus:_playerCurrentState withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:@{}];
     [self.playerView startPlayingVideo:YES];
+    if(self.slikeConfig.isInitialPlayerMute)
+    {
+        [self.playerView playerMute:YES];
+        self.slikeConfig.isInitialPlayerMute =  NO;
+    }
 }
 
 - (void)_readyMediaStream {
@@ -1117,6 +1264,9 @@
         [self _sendStatusToControls:SL_SHOWCONTROLS];
         [self.playerView pause];
     }
+    
+    
+    
 }
 
 #pragma mark - iSlikePlayer Player Play Stream
@@ -1133,8 +1283,12 @@
  @param parent - Parent view on which the Controller needs to set
  */
 - (void)playMovieStreamWithObject:(SlikeConfig *)configModel withParent:(id)parent {
-    
+    [[SlikeDeviceSettings sharedSettings] setVideoRid:@""];
     SlikeDLog(@"AV PLAYER LOG: playMovieStreamWithObject");
+    _orentationObserver.disableOrientation = NO;
+    if (configModel.disableOrientation) {
+        _orentationObserver.disableOrientation = YES;
+    }
     self.isAppAlreadyDestroyed = NO;
     [self resetVariables];
     
@@ -1152,6 +1306,15 @@
         configModel.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:configModel.mediaId];
     
     self.slikeConfig = configModel;
+    [self updateExternalAddIfAny:self.slikeConfig];
+    
+    if(self.slikeConfig.streamingInfo.intl && self.slikeConfig.streamingInfo.hurl)
+        //    if(self.slikeConfig.streamingInfo.hurl)
+    {
+        self.liveErrorHandler = [SlikeLiveErrorHandler sharedLiveErrorHander];
+        self.liveErrorHandler.slikeConfig = self.slikeConfig;
+        self.liveErrorHandler.statusPollingUrl = self.slikeConfig.streamingInfo.hurl;
+    }
     [self _applicationPresenceState];
     [self _updateOrientationSettings];
     
@@ -1159,8 +1322,21 @@
     {
         if (configModel.customControls)
         {
-            [self.view addSubview:configModel.customControls];
             configModel.customControls.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+            [self.view addSubview:configModel.customControls];
+            configModel.customControls.translatesAutoresizingMaskIntoConstraints= false;
+            [configModel.customControls activateConstraints:^{
+                [configModel.customControls.top_attr equalTo: self.view.top_attr];
+                [configModel.customControls.left_attr equalTo: self.view.left_attr];
+                [configModel.customControls.right_attr equalTo: self.view.right_attr];
+                [configModel.customControls.bottom_attr equalTo: self.view.bottom_attr];
+            }];
+            
+            
+            /*  configModel.customControls.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
+             */
+            [configModel.customControls layoutIfNeeded];
+            
         } else {
             //Parent has not provided the controls UI. We need to create it
             [self _createSlikeCustomControlUI];
@@ -1181,7 +1357,7 @@
     if(self.slikeConfig.isAllowSlikePlaceHolder) {
         [self setVideoPlaceHolder:YES];
     }
-    
+    [self.playerView attachCueManager:self];
     if (self.slikeConfig.isAutoPlay) {
         if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
             [self.view bringSubviewToFront:self.slikeConfig.customControls];
@@ -1199,6 +1375,24 @@
     } else {
         [self _loadMediaStream];
         [self.view bringSubviewToFront:self.slikeConfig.customControls];
+    }
+    
+}
+-(void)updateExternalAddIfAny:(SlikeConfig*)configModel
+{
+    if(configModel.externalAdArray && configModel.externalAdArray.count >0)
+    {
+        if (!self.slikeConfig.isSkipAds  || !self.slikeConfig.ispr || (!self.slikeConfig.isPrerollEnabled && self.slikeConfig.isPostrollEnabled))
+        {
+            [[SlikeAdManager sharedInstance] cleanupAdManager:^{
+                
+            }];
+        }
+        configModel.streamingInfo.adContentsArray = [NSMutableArray arrayWithArray:configModel.externalAdArray];
+        configModel.streamingInfo.outSideAd =  YES;
+    }else
+    {
+        configModel.streamingInfo.outSideAd =  NO;
     }
     
 }
@@ -1232,8 +1426,18 @@
  @param adPosition - 0=>PRE | -1=>POST
  */
 - (void)_requestAdForPosition:(NSInteger)adPosition {
-    [self _sendStatusToControls:SL_AD_REQUESTED];
-    [[SlikeAdManager sharedInstance] showAd:self.slikeConfig adContainerView:[self _adPlayerContainerView] forAdPosition:adPosition];
+    self.currentAdType =  adPosition;
+    if(self.slikeConfig.streamingInfo && self.slikeConfig.streamingInfo.outSideAd)
+    {        
+        [[SlikeAdManager sharedInstance] cleanupAdManager:^{
+            [self _sendStatusToControls:SL_AD_REQUESTED];
+            [[SlikeAdManager sharedInstance] showAd:self.slikeConfig adContainerView:[self _adPlayerContainerView] forAdPosition:adPosition];
+        }];
+    }else
+    {
+        [self _sendStatusToControls:SL_AD_REQUESTED];
+        [[SlikeAdManager sharedInstance] showAd:self.slikeConfig adContainerView:[self _adPlayerContainerView] forAdPosition:adPosition];
+    }
 }
 
 - (void)_setAdIsPlaying:(BOOL)isPlaying {
@@ -1285,7 +1489,7 @@
        [self.slikeConfig.streamingInfo hasVideo:VIDEO_SOURCE_FHLS] ||
        [self.slikeConfig.streamingInfo hasVideo:VIDEO_SOURCE_SHLS])
     {
-        m3u8URL = [m3u8URL stringByReplacingOccurrencesOfString:@"http" withString:@"123"];
+        m3u8URL = [m3u8URL stringByReplacingOccurrencesOfString:@"http" withString:@"slikehttp"];
     }
     SlikeDLog(@"AV PLAYER LOG: Inside callPlayVideo...");
     if ([NSURL URLWithString:m3u8URL] == nil) {
@@ -1313,6 +1517,8 @@
     }
     self.playerView.isSecure = _isSecure;
     [self.playerView initialisePlayerWithPlaylist:m3u8 withStartPos:_nTimeCode];
+    //Attach Player for listening the Events
+    
     if (self.slikeConfig) {
         [self.playerView setAllowsAirPlay:self.slikeConfig.enableAirPlay];
     }
@@ -1400,6 +1606,8 @@
         return YES;
         
     }];
+    
+    
     _orentationObserver.backWindowColor = self.slikeConfig.fullScreenWindowColor;
     [self _updateOrientationSettings];
     
@@ -1653,7 +1861,13 @@
         [weakAlert removeAlertViewWithAnimation:YES];
     };
     
-    _bitratesView.selectedBirateBlock = ^(id bitrateType) {
+    _bitratesView.selectedBirateBlock = ^(id bitrateType)
+    {
+        if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
+            [weekSelf _showAlertViewForOffline:YES hasEmptyBuffer:NO];
+            [weekSelf _sendNetworkErrorMessage];
+            return;
+        }
         SlikeMediaBitrate selectStreamBitrate = [bitrateType integerValue];
         [[SlikeSharedDataCache sharedCacheManager] setCurrentStreamBitrate:selectStreamBitrate];
         [weekSelf _updateBitrate];
@@ -1699,7 +1913,27 @@
 - (void)updateCustomBitrate:(Stream*)stream {
     
 }
-
+- (void)updateCustomBitrateNew:(NSInteger)bitrateType
+{
+    //Tesk
+    SlikeMediaBitrate currentBitRateType = [SlikeSharedDataCache sharedCacheManager].currentStreamBitrate;
+    SlikeMediaBitrate selectStreamBitrate = bitrateType;
+    
+    if (currentBitRateType == selectStreamBitrate ) {
+        //Do nothing
+    } else
+    {
+        if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
+            [self _showAlertViewForOffline:YES hasEmptyBuffer:NO];
+            [self _sendNetworkErrorMessage];
+            return;
+        }
+        [[SlikeSharedDataCache sharedCacheManager] setCurrentStreamBitrate:selectStreamBitrate];
+        [self _updateBitrate];
+        [self _removeBiratesUI];
+        
+    }
+}
 /**
  Remove the Bitrates UI
  */
@@ -1748,8 +1982,8 @@
     [self setVideoPlaceHolder:YES];
     [self _sendStatusToControls:SL_HIDECONTROLS];
     if (_isNetworkWindowPresented && bufferEmpty) {
-         [self pause:NO];
-         [self _sendStatusToControls:SL_HIDECONTROLS];
+        [self pause:NO];
+        [self _sendStatusToControls:SL_HIDECONTROLS];
         return;
     }
     [self pause:NO];
@@ -1757,20 +1991,19 @@
     UIView *parentView = (UIView *)self.view;
     [parentView addSubviewWithContstraints:_slikeAlertView];
     
-
+    
     __block SlikePlayerErrorView* weakAlert = _slikeAlertView;
-   if(self.slikeConfig.isNoNetworkCloseControlEnable)
-   {
-       [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:_isFullScreen withReloadEnable:enableReload];
-   }else
-   {
-    [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:self.slikeConfig.isNoNetworkCloseControlEnable withReloadEnable:enableReload];
-   }
+    if(self.slikeConfig.isNoNetworkCloseControlEnable)
+    {
+        [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:_isFullScreen withReloadEnable:enableReload];
+    }else
+    {
+        [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:self.slikeConfig.isNoNetworkCloseControlEnable withReloadEnable:enableReload];
+    }
     _isNetworkWindowPresented = YES;
     
     [self _removeBiratesUI];
     [self _sendStatusToControls:SL_HIDECONTROLS];
-    
     //Set the poster image
     [self setVideoPlaceHolder:YES];
     __weak typeof(self) weekSelf = self;
@@ -1807,66 +2040,69 @@
     
 }
 - (void)removePlayer {
-    
-    if([self.playerView isPlayerExist]) {
-        [self pause:NO];
+    __weak typeof(self) _self = self;
+    if([_self.playerView isPlayerExist]) {
+        [_self pause:NO];
     }
-    
-    [self sendPlayerForceCloseEvent];
-    
+    [_self.playerView deattachCueManager];
+    if(_self.cueManager)
+    {
+        [_self.cueManager stopTimer];
+        _self.cueManager= nil;
+    }
+    if(_self.liveErrorHandler)
+    {
+        [_self.liveErrorHandler stopPollingTimer];
+        _self.liveErrorHandler.liveErrorDelegate =  nil;
+        _self.liveErrorHandler= nil;
+        [self removeTimerSlate];
+    }
+    [_self sendPlayerForceCloseEvent];
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-
-   
-    [self.playerView stopVideo:YES];
-    
-    __weak typeof(self) _self = self;
-    
-    [self _removeCustomControls:^{
-       
-        [_self cleanup];
-        _self.progressInfo=nil;
+        [_self.playerView stopVideo:YES];
+        [_self _removeCustomControls:^{
+            [_self cleanup];
+            _self.progressInfo=nil;
+        }];
         
-        
-    }];
-    
 #ifdef __SLIKE_ORIENTATION_WITH_VIEW_CONTROLLER__
-    if (self.vcRotationManager) {
-        self.vcRotationManager =nil;
-    }
-#else
-    if (self.orentationObserver) {
-        self.orentationObserver =nil;
-    }
-#endif
-    
-    if (_playerRegistrar) {
-        self.playerRegistrar = nil;
-    }
-    if (self.slikeGestureUI) {
-        self.slikeGestureUI =nil;
-    }
-    self.strNewURL=nil;
-    if (self.slikeAlertView) {
-        [_slikeAlertView removeFromSuperview];
-        self.slikeAlertView=nil;
-    }
-    
-    if(_playerContainer && self.view) {
-        if([_playerContainer isKindOfClass:[UIView class]]) {
-            if(self.parentViewController) {
-                [self willMoveToParentViewController:nil];
-            }
-            if([self.view superview]){
-                [self.view removeFromSuperview];
-            }
-            if(self.parentViewController) {
-                [self removeFromParentViewController];
-            }
+        if (_self.vcRotationManager) {
+            _self.vcRotationManager =nil;
         }
-        _playerContainer=nil;
-    }
-            });
+#else
+        if (_self.orentationObserver) {
+            _self.orentationObserver =nil;
+        }
+#endif
+        
+        if (_self.playerRegistrar) {
+            _self.playerRegistrar = nil;
+        }
+        if (_self.slikeGestureUI) {
+            _self.slikeGestureUI =nil;
+        }
+        _self.strNewURL=nil;
+        if (_self.slikeAlertView) {
+            [_self.slikeAlertView removeFromSuperview];
+            _self.slikeAlertView=nil;
+        }
+        
+        if(self ->_playerContainer && self.view) {
+            if([self ->_playerContainer isKindOfClass:[UIView class]]) {
+                if(_self.parentViewController) {
+                    [_self willMoveToParentViewController:nil];
+                }
+                if([_self.view superview]){
+                    [_self.view removeFromSuperview];
+                }
+                if(_self.parentViewController) {
+                    [_self removeFromParentViewController];
+                }
+            }
+            self->_playerContainer=nil;
+        }
+    });
 }
 
 
@@ -1923,7 +2159,7 @@
     }
     [self.playerView resetAvPlayer];
     
-    self.slikeConfig.customControls.alpha=0;
+    self.slikeConfig.customControls.alpha=1;
     self.progressInfo = nil;
     self.strNewURL = nil;
     if (self.playerRegistrar) {
@@ -1945,7 +2181,6 @@
 }
 
 - (void)resetBooleans {
-    
     _isUserPaused = NO;
     _isVideoSeen = NO;
     _isUserSeeked = NO;
@@ -1992,7 +2227,6 @@
 }
 
 - (void)rotationManager:(id<SJRotationManagerProtocol>)manager didRotateView:(BOOL)isFullscreen {
-    
     self.isFullScreen = isFullscreen;
     [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateFullScreenNotification object:nil userInfo:nil];
     if (_isFullScreen && self.slikeGestureUI) {
@@ -2014,4 +2248,221 @@
     return false;
 }
 
+
+#pragma mark - SlikeCueManagerDelegate
+- (void)processCueEvent:(NSString *)subTitleString  forItemTime:(NSTimeInterval)mediaTime {
+    if(_cueManager) {
+        [_cueManager processCue:subTitleString forItemTime:mediaTime fromJson:NO];
+    }
+}
+
+/*
+ status == (-1) => Not Contains
+ status == (1) => Contains
+ Other values may  be used for future
+ */
+- (void)streamContainsCueEvents:(NSInteger)hasCueEvents {
+    
+    if (hasCueEvents == 1) {
+        
+        self.cueManager = [SlikeCueManager sharedCueManager];
+        self.cueManager.slikeMediaId =  self.slikeConfig.mediaId;
+        self.cueManager.cueExpTime =  self.slikeConfig.cueExpTime;
+        self.cueManager.minCueTrigTime =  self.slikeConfig.minCueTrigTime;
+        self.cueManager.syncTimeDiff =  self.slikeConfig.syncTimeDiff;
+        self.cueManager.slikeConfig =  self.slikeConfig;
+        if(self.slikeConfig.streamingInfo.evtUrl && [self.slikeConfig.streamingInfo.evtUrl  length]>0) {
+            self.cueManager.evtUrl =  self.slikeConfig.streamingInfo.evtUrl;
+        }
+        
+        if(self.cueManager &&  self.cueManager.evtUrl && [self.cueManager.evtUrl  length] == 0 && self.strNewURL && self.strNewURL.length >0) {
+            self.cueManager.evtUrl =  [self.strNewURL stringByReplacingOccurrencesOfString:@".m3u8" withString:@"/evt.json"];
+        }
+        
+        if(self.cueManager.evtUrl) {
+            self.cueManager.cuePointPolling = self.slikeConfig.cuePointPolling;
+            [self.cueManager startTimer];
+        }
+        
+    } else if (hasCueEvents == 0) {
+        if(self.cueManager) {
+            self.cueManager = nil;
+        }
+    }
+}
+
+
+- (void)streamEventStatus:(LiveStatusMDO*)evtstatusMDO {
+    
+    if(evtstatusMDO.evtstatus == -1 && evtstatusMDO.evttime)
+    {
+        NSTimeInterval unixTimeStamp = evtstatusMDO.evttime / 1000.0;
+        NSDate *onLineDate = [NSDate dateWithTimeIntervalSince1970:unixTimeStamp];
+        [self addTimerSlate:onLineDate];
+    }else if(evtstatusMDO.evtstatus == 0)
+    {
+        [self liveEventEnded];
+    }
+    else
+    {
+        [self removeTimerSlate];
+    }
+    
+    if(self.eventStatus == -2 && evtstatusMDO.evtstatus == -1) {
+        self.eventStatus = evtstatusMDO.evtstatus;
+        return;
+    }
+    
+    
+    BOOL isSeekNeeded =  NO;
+    if((self.eventStatus == 2 &&  evtstatusMDO.evtstatus == 1) || (self.eventStatus == -1 &&  evtstatusMDO.evtstatus == 1)) {
+        isSeekNeeded = YES;
+    }
+    
+    self.eventStatus = evtstatusMDO.evtstatus;
+    StatusInfo *info =   [[StatusInfo alloc] init];
+    info.liveStatusMDO = evtstatusMDO;
+    [[EventManager sharedEventManager]dispatchEvent:MEDIA playerState:SL_LIVE_STATES dataPayload:@{kSlikeADispatchEventToParentKey:@YES, kSlikeAdStatusInfoKey:info} slikePlayer:nil];
+    
+    if(self.liveErrorHandler) {
+        
+        if(self.eventStatus == 2) {
+            [self.liveErrorHandler startPollingTimer:0];
+            
+        } else  if(self.eventStatus == 1 && isSeekNeeded) {
+            
+            if(self.slikeConfig.streamingInfo.isLive) {
+                [self playerTryToplay];
+                
+            } else {
+                [self play:NO];
+                [self _hideWaitingIndicator];
+                
+            }
+        }
+    }
+}
+
+- (void)playerTryToplay {
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                   {
+        [self _hideWaitingIndicator];
+        [self.playerView stopVideo:YES];
+        [self callPlayVideo:self->_strNewURL];
+        [self performSelector:@selector(seekUpdatePauseState) withObject:nil afterDelay:1.0];
+    });
+}
+
+- (void)seekUpdatePauseState {
+    [self play:YES];
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+        if(![self isPlaying] && self.eventStatus ==  2) {
+            [self playerTryToplay];
+        }
+    });
+}
+
+
+#pragma mark - DVR/LIVE Switching
+- (void)switchToStream:(SLKMediaPlayerStreamType)aStream {
+    if (aStream == SLKMediaPlayerStreamTypeLive) {
+        [self playLiveStream];
+    } else if (aStream == SLKMediaPlayerStreamTypeDVR) {
+        [self playDVRLiveStream];
+    } else {
+        //TODO:
+    }
+}
+
+- (void)playDVRLiveStream {
+    self.slikeConfig.streamingInfo.mediaStreamType = SLKMediaPlayerStreamTypeDVR;
+    [[SlikeSharedDataCache sharedCacheManager]resetSlikeBitratesModel];
+    self.strNewURL = [self.slikeConfig.streamingInfo dvrMediaStream:self.slikeConfig.preferredVideoType];
+    
+    if (self.strNewURL && [self.strNewURL length]>0) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self _showWaitingIndicator];
+            [self callPlayVideo:self.strNewURL];
+        });
+        
+    } else {
+        //We have some issue for DVR Stream. Now switch back to live
+        [self playLiveStream];
+    }
+}
+
+- (void)playLiveStream {
+    
+    _nTimeCode = 0;
+    self.slikeConfig.streamingInfo.mediaStreamType = SLKMediaPlayerStreamTypeLive;
+    self.playerView.nCurrentTime = 0;
+    self.strNewURL = [StreamingInfo slikeMediaUrl:self.slikeConfig];
+    [[SlikeSharedDataCache sharedCacheManager]resetSlikeBitratesModel];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self _showWaitingIndicator];
+        [self callPlayVideo:self.strNewURL];
+    });
+}
+#pragma mark - End of DVR/LIVE Switching
+
+-(void)addTimerSlate:(NSDate*)evtStartTime
+{
+    if(!self.objTimerView && evtStartTime != nil)
+    {
+        self.objTimerView =  [[[NSBundle slikeNibsBundle] loadNibNamed:NSStringFromClass([SLTimerVC class]) owner:self options:nil] lastObject];
+        
+        self.objTimerView.evtStartTime =  evtStartTime;
+        
+        [self.objTimerView isTimePass];
+        
+        [self.view addSubview:self.objTimerView];
+        self.objTimerView.backgroundColor =  [UIColor blackColor];
+        self.objTimerView.frame = self.view.bounds;
+        self.objTimerView.blurBG.backgroundColor = [UIColor blackColor];
+        [self.objTimerView.blurBG setPlaceHolderImage:YES configModel:self.slikeConfig withPlayerView:_playerView];
+        //    }else
+        //    {
+        //       // [self removeTimerSlate];
+        //    }
+    }
+    else if(self.objTimerView)
+    {
+        self.objTimerView.evtStartTime =  evtStartTime;
+        if(![self.objTimerView isTimePass])
+        {
+            NSLog(@"Time Update");
+        }else
+        {
+            // [self removeTimerSlate];
+        }
+    }
+}
+-(void)removeTimerSlate
+{
+    if(self.objTimerView)
+    {
+        [self.objTimerView removeFromSuperview];
+        self.objTimerView = nil;
+    }
+}
+-(void)liveEventEnded
+{
+    if(!self.objTimerView)
+    {
+        self.objTimerView =  [[[NSBundle slikeNibsBundle] loadNibNamed:NSStringFromClass([SLTimerVC class]) owner:self options:nil] lastObject];
+        [self.objTimerView eventEnded];
+        [self.view addSubview:self.objTimerView];
+        self.objTimerView.backgroundColor =  [UIColor blackColor];
+        self.objTimerView.frame = self.view.bounds;
+        self.objTimerView.blurBG.backgroundColor = [UIColor blackColor];
+        [self.objTimerView.blurBG setPlaceHolderImage:YES configModel:self.slikeConfig withPlayerView:_playerView];
+    }else
+    {
+        [self.objTimerView eventEnded];
+    }
+}
 @end

@@ -15,6 +15,7 @@
 #import "SlikeSharedDataCache.h"
 #import "SlikeUtilities.h"
 #import "SlikeMediaPreview.h"
+#import "SLManifestlessDataParser.h"
 
 @interface SlikeDataParser() {
     
@@ -218,6 +219,69 @@
         slikeConfigModel.gifInterval = [gifIntervalString integerValue];
     }
     
+    NSString *cuePollingIntervalString =  [dictSettings stringForKey:@"cuePollingInterval"];
+    if(cuePollingIntervalString) {
+        slikeConfigModel.cuePointPolling = [cuePollingIntervalString integerValue]/1000;
+    }
+    
+    NSString *cueExpTime =  [dictSettings stringForKey:@"cueExpTime"];
+    if(cuePollingIntervalString) {
+        slikeConfigModel.cueExpTime = [cueExpTime integerValue];
+    }
+    
+    NSString *minCueTrigTime =  [dictSettings stringForKey:@"minCueTrigTime"];
+    if(minCueTrigTime) {
+        slikeConfigModel.minCueTrigTime = [minCueTrigTime integerValue];
+    }
+    
+    NSString *syncTimeDiff =  [dictSettings stringForKey:@"syncTimeDiff"];
+    if(syncTimeDiff) {
+        slikeConfigModel.syncTimeDiff = [syncTimeDiff integerValue];
+    }
+    
+    NSArray * hintervals = [dictSettings objectForKey:@"hintervals"];
+    if(hintervals.count >0)
+    {
+        slikeConfigModel.liveErrorPollingIntialInterval = [[hintervals objectAtIndex:0] integerValue];
+    }
+    if(hintervals.count >1)
+    {
+        slikeConfigModel.liveErrorPollingInterval = [[hintervals objectAtIndex:1] integerValue];
+    }
+    if(hintervals.count >2)
+    {
+        slikeConfigModel.polTimerIncreaseAfterSpecficTime = [[hintervals objectAtIndex:2] integerValue];
+    }
+    if(hintervals.count >3)
+    {
+        slikeConfigModel.timeInterverForPauseHandle = [[hintervals objectAtIndex:3] integerValue];
+    }
+    
+    //For Audio Player Support
+    NSNumber *canDownload =  [dictSettings numberForKey:@"canDownload"];
+    if(canDownload){
+        if ([canDownload integerValue] == 0) {
+            slikeConfigModel.canDownload =  false;
+        } else {
+            slikeConfigModel.canDownload =  true;
+        }
+        [SlikeSharedDataCache sharedCacheManager].canDownload = slikeConfigModel.canDownload;
+    }
+    
+    NSNumber *storagelimit =  [dictSettings numberForKey:@"storagelimit"];
+    if(storagelimit){
+        slikeConfigModel.storagelimit =  [storagelimit integerValue];
+        [SlikeSharedDataCache sharedCacheManager].storagelimit = slikeConfigModel.storagelimit;
+    }
+    
+    NSNumber *trackLimit =  [dictSettings numberForKey:@"trackLimit"];
+    if(trackLimit){
+        slikeConfigModel.trackLimit =  [trackLimit integerValue];
+        [SlikeSharedDataCache sharedCacheManager].trackLimit = slikeConfigModel.trackLimit;
+    }
+    //End For Audio Player Support
+    
+    
     NSString *imgBaseUrlString = [dictSettings stringForKey:@"imgBaseUrl"];
     if(imgBaseUrlString != nil) {
         slikeConfigModel.imgBaseUrl = imgBaseUrlString;
@@ -239,9 +303,17 @@
         slikeConfigModel.postRollPreFetchInterval = [postRollPreFetchIntervalString integerValue];
         
         //Value:0 - Prefecthing is desiabled for this stream
+        //if postroll and pre roll out side not enable
+        //        if(enableYES)
+        //        {
+        //            slikeConfigModel.adPrefetchEnable=NO;
+        //
+        //        }else
+        //        {
         if (slikeConfigModel.postRollPreFetchInterval ==0) {
             slikeConfigModel.adPrefetchEnable=NO;
         }
+        //}
     }
     
     NSString *videoPlayedString =  [dictSettings stringForKey:@"videoPlayed"];
@@ -439,14 +511,16 @@
         slikeStreamModel.strMeta = metaString;
     }
     
+    //Aravind Need to discuss
+    
     NSDictionary * adsDictonary = [configDict dictionaryForKey:@"ads"];
     if (adsDictonary && [adsDictonary count]>0) {
         [self parseAds:slikeStreamModel adsInfo:adsDictonary sectionTitle:slikeConfigModel.section midRollPostions:midPostionArray];
     }
     
+    
     slikeConfigModel.streamingInfo = slikeStreamModel;
     slikeConfigModel.streamingInfo.nStartTime = slikeConfigModel.timecode;
-    
     //Return the parsed result
     completionBlock(slikeStreamModel, nil);
 }
@@ -497,6 +571,11 @@
     NSString * nameString = [streamDict stringForKey:@"name"];
     if (nameString) {
         streamInfo.strTitle = nameString;
+    }
+    
+    NSString * evtUrlString = [streamDict stringForKey:@"evtUrl"];
+    if (nameString) {
+        streamInfo.evtUrl = evtUrlString;
     }
     
     NSString *durationmsString = [streamDict stringForKey:@"durationms"];
@@ -555,6 +634,7 @@
             slikeConfigModel.preview = FALSE;
         }
     }
+    
     NSString *agMsgString = [streamDict stringForKey:@"AG"];
     if (agMsgString) {
         streamInfo.vendorName = agMsgString;
@@ -579,11 +659,26 @@
     NSString *isLiveString = [streamDict stringForKey:@"isLive"];
     if (isLiveString) {
         streamInfo.isLive = [isLiveString integerValue] ? YES : NO;
+        streamInfo.mediaStreamType = [isLiveString integerValue]?SLKMediaPlayerStreamTypeLive: SLKMediaPlayerStreamTypeOthers;
     }
     
+    NSString *isIntlString = [streamDict stringForKey:@"intl"];
+    if (isIntlString) {
+        streamInfo.intl = [isIntlString integerValue] ? YES : NO;
+    }
+    
+    NSString *hurlString = [streamDict stringForKey:@"hurl"];
+    if (hurlString) {
+        streamInfo.hurl = hurlString;
+    }
+    
+    NSDictionary *customStream = [streamDict dictionaryForKey:@"hs"];
+    if (!slikeConfigModel.enableManifestCache) {
+        customStream = nil;
+    }
     NSArray *arrFlavors = [streamDict arrayForKey:@"flavors"];
     if(arrFlavors && !isThirdPartyVideo) {
-        isError = [self parseFlavours:arrFlavors withStream:streamInfo];
+        isError = [self parseFlavours:arrFlavors withStream:streamInfo hsContent:customStream];
         completionBlock(streamInfo, isError);
     }
     else {
@@ -596,7 +691,7 @@
     return ;
 }
 
-- (BOOL)parseFlavours:(NSArray *)arrFlavors withStream:(StreamingInfo *)streamInfo {
+- (BOOL)parseFlavours:(NSArray *)arrFlavors withStream:(StreamingInfo *)streamInfo hsContent:(NSDictionary *)hsContent {
     
     NSInteger itemIndex, flavoursCount = arrFlavors.count;
     if(flavoursCount == 0) {
@@ -629,10 +724,31 @@
                     theSize = CGSizeZero;
                 }
                 
-                [streamInfo updateStreamSource:[dict stringForKey:@"url"] withBitrates:bitrate withFlavor:[dict stringForKey:@"flavor"] withSize:theSize withLabel:strLabel ofType:[streamInfo getVideoSourceTypeEnumByString:[dict stringForKey:@"type"]]];
+                NSString *dvrString = nil;
+                if([dict stringForKey:@"dvr"])  {
+                    streamInfo.dvrURLString = [NSString stringWithFormat:@"%@", [dict stringForKey:@"dvr"]];
+                    dvrString = [NSString stringWithFormat:@"%@", [dict stringForKey:@"dvr"]];
+                    streamInfo.containsDVR = YES;
+                }
+                
+                //                BOOL test = NO;
+                //                if (test) {
+                //                    dvrString =      @"http://tagesschau-lh.akamaihd.net/i/tagesschau_1@119231/master.m3u8";
+                //                    streamInfo.dvrURLString = [NSString stringWithFormat:@"%@",dvrString];
+                //                }
+                
+                [streamInfo updateStreamSource:[dict stringForKey:@"url"] withBitrates:bitrate withFlavor:[dict stringForKey:@"flavor"] withSize:theSize withLabel:strLabel ofType:[streamInfo getVideoSourceTypeEnumByString:[dict stringForKey:@"type"]] withDVR:dvrString];
+                
+                if (hsContent){
+                    if ([[dict stringForKey:@"type"] isEqualToString:@"hls"] && [hsContent count]>0) {
+                        SLManifestlessDataParser *parser = [[SLManifestlessDataParser alloc]initWithStreamData:hsContent];
+                        [parser prepareManifesForMediaFile:[dict stringForKey:@"url"]];
+                    }
+                }
             }
         }
     }
+    
     return NO;
 }
 
@@ -715,7 +831,6 @@
                     SlikeAdsUnit *adUnit = [[SlikeAdsUnit alloc] initWithCategory:adId andAdURL:adURL];
                     adUnit.adProvider = provider;
                     [adInfo addPosition:0 withAdUnit:adUnit];
-                    
                     index = index+2;
                 }
             }

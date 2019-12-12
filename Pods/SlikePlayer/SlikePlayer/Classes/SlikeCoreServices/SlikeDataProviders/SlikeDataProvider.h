@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^SlikeDataProviderCompletionBlock)(id responseObject, NSError* errExists);
+typedef void (^SlikeDataProviderCompletionBlock)(id _Nullable responseObject, NSError* _Nullable errExists);
 
 @interface SlikeDataProvider : NSObject
 
@@ -15,14 +15,14 @@ typedef void (^SlikeDataProviderCompletionBlock)(id responseObject, NSError* err
  Creats the class instance of DataProvider
  @return - Class instance
  */
-+ (instancetype)slikeDataProvider;
++ (instancetype _Nullable)slikeDataProvider;
 
 
 /**
  Creats the shared instance of DataProvider
  @return - Singleton class  instance
  */
-+ (instancetype)sharedSlikeDataProvider;
++ (instancetype _Nullable )sharedSlikeDataProvider;
 
 
 /**
@@ -33,7 +33,7 @@ typedef void (^SlikeDataProviderCompletionBlock)(id responseObject, NSError* err
  @param slikeConfigModel - Model that needs to update
  @param completionHandler - Completion Handler Block
  */
-- (void)downloadSlikeConfigData:(NSString *)configURL  withConfig:(SlikeConfig *)slikeConfigModel resultBlock:(SlikeDataProviderCompletionBlock)completionHandler;
+- (void)downloadSlikeConfigData:(NSString *_Nullable)configURL  withConfig:(SlikeConfig *_Nonnull)slikeConfigModel resultBlock:(SlikeDataProviderCompletionBlock _Nullable)completionHandler;
 
 /**
  Download the Stream  data for perticular slike id from the server.
@@ -44,7 +44,7 @@ typedef void (^SlikeDataProviderCompletionBlock)(id responseObject, NSError* err
  @param completionHandler - Completion Handler Block
  */
 
-- (void)downloadSlikeStreamData:(NSString *)streamURL playerConfig:(SlikeConfig *)slikeConfigModel configInfoData:(NSDictionary *)configDataDict resultBlock:(SlikeDataProviderCompletionBlock) completionHandler;
+- (void)downloadSlikeStreamData:(NSString *_Nonnull)streamURL playerConfig:(SlikeConfig *_Nonnull)slikeConfigModel configInfoData:(NSDictionary *_Nonnull)configDataDict resultBlock:(SlikeDataProviderCompletionBlock _Nullable ) completionHandler;
 
 
 /**
@@ -52,7 +52,7 @@ typedef void (^SlikeDataProviderCompletionBlock)(id responseObject, NSError* err
  @param configURL - Config url
  @param completionHandler - Completion Handler Block
  */
-- (void)downloadAndCacheConfigData:(NSString *)configURL resultBlock:(SlikeDataProviderCompletionBlock)completionHandler;
+- (void)downloadAndCacheConfigData:(NSString *_Nonnull)configURL resultBlock:(SlikeDataProviderCompletionBlock _Nullable )completionHandler;
 
 
 /**
@@ -60,12 +60,18 @@ typedef void (^SlikeDataProviderCompletionBlock)(id responseObject, NSError* err
  @param streamURL - Stream URL
  @param completionHandler - Completion Block 
  */
-- (void)downloadAndCacheStreamData:(NSString *)streamURL forMediaId:(NSString *)mediaId resultBlock:(SlikeDataProviderCompletionBlock) completionHandler;
+- (void)downloadAndCacheStreamData:(NSString *_Nonnull)streamURL forMediaId:(NSString *_Nonnull)mediaId resultBlock:(SlikeDataProviderCompletionBlock _Nullable ) completionHandler;
 
 /**
  Prepare the slike config model from the cache. If we have downloaded stream data and config data .
  @param slikeConfigModel - Partial Config model that needs to update
  @param completionHandler - Completion handler
  */
-- (void)prepareSlikeConfigFromCache:(SlikeConfig *)slikeConfigModel resultBlock:(SlikeDataProviderCompletionBlock) completionHandler;
+- (void)prepareSlikeConfigFromCache:(SlikeConfig *_Nonnull)slikeConfigModel resultBlock:(SlikeDataProviderCompletionBlock _Nullable ) completionHandler;
+
+#pragma mark - Audo Playlist
+- (void)downloadAudioPlaylist:(NSString *_Nonnull)slikeIds resultBlock:(SlikeDataProviderCompletionBlock _Nullable )completionHandler;
+
+- (void)createAudioConfigModel:(NSData *_Nullable)configData mediaId:(NSString * _Nonnull)mediaId slikeConfig:(SlikeConfig *_Nullable)slikeConfig streamData:(NSData *_Nullable)streamData status:(void(^_Nullable)(BOOL status))result;
+
 @end

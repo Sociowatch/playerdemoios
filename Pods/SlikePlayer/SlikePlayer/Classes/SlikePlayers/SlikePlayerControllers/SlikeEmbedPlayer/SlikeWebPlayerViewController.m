@@ -221,10 +221,7 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
         self.sdkConfiguration.streamingInfo.strSS = @"";
         if([self.sdkConfiguration.streamingInfo.strSS length] == 0)
             self.sdkConfiguration.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:self.sdkConfiguration.mediaId];
-        
-        
-        
-        NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",_urts, (long) _uopts];
+        NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",(long)_urts, (long) _uopts];
         [self prepareAndSendAnaltytics:@"1" withTimeStamp:analyticsString];
     }
     _loadingView.hidden = YES;
@@ -283,7 +280,7 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
     if (!self.playerDidStarted) {
         self.playerDidStarted=YES;
         
-        NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",_urts, (long) _uopts];
+        NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",(long)_urts, (long) _uopts];
         [self prepareAndSendAnaltytics:@"2" withTimeStamp:analyticsString];
         StatusInfo *progressInfo = [StatusInfo initWithBuffer:0 withPosition:0 withDuration:0 muteStatus:0];
         [self _dispatchEventsToParent:SL_START withProgress:progressInfo];
@@ -500,7 +497,10 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
 - (void)updateCustomBitrate:(Stream*)obj {
     //DO NOTHING.
 }
-
+- (void)updateCustomBitrateNew:(NSInteger)type
+{
+    
+}
 - (void)setNativeControl:(BOOL) isNative {
     self.isNativeControls = isNative;
 }
@@ -508,7 +508,10 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
 - (NSString*)currentBitRateURI {
     return @"";
 }
-
+-(NSInteger)currentBitRateType
+{
+    return 0;
+}
 - (void)hideBitrateChooser {
 }
 
@@ -540,6 +543,11 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
 - (void)getScreenShotAtPosition:(NSInteger)position withCompletionBlock:(void (^)(UIImage *))completion {
     completion(nil);
 }
+
+- (BOOL)isAdPaused {
+    return NO;
+}
+
 
 #pragma mark -
 /**
