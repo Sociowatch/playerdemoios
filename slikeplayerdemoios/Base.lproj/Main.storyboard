@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -36,51 +36,53 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G7W-64-k1M">
-                                <rect key="frame" x="16" y="227.5" width="343" height="42"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="42" translatesAutoresizingMaskIntoConstraints="NO" id="wfg-Wp-Pnw">
+                                <rect key="frame" x="20" y="202.5" width="335" height="262"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G7W-64-k1M">
+                                        <rect key="frame" x="0.0" y="0.0" width="335" height="34"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Player"/>
+                                        <connections>
+                                            <action selector="startSlikePlayer:" destination="FFq-mn-aIX" eventType="touchUpInside" id="x04-nY-ehA"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dN1-uX-rY1">
+                                        <rect key="frame" x="0.0" y="76" width="335" height="34"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Youtube (slike id)"/>
+                                        <connections>
+                                            <action selector="startSlikeYoutube:" destination="FFq-mn-aIX" eventType="touchUpInside" id="Kih-TU-ojP"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1t8-rO-Vna">
+                                        <rect key="frame" x="0.0" y="152" width="335" height="34"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Youtube(youtube Id)"/>
+                                        <connections>
+                                            <action selector="directYoutubePlay:" destination="FFq-mn-aIX" eventType="touchUpInside" id="qWo-Wm-U9F"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Asj-KR-a71">
+                                        <rect key="frame" x="0.0" y="228" width="335" height="34"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Set Config"/>
+                                        <connections>
+                                            <action selector="configAction:" destination="FFq-mn-aIX" eventType="touchUpInside" id="duF-rK-msF"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="Wsn-Uh-y4M"/>
+                                    <constraint firstAttribute="height" constant="262" id="XPd-or-o4n"/>
                                 </constraints>
-                                <state key="normal" title="Start Player"/>
-                                <connections>
-                                    <action selector="startSlikePlayer:" destination="FFq-mn-aIX" eventType="touchUpInside" id="x04-nY-ehA"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dN1-uX-rY1">
-                                <rect key="frame" x="16" y="317" width="343" height="42"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="kvZ-t5-3MB"/>
-                                </constraints>
-                                <state key="normal" title="Start Youtube (slike id)"/>
-                                <connections>
-                                    <action selector="startSlikeYoutube:" destination="FFq-mn-aIX" eventType="touchUpInside" id="Kih-TU-ojP"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1t8-rO-Vna">
-                                <rect key="frame" x="16" y="397" width="343" height="42"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="mKf-0L-7zt"/>
-                                </constraints>
-                                <state key="normal" title="Start Youtube(youtube Id)"/>
-                                <connections>
-                                    <action selector="directYoutubePlay:" destination="FFq-mn-aIX" eventType="touchUpInside" id="qWo-Wm-U9F"/>
-                                </connections>
-                            </button>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="dN1-uX-rY1" firstAttribute="trailing" secondItem="1t8-rO-Vna" secondAttribute="trailing" id="2Bu-Jc-Qgn"/>
-                            <constraint firstItem="G7W-64-k1M" firstAttribute="centerY" secondItem="yLB-h9-8tz" secondAttribute="centerY" constant="-85" id="6Mw-z1-Fbj"/>
-                            <constraint firstItem="dN1-uX-rY1" firstAttribute="leading" secondItem="G7W-64-k1M" secondAttribute="leading" id="Hs3-7H-wPj"/>
-                            <constraint firstItem="dN1-uX-rY1" firstAttribute="top" secondItem="G7W-64-k1M" secondAttribute="bottom" constant="47.5" id="UXG-z3-o9l"/>
-                            <constraint firstItem="G7W-64-k1M" firstAttribute="leading" secondItem="yLB-h9-8tz" secondAttribute="leadingMargin" id="aLB-iC-PjC"/>
-                            <constraint firstItem="dN1-uX-rY1" firstAttribute="leading" secondItem="1t8-rO-Vna" secondAttribute="leading" id="gtj-1r-EsC"/>
-                            <constraint firstItem="1t8-rO-Vna" firstAttribute="top" secondItem="dN1-uX-rY1" secondAttribute="bottom" constant="38" id="nnF-vG-an0"/>
-                            <constraint firstItem="dN1-uX-rY1" firstAttribute="trailing" secondItem="G7W-64-k1M" secondAttribute="trailing" id="pNO-DH-HtZ"/>
-                            <constraint firstItem="G7W-64-k1M" firstAttribute="trailing" secondItem="yLB-h9-8tz" secondAttribute="trailingMargin" id="tah-7e-xRS"/>
+                            <constraint firstAttribute="trailing" secondItem="wfg-Wp-Pnw" secondAttribute="trailing" constant="20" id="1IN-8C-1S8"/>
+                            <constraint firstItem="wfg-Wp-Pnw" firstAttribute="centerY" secondItem="yLB-h9-8tz" secondAttribute="centerY" id="Jdy-nj-zPD"/>
+                            <constraint firstItem="wfg-Wp-Pnw" firstAttribute="leading" secondItem="yLB-h9-8tz" secondAttribute="leading" constant="20" id="UE5-XN-1Dd"/>
+                            <constraint firstItem="wfg-Wp-Pnw" firstAttribute="centerX" secondItem="yLB-h9-8tz" secondAttribute="centerX" id="i9C-iE-gk7"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Slike Player" id="Pv9-YI-Cow"/>
@@ -134,7 +136,44 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vau-bj-PpQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-623" y="473"/>
+            <point key="canvasLocation" x="-556" y="473"/>
+        </scene>
+        <!--Slike Config View Controller-->
+        <scene sceneID="c7v-a2-CPA">
+            <objects>
+                <viewController storyboardIdentifier="SlikeConfigViewController" id="zhd-2E-nXh" customClass="SlikeConfigViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="tYk-eJ-ViL"/>
+                        <viewControllerLayoutGuide type="bottom" id="elC-cQ-yjd"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="mki-vN-hld">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="72" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="idM-aY-8jn">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="zhd-2E-nXh" id="B7d-X9-bTJ"/>
+                                    <outlet property="delegate" destination="zhd-2E-nXh" id="19p-Nr-nmx"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="elC-cQ-yjd" firstAttribute="top" secondItem="idM-aY-8jn" secondAttribute="bottom" id="J1H-2S-ztU"/>
+                            <constraint firstAttribute="trailing" secondItem="idM-aY-8jn" secondAttribute="trailing" id="YNY-Lu-dmb"/>
+                            <constraint firstItem="idM-aY-8jn" firstAttribute="top" secondItem="tYk-eJ-ViL" secondAttribute="bottom" id="nKO-rr-5hI"/>
+                            <constraint firstItem="idM-aY-8jn" firstAttribute="leading" secondItem="mki-vN-hld" secondAttribute="leading" id="z5e-Y0-brt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tbView" destination="idM-aY-8jn" id="8vE-T0-Z5a"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zRS-1E-s0M" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="340" y="472.71364317841085"/>
         </scene>
     </scenes>
 </document>

@@ -293,5 +293,293 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2A2A6895-69FE-4DE2-8742-E7C5E788A504"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "slikeplayerdemoios/SlikeConfigViewController.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1057"
+            endingLineNumber = "1057"
+            landmarkName = "-textFieldDidChange:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "360E7B02-D1E4-4E10-B226-AC709CEC9682"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "slikeplayerdemoios/SlikeConfigViewController.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1261"
+            endingLineNumber = "1261"
+            landmarkName = "-textFieldDidChange:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BCBA3FDA-593B-48EC-B772-FB36A5D9596D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "slikeplayerdemoios/DemoViewController.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
+            landmarkName = "-startPlayerPreviousMethod"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "87A18738-C20F-4F4B-B31C-444BA4D3B613"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "slikeplayerdemoios/DemoViewController.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
+            landmarkName = "-startPlayerPreviousMethod"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "87A18738-C20F-4F4B-B31C-444BA4D3B613 - dab24b49f56e8101"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[DemoViewController startPlayerPreviousMethod]"
+                  moduleName = "slikeplayerdemoios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aravind.kumar/Documents/TVID/V2/slikeplayerdemoios/slikeplayerdemoios/DemoViewController.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "181"
+                  endingLineNumber = "181"
+                  offsetFromSymbolStart = "107">
+               </Location>
+               <Location
+                  uuid = "87A18738-C20F-4F4B-B31C-444BA4D3B613 - 85b736dad1909d10"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__47-[DemoViewController startPlayerPreviousMethod]_block_invoke"
+                  moduleName = "slikeplayerdemoios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aravind.kumar/Documents/TVID/V2/slikeplayerdemoios/slikeplayerdemoios/DemoViewController.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "183"
+                  endingLineNumber = "183"
+                  offsetFromSymbolStart = "55">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7978371B-2D19-4943-B266-BAD64A49392B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "332"
+            endingLineNumber = "332"
+            landmarkName = "-playVideo:inParentView:withProgressHandler:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C32ADA5B-3E71-4B64-A7AB-188A0A27CF90"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "357"
+            endingLineNumber = "357"
+            landmarkName = "-playVideo:inParentView:withProgressHandler:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F4852584-D9B8-45FF-88CD-08D558796365"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "386"
+            endingLineNumber = "386"
+            landmarkName = "-_downloadMediaConfigData:inParentView:withProgressHandler:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "76A1A1B2-F048-40EE-9E47-ED935C671AF8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "390"
+            endingLineNumber = "390"
+            landmarkName = "-_downloadMediaConfigData:inParentView:withProgressHandler:"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "76A1A1B2-F048-40EE-9E47-ED935C671AF8 - b60bc1fd119e9626"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[SlikePlayer _downloadMediaConfigData:inParentView:withProgressHandler:]"
+                  moduleName = "slikeplayerdemoios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aravind.kumar/Documents/TVID/V2/slikeplayerdemoios/Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "390"
+                  endingLineNumber = "390"
+                  offsetFromSymbolStart = "498">
+               </Location>
+               <Location
+                  uuid = "76A1A1B2-F048-40EE-9E47-ED935C671AF8 - 2a09faf8fafa6654"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__73-[SlikePlayer _downloadMediaConfigData:inParentView:withProgressHandler:]_block_invoke"
+                  moduleName = "slikeplayerdemoios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aravind.kumar/Documents/TVID/V2/slikeplayerdemoios/Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "392"
+                  endingLineNumber = "392"
+                  offsetFromSymbolStart = "78">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "41FF8B52-5606-4DBF-B947-B5ACA28921E5"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "392"
+            endingLineNumber = "392"
+            landmarkName = "-_downloadMediaConfigData:inParentView:withProgressHandler:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6F1AE703-9311-4B3B-9EF8-3BFD7BFB69D1"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCorePlayer/SlikePlayer.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
+            landmarkName = "-playVideo:inParentView:withProgressHandler:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "69C033E6-FF3D-4746-AD35-C9D3F4AB21B7"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCoreServices/SlikeDataProviders/SlikeDataProvider.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
+            landmarkName = "-downloadSlikeConfigData:withConfig:resultBlock:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5A9DD5D4-3D92-482F-B6EB-58E6984C7811"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SlikePlayer/SlikePlayer/Classes/SlikeCoreServices/SlikeNetworkService/SlikeNetworkInterface.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "-performGetServiceRequest:withCompletionBlock:"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5A9DD5D4-3D92-482F-B6EB-58E6984C7811 - a9f5df4acdb15871"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[SlikeNetworkInterface performGetServiceRequest:withCompletionBlock:]"
+                  moduleName = "slikeplayerdemoios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aravind.kumar/Documents/TVID/V2/slikeplayerdemoios/Pods/SlikePlayer/SlikePlayer/Classes/SlikeCoreServices/SlikeNetworkService/SlikeNetworkInterface.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "70">
+               </Location>
+               <Location
+                  uuid = "5A9DD5D4-3D92-482F-B6EB-58E6984C7811 - 181b30ed62a1bdea"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[SlikeNetworkInterface performGetServiceRequest:withCompletionBlock:]_block_invoke"
+                  moduleName = "slikeplayerdemoios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aravind.kumar/Documents/TVID/V2/slikeplayerdemoios/Pods/SlikePlayer/SlikePlayer/Classes/SlikeCoreServices/SlikeNetworkService/SlikeNetworkInterface.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "17">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

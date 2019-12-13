@@ -8,6 +8,7 @@
 
 #import "BaseViewController.h"
 #import "DemoViewController.h"
+#import "SlikeConfigViewController.h"
 
 @interface BaseViewController ()
 
@@ -41,6 +42,12 @@
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
     DemoViewController *controller=   [mainStoryboard instantiateViewControllerWithIdentifier:@"DemoViewController"];
     controller.playType =  2;
+    [self.navigationController pushViewController:controller animated:YES];
+}
+- (IBAction)configAction:(id)sender
+{
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    SlikeConfigViewController *controller=   [mainStoryboard instantiateViewControllerWithIdentifier:@"SlikeConfigViewController"];
     [self.navigationController pushViewController:controller animated:YES];
 }
 

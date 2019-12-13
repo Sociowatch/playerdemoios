@@ -14,6 +14,14 @@
 		3D21EE861DF7F8300002132E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D21EE841DF7F8300002132E /* LaunchScreen.storyboard */; };
 		7C3F563D9F4469259C7B5439 /* libPods-slikeplayerdemoios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13F939DEE1708D2759E95DFF /* libPods-slikeplayerdemoios.a */; };
 		A32B4530213FEAD300E999A4 /* DemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A32B452F213FEAD300E999A4 /* DemoViewController.m */; };
+		A354648D23A20E57005C63B0 /* SlikeConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A354648C23A20E57005C63B0 /* SlikeConfigViewController.m */; };
+		A354649023A212B9005C63B0 /* SYNUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = A354648F23A212B9005C63B0 /* SYNUtilities.m */; };
+		A354649923A2200A005C63B0 /* TitleDemoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A354649623A22009005C63B0 /* TitleDemoTableViewCell.xib */; };
+		A354649A23A2200A005C63B0 /* TitleDemoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A354649823A22009005C63B0 /* TitleDemoTableViewCell.m */; };
+		A354649D23A238EA005C63B0 /* submitCellTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A354649C23A238EA005C63B0 /* submitCellTableViewCell.m */; };
+		A354649F23A23A08005C63B0 /* submitCellTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A354649E23A23A08005C63B0 /* submitCellTableViewCell.xib */; };
+		A35464A323A241A1005C63B0 /* SwichTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A35464A123A241A1005C63B0 /* SwichTableViewCell.m */; };
+		A35464A423A241A1005C63B0 /* SwichTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A35464A223A241A1005C63B0 /* SwichTableViewCell.xib */; };
 		A374AB6D23694D0C009047AD /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A374AB6C23694D0C009047AD /* BaseViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +38,19 @@
 		3D21EE871DF7F8300002132E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A32B452E213FEAD300E999A4 /* DemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemoViewController.h; sourceTree = "<group>"; };
 		A32B452F213FEAD300E999A4 /* DemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoViewController.m; sourceTree = "<group>"; };
+		A354648B23A20E57005C63B0 /* SlikeConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SlikeConfigViewController.h; sourceTree = "<group>"; };
+		A354648C23A20E57005C63B0 /* SlikeConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SlikeConfigViewController.m; sourceTree = "<group>"; };
+		A354648E23A212B9005C63B0 /* SYNUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SYNUtilities.h; sourceTree = "<group>"; };
+		A354648F23A212B9005C63B0 /* SYNUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SYNUtilities.m; sourceTree = "<group>"; };
+		A354649623A22009005C63B0 /* TitleDemoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TitleDemoTableViewCell.xib; sourceTree = "<group>"; };
+		A354649723A22009005C63B0 /* TitleDemoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TitleDemoTableViewCell.h; sourceTree = "<group>"; };
+		A354649823A22009005C63B0 /* TitleDemoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TitleDemoTableViewCell.m; sourceTree = "<group>"; };
+		A354649B23A238EA005C63B0 /* submitCellTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = submitCellTableViewCell.h; sourceTree = "<group>"; };
+		A354649C23A238EA005C63B0 /* submitCellTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = submitCellTableViewCell.m; sourceTree = "<group>"; };
+		A354649E23A23A08005C63B0 /* submitCellTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = submitCellTableViewCell.xib; sourceTree = "<group>"; };
+		A35464A023A241A1005C63B0 /* SwichTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwichTableViewCell.h; sourceTree = "<group>"; };
+		A35464A123A241A1005C63B0 /* SwichTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwichTableViewCell.m; sourceTree = "<group>"; };
+		A35464A223A241A1005C63B0 /* SwichTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SwichTableViewCell.xib; sourceTree = "<group>"; };
 		A374AB6B23694D0C009047AD /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		A374AB6C23694D0C009047AD /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
 		A39906D822D32B71001A6D51 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -80,6 +101,19 @@
 				3D21EE841DF7F8300002132E /* LaunchScreen.storyboard */,
 				3D21EE871DF7F8300002132E /* Info.plist */,
 				3D21EE761DF7F8300002132E /* Supporting Files */,
+				A354648B23A20E57005C63B0 /* SlikeConfigViewController.h */,
+				A354648C23A20E57005C63B0 /* SlikeConfigViewController.m */,
+				A354648E23A212B9005C63B0 /* SYNUtilities.h */,
+				A354648F23A212B9005C63B0 /* SYNUtilities.m */,
+				A354649723A22009005C63B0 /* TitleDemoTableViewCell.h */,
+				A354649823A22009005C63B0 /* TitleDemoTableViewCell.m */,
+				A354649623A22009005C63B0 /* TitleDemoTableViewCell.xib */,
+				A354649B23A238EA005C63B0 /* submitCellTableViewCell.h */,
+				A354649C23A238EA005C63B0 /* submitCellTableViewCell.m */,
+				A354649E23A23A08005C63B0 /* submitCellTableViewCell.xib */,
+				A35464A023A241A1005C63B0 /* SwichTableViewCell.h */,
+				A35464A123A241A1005C63B0 /* SwichTableViewCell.m */,
+				A35464A223A241A1005C63B0 /* SwichTableViewCell.xib */,
 			);
 			name = classes;
 			path = slikeplayerdemoios;
@@ -174,8 +208,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A35464A423A241A1005C63B0 /* SwichTableViewCell.xib in Resources */,
 				3D21EE861DF7F8300002132E /* LaunchScreen.storyboard in Resources */,
+				A354649923A2200A005C63B0 /* TitleDemoTableViewCell.xib in Resources */,
 				3D21EE831DF7F8300002132E /* Assets.xcassets in Resources */,
+				A354649F23A23A08005C63B0 /* submitCellTableViewCell.xib in Resources */,
 				3D21EE811DF7F8300002132E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,10 +245,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
+				"${PODS_ROOT}/IQKeyboardManager/IQKeyboardManager/Resources/IQKeyboardManager.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SlikePlayer/SlikePlayerResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IQKeyboardManager.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SlikePlayerResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,7 +286,12 @@
 				A32B4530213FEAD300E999A4 /* DemoViewController.m in Sources */,
 				A374AB6D23694D0C009047AD /* BaseViewController.m in Sources */,
 				3D21EE7B1DF7F8300002132E /* AppDelegate.m in Sources */,
+				A354649D23A238EA005C63B0 /* submitCellTableViewCell.m in Sources */,
+				A35464A323A241A1005C63B0 /* SwichTableViewCell.m in Sources */,
+				A354648D23A20E57005C63B0 /* SlikeConfigViewController.m in Sources */,
 				3D21EE781DF7F8300002132E /* main.m in Sources */,
+				A354649A23A2200A005C63B0 /* TitleDemoTableViewCell.m in Sources */,
+				A354649023A212B9005C63B0 /* SYNUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,7 +419,7 @@
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = in.til.popkorn;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -394,7 +438,7 @@
 				INFOPLIST_FILE = slikeplayerdemoios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = in.til.popkorn;
+				PRODUCT_BUNDLE_IDENTIFIER = com.til.primeapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

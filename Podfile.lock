@@ -3,11 +3,13 @@ PODS:
     - FBSDKCoreKit/Basics (>= 5.6.0)
   - FBSDKCoreKit/Basics (5.8.0)
   - GoogleAds-IMA-iOS-SDK (3.10.1)
+  - IQKeyboardManager (6.5.3)
   - SlikePlayer (2.7.7.2):
     - FBAudienceNetwork
     - GoogleAds-IMA-iOS-SDK (~> 3.10.1)
 
 DEPENDENCIES:
+  - IQKeyboardManager
   - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.7.7.2`)
 
 SPEC REPOS:
@@ -15,6 +17,7 @@ SPEC REPOS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - GoogleAds-IMA-iOS-SDK
+    - IQKeyboardManager
 
 EXTERNAL SOURCES:
   SlikePlayer:
@@ -30,8 +33,9 @@ SPEC CHECKSUMS:
   FBAudienceNetwork: 1ea63543665445a3a5b4a059e8210a343b6ab3c1
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
   GoogleAds-IMA-iOS-SDK: 0e37ab83b22075ad631a70dcba9528cb246c92bf
+  IQKeyboardManager: c2f901164d56807a35788483584d09fa69192e8e
   SlikePlayer: e9ccbc0097979b6f9756a8922881cfa86243546d
 
-PODFILE CHECKSUM: e2567c53417b64c6045fd6df28f74826d9cf4d38
+PODFILE CHECKSUM: 2823d0cf0846f945e52372af19c533a1292469a6
 
 COCOAPODS: 1.8.4

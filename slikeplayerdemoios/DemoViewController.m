@@ -7,9 +7,7 @@
 //
 
 #import "DemoViewController.h"
-#import "SlikeAdStatusInfo.h"
-#import <SlikePlayer.h>
-#import <SlikeGlobals.h>
+
 
 @interface DemoViewController ()
 {
@@ -25,7 +23,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    if(self.playType == 0)
+    if(_slikeConfigPrevious)
+    {
+        [self startPlayerPreviousMethod];
+    }
+    else if(self.playType == 0)
     {
         [self startPlayer];
     }else if(self.playType == 1)
@@ -172,6 +174,33 @@
 -(void)dealloc
 {
     [self stopPlayer];
+}
+-(void)startPlayerPreviousMethod
+{
+    self.slikePlayer = [SlikePlayer sharedSlikePlayer];
+        [_slikePlayer playVideo:_slikeConfigPrevious inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
+            
+            if (eventType == AD) {
+                
+                NSLog(@"PARENT EVENT: (AD) ===> [position - %ld]", statusInfo.position);
+                NSLog(@"PARENT EVENT: (AD) ===> [duration - %ld]", (long)statusInfo.duration);
+                NSLog(@"PARENT EVENT: (AD) ===> [adTypeEnum - %ld]", (long)statusInfo.adStatusInfo.adTypeEnum);
+                
+            }
+            else if (eventType == CONTROLS && playerState == SL_SHARE) {
+                
+                //Pause the player. Pause:FALSE (User has not paused the video. It is Paused by activity)
+                //Input share logic
+    //            if([[_slikePlayer getAnyPlayer] isPlaying])
+    //            [[_slikePlayer getAnyPlayer] pause:NO];
+    //            else  [[_slikePlayer getAnyPlayer] play:NO];
+                    
+            }
+            
+            else if (eventType == MEDIA) {
+                NSLog(@"PARENT EVENT: (MEDIA) ===> [SlikePlayerState - %ld]", (long)playerState);
+            }
+        }];
 }
 @end
 
