@@ -33,7 +33,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 @property(nonatomic, strong) CLLocation *location;
 @property(nonatomic, strong) CLLocationManager *locationManager;
 @property(nonatomic, strong) NSString *mediaSavedBitrate;
-@property(nonatomic, strong) NSString *userSessionId;
+@property(atomic, strong) NSString *userSessionId;
 @property(nonatomic, strong) NSDate *sessionGenrateTime;
 @property(nonatomic, strong) NSString * rid;
 @property(nonatomic, strong) NSString * geoID;
@@ -656,7 +656,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 }
 
 - (NSString*)getSDKVersion {
-    return  @"2.7.7.2";
+    return  @"2.7.8";
 }
 
 - (void)setPlayerViewArea:(id)parentView {

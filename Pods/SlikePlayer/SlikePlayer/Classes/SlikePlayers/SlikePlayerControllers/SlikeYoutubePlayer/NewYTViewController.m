@@ -48,7 +48,6 @@
         self.timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(timerCallback:) userInfo:nil repeats:YES];
         NSRunLoop *runner = [NSRunLoop currentRunLoop];
         [runner addTimer:self.timer forMode: NSDefaultRunLoopMode];
-        runner = nil;
     }
 }
 

@@ -396,7 +396,8 @@
         [self toggleFullScreen];
         
     }  else if(state == SL_PAUSE) {
-        [self pause:NO];
+        BOOL isUserInisiated = [payload boolForKey:kSlikePlayPauseByUserKey];
+        [self pause:isUserInisiated];
     }
 }
 
@@ -1680,7 +1681,13 @@
  Play the Stream with Some delay
  */
 - (void)_playStreamWithDelay {
+    if(_playerCurrentState == SL_COMPLETED)
+    {
+        [self replay];
+    }else
+    {
     [self play:NO];
+    }
     [self setVideoPlaceHolder:NO];
 }
 /**
@@ -2434,7 +2441,7 @@
         self.objTimerView.evtStartTime =  evtStartTime;
         if(![self.objTimerView isTimePass])
         {
-            NSLog(@"Time Update");
+            SlikeDLog(@"Time Update");
         }else
         {
             // [self removeTimerSlate];

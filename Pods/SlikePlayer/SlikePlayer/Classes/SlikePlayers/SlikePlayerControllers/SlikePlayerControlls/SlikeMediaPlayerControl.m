@@ -87,6 +87,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
 @property (assign, nonatomic) BOOL isControllHidden;
 @property (assign, nonatomic) BOOL videoCompleted;
 @property (assign, nonatomic) BOOL isVideoPaused;
+@property (assign, nonatomic) BOOL isSharePause;
 @property (assign, nonatomic) BOOL isSlideing;
 @property (assign, nonatomic) BOOL isLiveStream;
 @property (assign, nonatomic) BOOL isBitrateChange;
@@ -866,7 +867,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
     
     //Do the share controlls-
     //create a message
-    NSString *theMessage = @"Toi.in";
+    NSString *theMessage = self.mediaConfig.shareText;
     NSArray *items = @[theMessage];
     
     // build an activity view controller
@@ -878,9 +879,15 @@ static NSInteger kDraggingViewBottomOffset = 5;
 }
 
 - (void)presentActivityController:(UIActivityViewController *)controller {
-    
-    [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PAUSE dataPayload:@{} slikePlayer:nil];
-    
+    if(!self.isVideoPaused)
+    {
+    [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PAUSE dataPayload:@{kSlikePlayPauseByUserKey : @YES} slikePlayer:nil];
+        self.isSharePause =  YES;
+    }else
+    {
+        [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PAUSE dataPayload:@{} slikePlayer:nil];
+        self.isSharePause =  NO;
+    }
     // for iPad: make the presentation a Popover
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [[SlikeUtilities topMostController] presentViewController:controller animated:YES completion:nil];
@@ -898,8 +905,13 @@ static NSInteger kDraggingViewBottomOffset = 5;
                                               BOOL completed,
                                               NSArray *returnedItems,
                                               NSError *error){
-        
-        [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PLAY dataPayload:@{} slikePlayer:nil];
+        if(self.isSharePause)
+        {
+        [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PLAY dataPayload:@{kSlikePlayPauseByUserKey : @YES} slikePlayer:nil];
+        }else
+        {
+            [[EventManager sharedEventManager] dispatchEvent:CONTROLS playerState:SL_PLAY dataPayload:@{} slikePlayer:nil];
+        }
         
         if (error) {
             SlikeDLog(@"An Error occured: %@, %@", error.localizedDescription, error.localizedFailureReason);

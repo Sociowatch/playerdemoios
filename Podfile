@@ -4,7 +4,7 @@ platform :ios, '9.0'
 source 'https://bitbucket.org/times_internet/specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 target 'slikeplayerdemoios' do
-    pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => ‘2.7.7.2’
+    pod 'SlikePlayer', :git => 'https://bitbucket.org/times_internet/slikeplayer-ios.git', :tag => ‘2.7.8’
     
     pod 'IQKeyboardManager'
 

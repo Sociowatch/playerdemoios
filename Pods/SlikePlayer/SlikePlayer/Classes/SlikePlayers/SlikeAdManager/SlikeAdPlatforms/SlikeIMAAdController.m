@@ -311,7 +311,7 @@
             errCode = @"900";
         }
     }
-    NSLog(@"%@", errDescription);
+    SlikeDLog(@"%@", errDescription);
     
     //    NSDictionary * payload = @{
     //                               kSlikeAdErrMessageKey:errMessage,

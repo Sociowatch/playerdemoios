@@ -130,10 +130,10 @@
 {
     //youtube ID
     
-    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"Seagram’s 100 Pipers | The Legacy Project" withID:@"cv8UocAT87c" withSection:@"default" withMSId:@"56087249" posterImage:@""];
-    
-    _slikeConfig.streamingInfo = [StreamingInfo createStreamURL:@"cv8UocAT87c" withType:VIDEO_SOURCE_YT withTitle:@"Seagram’s 100 Pipers | The Legacy Project" withSubTitle:@"" withDuration:0L withAds:nil];
-    
+//    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"Seagram’s 100 Pipers | The Legacy Project" withID:@"cv8UocAT87c" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+  self.slikeConfig =  [SlikeConfig createConfigForType:VIDEO_SOURCE_YT mediaTitle:@"Seagram’s 100 Pipers | The Legacy Project" mediaURL:@"cv8UocAT87c" posterURL:@"" isAutoPlay:YES];
+//    _slikeConfig.streamingInfo = [StreamingInfo createStreamURL:@"cv8UocAT87c" withType:VIDEO_SOURCE_YT withTitle:@"Seagram’s 100 Pipers | The Legacy Project" withSubTitle:@"" withDuration:0L withAds:nil];
+   // _slikeConfig.streamingInfo.isExternalPlayer = YES;
     _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"Toi.in";

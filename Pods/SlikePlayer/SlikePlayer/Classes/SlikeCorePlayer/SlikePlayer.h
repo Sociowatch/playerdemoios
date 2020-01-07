@@ -5,7 +5,7 @@
 //  Created by TIL on 29/11/16.
 //  Copyright © 2016 BBDSL. All rights reserved.
 //
-// SDK Version 2.7.7.2
+// SDK Version 2.7.8
 
 #import <UIKit/UIKit.h>
 #import "ISlikePlayer.h"

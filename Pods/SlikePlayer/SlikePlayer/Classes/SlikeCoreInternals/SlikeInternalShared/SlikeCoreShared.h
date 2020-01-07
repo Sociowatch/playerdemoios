@@ -9,7 +9,7 @@
 #define SlikeCoreShared_h
 #endif /* SlikeCoreShared_h */
 
-#define ENABLE_LOG 0
+#define ENABLE_LOG 1
 #define ENABLE_Analytic 1
 
 #define CHECK_SAFE_STRING(obj) ((obj != nil && [obj isKindOfClass:[NSString class]] && obj.length > 0) ? YES : NO)

@@ -1,3 +1,4 @@
+
 //
 //  SlikeNetworkManager
 //
@@ -40,6 +41,7 @@ static dispatch_queue_t kDownloadGCDQueue = nil;
     BOOL isServerUp;
 }
 
+@property(nonatomic, strong) NSString *loadAnalyticsDataURL;
 @property (nonatomic, readonly) NSURLSession *urlSession;
 @property (nonatomic, readonly) NSSet *runningURLRequests;
 @property(nonatomic, strong) NSString *strExtraData;
@@ -47,6 +49,8 @@ static dispatch_queue_t kDownloadGCDQueue = nil;
 @property (nonatomic, readonly) BOOL isNetworkReachable;
 @property (nonatomic, readonly) BOOL isReachableViaWiFi;
 @property (nonatomic, strong, nullable) dispatch_queue_t  writerDispatchQueue;
+@property (nonatomic, strong) NSString *encodedString;
+
 
 @end
 
@@ -122,6 +126,7 @@ static void TWEndNetworkActivity() {
         
         dictConfig = nil;
         isHandleCookies = NO;
+        _encodedString = nil;
         
         if (!kDownloadGCDQueue) {
             kDownloadGCDQueue = dispatch_queue_create("net.tapwork.download_gcd_queue", DISPATCH_QUEUE_CONCURRENT);
@@ -1103,8 +1108,8 @@ static void TWEndNetworkActivity() {
     __block  NSString *analyticInfo = [NSString stringWithFormat:@"savelogs?at=%ld&apikey=%@&css=%@&type=init&k=%@",(long)playerStatus,[[SlikeDeviceSettings sharedSettings] getKey],[SlikeSharedDataCache sharedCacheManager].cssId  ,config.mediaId];
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,analyticInfo];
-   requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1140,8 +1145,7 @@ static void TWEndNetworkActivity() {
     NSInteger streamDuration = 0;
     if(player)
     {
-        NSInteger streamPostion = [player getPosition];
-        
+        streamPostion = [player getPosition];
         if(streamPostion < 0) {
             streamPostion = 0;
         }
@@ -1153,7 +1157,6 @@ static void TWEndNetworkActivity() {
         
         if((streamDuration - streamPostion) < 100) {
             streamPostion = streamDuration;
-            //NSLog (@"%ld", (long)streamPostion);
         }
         
         if(streamDuration < 0) {
@@ -1231,9 +1234,9 @@ static void TWEndNetworkActivity() {
     } else {
         analyticInfo = [NSString stringWithFormat:@"%@&rid=%@",analyticInfo,rid];
     }
-   
-    //NSLog(@"urlurlurlurlurl-> %@",analyticInfo);
-
+    
+    SlikeDLog(@"analyticInfo %@" , analyticInfo);
+    
     if(playerStatus == 1)
     {
         if([SlikeSharedDataCache sharedCacheManager].cssId && [[SlikeSharedDataCache sharedCacheManager].cssId  length] >0)
@@ -1242,8 +1245,7 @@ static void TWEndNetworkActivity() {
         }
         NSString *aUrl = [NSString stringWithFormat:@"%@%@", strAnalyticsBaseURL,analyticInfo];
         aUrl = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-        SlikeDLog(@"AURL %@" , aUrl);
+        
         double CurrentTimeNew = CACurrentMediaTime();
         nTotalPlayedTimestamp = CurrentTimeNew;
         
@@ -1271,7 +1273,7 @@ static void TWEndNetworkActivity() {
                             }
                             SlikeDLog(@"Video %@",dict);
                             SlikeDLog(@"ss = >  %@",[dict stringForKey:@"ss"]);
-
+                            
                             if([dict isValidDictonary]) {
                                 
                                 if([dict stringForKey:@"ss"]) {
@@ -1494,10 +1496,10 @@ static void TWEndNetworkActivity() {
                     if(errorInformation && errorInformation!=nil && ![errorInformation isKindOfClass:[NSNull class]]) {
                         
                         errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
-                    //@Ravi and @utasav and @nialy
-
-//                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&&" withString:@"`"];
-//                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&" withString:@"`"];
+                        //@Ravi and @utasav and @nialy
+                        
+                        //                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&&" withString:@"`"];
+                        //                        errorInformation = [errorInformation stringByReplacingOccurrencesOfString:@"&" withString:@"`"];
                         
                         if(self->strAnalyticsBaseURL != nil && self->strAnalyticsBaseURL.length == 0) return;
                         
@@ -1560,26 +1562,27 @@ static void TWEndNetworkActivity() {
 - (void)loadAnalyticInfoFromDocToServer:(SlikeConfig *)configModel {
     
     if(strAnalyticsBaseURL == nil || [strAnalyticsBaseURL length] == 0 ) return;
-    
     nTotalPlayedTimestamp = CACurrentMediaTime();
     
     if(isServerUp) {
-        
         __block  NSString *strData = [self readAnalyticsFromDocumnt];
-        
         if([strData isValidString]) {
             
-            NSString *aUrl = [NSString stringWithFormat:@"%@multistats?%@", strAnalyticsBaseURL,[SlikeUtilities endcodeAndFormatString:strData]];
-            NSString* webStringURL = [aUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            
-            NSURL* url = [NSURL URLWithString:webStringURL];
-            
-            [self removeAnalyticFileFromLocal];
-            if(!ENABLE_LOG)
-            {
-                //NSLog(@"urlurlurlurlurl-> %@",url);
+            self.loadAnalyticsDataURL = nil;
+            self.encodedString = [[NSString alloc]initWithString:[self endcodeAndFormatString:strData]];
+            if (![self.encodedString isValidString] ) {
+                return;
             }
-            [[SlikeNetworkManager defaultManager] requestURL:url type:NetworkHTTPMethodPOST completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
+        
+            self.loadAnalyticsDataURL = [[NSString alloc] initWithFormat:@"%@multistats?%@", strAnalyticsBaseURL, self.encodedString];
+            
+            self.loadAnalyticsDataURL = [self.loadAnalyticsDataURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            [self removeAnalyticFileFromLocal];
+            
+//            if(!ENABLE_LOG) {
+//                //NSLog(@"urlurlurlurlurl-> %@",url);
+//            }
+            [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:self.loadAnalyticsDataURL] type:NetworkHTTPMethodPOST completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
                 
                 SlikeDLog(@"status code -> %ld",(long)statusCode);
                 if(statusCode != 200) {
@@ -1605,6 +1608,7 @@ static void TWEndNetworkActivity() {
                 }
                 
             }];
+            
         }
     } else {
         
@@ -1676,7 +1680,7 @@ static void TWEndNetworkActivity() {
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",baseUrl, analyticInfoString];
     requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    
     SlikeDLog(@"EMBEDED PLAYER- Analytics - %@ ", requestUrl);
     
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
@@ -1841,13 +1845,13 @@ static void TWEndNetworkActivity() {
     NSString *analyticInfoString = [NSString stringWithFormat:@"adstats?%@%@", analyticInfo, [[SlikeDeviceSettings sharedSettings] getSlikeAnalyticsCache]];
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",baseUrl, analyticInfoString];
-   requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-    if(ENABLE_LOG)
-    {
-       // NSLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
-    }
+    requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
+//    if(ENABLE_LOG)
+//    {
+//        // NSLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
+//    }
+//    
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -2090,4 +2094,33 @@ static void TWEndNetworkActivity() {
     analyticInfo = [NSString stringWithFormat:@"cue?msgid=%@&ss=%@&ts=%@&k=%@&cm=%d&lt=%ld",model.cueID,config.streamingInfo.strSS,config.streamingInfo.strTS,config.streamingInfo.strID,model.isJson,(long)model.latency];
     [self writeAnalyticsInDocumnet:analyticInfo];
 }
+
+
+- (NSString *)endcodeAndFormatString:(NSString *)encodeData {
+    
+    if (encodeData == nil || [encodeData isEqualToString:@""]) {
+        return @" ";
+    }
+      
+    NSString *resultStr = nil;
+    CFStringRef originalString = (__bridge CFStringRef) encodeData;
+    CFStringRef leaveUnescaped = CFSTR(" ");
+    CFStringRef forceEscaped = CFSTR("!*'();:@&=+$,/?%#[]");
+    NSString *escapedStr;
+    
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+       escapedStr = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                            originalString,
+                                                            leaveUnescaped,
+                                                            forceEscaped,
+                                                            kCFStringEncodingUTF8));
+    #pragma clang diagnostic pop
+       if( escapedStr ) {
+           resultStr = [escapedStr stringByReplacingOccurrencesOfString:@" "
+                                       withString:@"%20"];
+       }
+    return resultStr;
+}
+
 @end

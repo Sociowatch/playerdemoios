@@ -259,7 +259,6 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
         self.timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(timerCallback:) userInfo:nil repeats:YES];
         NSRunLoop *runner = [NSRunLoop currentRunLoop];
         [runner addTimer:self.timer forMode: NSRunLoopCommonModes];
-        runner = nil;
         //});
     }
 }
@@ -683,7 +682,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
             }
             
             self.isSeeking = YES;
-            NSLog(@"PLAYER SEEK SECONDS = %f", CMTimeGetSeconds(time));
+            SlikeDLog(@"PLAYER SEEK SECONDS = %f", CMTimeGetSeconds(time));
             
             
             [self.player seekToTime:time toleranceBefore:isFastSeek ? kCMTimePositiveInfinity : kCMTimeZero toleranceAfter:isFastSeek ? kCMTimePositiveInfinity : kCMTimeZero completionHandler:^(BOOL finished) {

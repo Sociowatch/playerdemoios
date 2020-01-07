@@ -13,7 +13,7 @@
 #define NOT_SUPPORTED                               @"Video is not supported"
 #define WRONG_GEO                                   @"This video is not available in your country"
 #define ERROR_CONTENT_DISABLE                       @"Unauthorized access content disabled!"
-#define INSUFFICIENT_INFORMATION                    @"Insufficient informatio."
+#define INSUFFICIENT_INFORMATION                    @"Insufficient information."
 #define INVALID_API_KEY                             @"Invalid API Key"
 #define UNKNOWN_ERROR                               @"Unknown error occurred. Please try again after some time"
 #define WRONG_CONFIGARATION                         @"Configuration is not available."

@@ -680,6 +680,14 @@ static NSString *const kAllowTracking = @"allowTracking";
         } else {
             slikePlayerController = (UIViewController *)[self.slikePlayer getViewController];
         }
+        if(slikePlayerController ==  nil) {
+            self.slikePlayer =  nil;
+                   if(block) {
+                       block(MEDIA, SL_ERROR, [StatusInfo initWithError:UNKNOWN_ERROR]);
+                   }
+            [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, UNKNOWN_ERROR)];
+            return ;
+        }
         id cntrlr = [self traverseResponderChainForUIViewController:parevtView];
         if(cntrlr){
             [(UIViewController *)cntrlr addChildViewController:slikePlayerController];
@@ -756,9 +764,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 - (void)releaseSlikePlayer {
     
     if (self.slikePlayer) {
-        
         [_slikePlayer removePlayer];
-        
         [[EventManager sharedEventManager]unregisterEvent:self.slikePlayer];
         self.slikePlayer = nil;
         _videoViewParent =  nil;
@@ -1156,15 +1162,13 @@ static NSString *const kAllowTracking = @"allowTracking";
 /// @param isSoftCncl YES  if reset all ad pass NO
 -(void)setAdPriority:(NSArray*)adPriority withSoftCancellation:(BOOL)isSoftCncl
 {
-   
     if(!isSoftCncl)
     {
+        //cancel Prefetch if any
        [[SlikeAdManager sharedInstance] cleanupAdManager:^{
        }];
     }
-    
     [SlikeSharedDataCache sharedCacheManager].adPriority = adPriority;
-   
     
 }
 /**

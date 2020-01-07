@@ -285,8 +285,10 @@ NSString * const kSlikeNormalAdFailKey               = @"NormalAdFail";
     _isAdLoaded = FALSE;
     self.delayTimer = [NSTimer timerWithTimeInterval:10.0 target:self selector:@selector(_startPrefetching:) userInfo:@{@"slikeQueue": slikeAdsQueue} repeats:NO];
     NSRunLoop *runner = [NSRunLoop currentRunLoop];
+    if(runner)
+    {
     [runner addTimer:self.delayTimer forMode: NSDefaultRunLoopMode];
-    runner = nil;
+    }
 }
 
 /**
@@ -483,7 +485,7 @@ NSString * const kSlikeNormalAdFailKey               = @"NormalAdFail";
     }
     else if (adEvent == kSlikeAdEventLoadingError) {
         
-        NSLog(@"Ad Error %@",[payload objectForKey:kSlikeAdDescriptionKey]);
+        SlikeDLog(@"Ad Error %@",[payload objectForKey:kSlikeAdDescriptionKey]);
         
         //Plateform is unable to load the contents
         SlikeDLog(@"ADS LOG: AdEventLoadingError");
@@ -698,6 +700,9 @@ NSString * const kSlikeNormalAdFailKey               = @"NormalAdFail";
     NSInteger nStatus = 3;
     NSString * thirdPartyStatus = @"";
     if(status == SL_READY) {
+        if(_currentAdPos == 0) {
+        _playerPosition = 0;
+    }
         nStatus = 0;
         thirdPartyStatus = @"ADREQUEST";
     }

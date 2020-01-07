@@ -191,13 +191,19 @@
     _adPrefetchQueue =  [self setAdPriortyValues:_adPrefetchQueue];
     return _adPrefetchQueue;
 }
+-(BOOL)isValidArray:(NSArray *)itemsArray {
+    if(![itemsArray isKindOfClass:[NSNull class]] && itemsArray != (id)[NSNull null] && [itemsArray isKindOfClass:[NSArray class]]
+       && itemsArray !=nil) {
+        return YES;
+    }
+    return NO;
+}
 -(SlikeAdsQueue*)setAdPriortyValues:(SlikeAdsQueue*)adInfo{
     BOOL isAddNeedtoReplace =  NO;
-    if(_adPriority && [_adPriority isKindOfClass:[NSArray class]] && _adPriority.count >0 )
-    {
+    if(self.adPriority && [self isValidArray:self.adPriority] && self.adPriority.count >0 ){
         NSString *adPriotyFirst = @"";
         NSString *adPriotySecond = @"";
-        NSArray *adPriortyArray = _adPriority;
+        NSArray *adPriortyArray = self.adPriority;
         if(adPriortyArray.count >1)
         {
             adPriotyFirst =  [adPriortyArray objectAtIndex:0];

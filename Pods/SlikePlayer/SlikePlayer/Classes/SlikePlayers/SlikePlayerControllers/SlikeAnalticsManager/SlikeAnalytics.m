@@ -809,7 +809,7 @@
     NSString *analyticsString = [NSString stringWithFormat:@"type=%@&k=%@&ch=%@&tpr=%@&vid=%@&at=%@&ss=%@&ts=%@&pt=%ld&stt=%ld&tb=%@%@",eventModel.playerEventModel.type, self.slikeconfig.mediaId, self.slikeconfig.channel,self.slikeconfig.product,self.slikeconfig.vendorID,
                                  eventModel.playerEventModel.eventType, self.slikeconfig.streamingInfo.strSS, self.slikeconfig.streamingInfo.strTS, (long)eventModel.playerEventModel.playerType, (long)eventModel.playerEventModel.currentPlayer,self.slikeconfig.business,[self.slikeconfig toString]];
     
-    NSLog(@"%@",analyticsString);
+    SlikeDLog(@"%@",analyticsString);
     
     [self processAnalyticsRequest:analyticsString];
 }
@@ -849,7 +849,7 @@
  @param eventModel - Event Model
  */
 - (void)_processRumbleAdAnalytics:(EventModel *)eventModel {
-    NSLog(@"_processRumbleAdAnalytics");
+    SlikeDLog(@"_processRumbleAdAnalytics");
 }
 
 /**
@@ -858,7 +858,7 @@
  */
 - (void)_processRumbleAnalytics:(EventModel *)eventModel {
     
-    NSLog(@"_processRumbleAnalytics - %ld", (long)eventModel.playerEventModel.playerState);
+    SlikeDLog(@"_processRumbleAnalytics - %ld", (long)eventModel.playerEventModel.playerState);
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
     [self _processEmbededAnalytics:eventModel];
 }
