@@ -6,31 +6,29 @@
 
 #import "SlikeWebPlayerViewController.h"
 #import "SlikePlayer.h"
-#import "UIWebView+SlikeJavascriptInterface.h"
-#import "SlikeInterfaceProvider.h"
+#import "SlikeStringUtil.h"
 #import "SlikeUtilities.h"
 #import "NSBundle+Slike.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikePlayerEvent.h"
 #import "EventManagerProtocol.h"
 #import "EventManager.h"
 #import "SlikePlayerConstants.h"
 #import "SlikeMaterialDesignSpinner.h"
 #import "UIView+SlikeAlertViewAnimation.h"
+#import "SlikeInterfaceProvider.h"
+#import "WKWebView+SlikeJavascriptInterface.h"
 
-@interface SlikeWebPlayerViewController () <SlikeInterfaceProvider,
-EventManagerProtocol,
-UIWebViewDelegate> {
+@interface SlikeWebPlayerViewController () <
+EventManagerProtocol,WKUIDelegate, WKNavigationDelegate, SlikeInterfaceProvider> {
     id _playerContainer;
 }
 
-@property (weak, nonatomic) IBOutlet UIWebView *playerWebView;
 @property (nonatomic,assign)  BOOL isNativeControls;
 @property (assign, nonatomic) BOOL playerLoaded;
 @property (assign, nonatomic) BOOL playerDidStarted;
 @property (assign, nonatomic) BOOL loadingFailed;
 @property (assign, nonatomic) BOOL isReplayed;
-
 @property (assign, nonatomic) NSInteger replayCount;
 @property (strong,nonatomic)NSString *playerImageUrl;
 
@@ -41,6 +39,9 @@ UIWebViewDelegate> {
 @property (weak, nonatomic) IBOutlet SlikeMaterialDesignSpinner *loadingView;
 @property (weak, nonatomic) IBOutlet UIImageView *posterImage;
 
+//Porting to new
+@property (weak, nonatomic) IBOutlet UIView *playerContainerView;
+@property (strong, nonatomic) WKWebView *playerWebView;
 
 @end
 
@@ -54,20 +55,20 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-   
-    _playerWebView.delegate=self;
-    [_playerWebView initializeWebKit];
     [[EventManager sharedEventManager]registerEvent:self];
-    [_playerWebView addJavascriptInterface:self forName:@"JsHandler"];
-    
     [_playerWebView setBackgroundColor:[UIColor clearColor]];
     [_playerWebView setOpaque:NO];
-    _playerWebView.allowsInlineMediaPlayback = YES;
     
     self.playerLoaded = NO;
     self.playerDidStarted = NO;
     self.loadingFailed = NO;
     _replayCount=0;
+    [self createWebKit];
+    
+    [_playerWebView initJavascriptInterface];
+    [_playerWebView enableJavascriptInterface:self];
+    [_playerWebView addJavascriptInterface:self forName:@"JsHandler"];
+    
     
 }
 
@@ -76,9 +77,9 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
  @param playerURL - Stream URL
  */
 - (void)loadPlayer:(NSString *)playerURL {
-    
-   //NSString *encodedString=[siteUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    //NSString *encodedString=[siteUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    //self.playerWebView.navigationDelegate = self;
+    self.playerWebView.UIDelegate = self;
     NSURLRequest *nsrequest= [NSURLRequest requestWithURL:[NSURL URLWithString:playerURL]];
     [_playerWebView loadRequest:nsrequest];
     
@@ -156,14 +157,11 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
  Remove the player and release all the resources
  */
 - (void)removePlayer {
-    
     [self cleanup];
-    
     if(_playerContainer) {
         if([_playerContainer isKindOfClass:[UIView class]]) {
             [self.view removeFromSuperview];
             [self removeFromParentViewController];
-            
         }
     }
 }
@@ -172,7 +170,8 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
     if ([self.playerWebView isLoading]) {
         [self.playerWebView stopLoading];
     }
-    self.playerWebView.delegate=nil;
+    self.playerWebView.UIDelegate = nil;
+    self.playerWebView.navigationDelegate = nil;
 }
 
 - (BOOL)cleanup {
@@ -202,52 +201,6 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
     [[EventManager sharedEventManager]dispatchEvent:MEDIA playerState:status dataPayload:@{kSlikeADispatchEventToParentKey:@YES, kSlikeAdStatusInfoKey:progressInfo} slikePlayer:self];
 }
 
-#pragma mar- UIWebViewDelegate
-- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-    if (!_isReplayed) {
-    }
-}
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    if (!self.playerLoaded) {
-        self.playerLoaded=YES;
-        if (_uopts==-1) {
-            _uopts = ([[NSDate date] timeIntervalSince1970] * 1000);
-        }
-        
-        self.sdkConfiguration.streamingInfo.strSS = @"";
-        if([self.sdkConfiguration.streamingInfo.strSS length] == 0)
-            self.sdkConfiguration.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:self.sdkConfiguration.mediaId];
-        NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",(long)_urts, (long) _uopts];
-        [self prepareAndSendAnaltytics:@"1" withTimeStamp:analyticsString];
-    }
-    _loadingView.hidden = YES;
-    [_loadingView stopAnimating];
-    [self setVideoPlaceHolder:NO];
-    
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    
-    _loadingView.hidden = YES;
-    [_loadingView stopAnimating];
-    [self setVideoPlaceHolder:NO];
-    
-    //Its is sending the Cancel error message
-    if(error.code != NSURLErrorCancelled && error) {
-        StatusInfo *progressInfo = [StatusInfo initWithBuffer:0 withPosition:0 withDuration:0 muteStatus:0];
-        [self _dispatchEventsToParent:SL_ERROR withProgress:progressInfo];
-    }
-    
-    if (!self.loadingFailed && !self.playerLoaded) {
-        self.loadingFailed=YES;
-        [self prepareAndSendAnaltytics:@"-10" withTimeStamp:nil];
-    }
-}
-
 /**
  Prepare the request for the Analytics.
  
@@ -256,7 +209,7 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
  */
 - (void)prepareAndSendAnaltytics:(NSString *)eventTypeString withTimeStamp:(NSString *)timeStampParam {
     
-    EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeEmbed withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
+    SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeEmbed withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
     eventModel.slikeConfigModel = self.sdkConfiguration;
     
     eventModel.playerEventModel.eventType = eventTypeString;
@@ -279,6 +232,8 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
 - (NSString *)videoStartFn:(NSString *) input {
     if (!self.playerDidStarted) {
         self.playerDidStarted=YES;
+        _loadingView.hidden = YES;
+        [_loadingView stopAnimating];
         
         NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",(long)_urts, (long) _uopts];
         [self prepareAndSendAnaltytics:@"2" withTimeStamp:analyticsString];
@@ -356,21 +311,6 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
         [self.playerWebView reload];
     }
     return @"";
-}
-
-
-/**
- The JS interface
- @return - JS methods that needs to be called from the JS side
- */
-- (NSDictionary<NSString *, NSValue *> *) javascriptInterfaces{
-    return @{
-             @"videoStartFn" : [NSValue valueWithPointer:@selector(videoStartFn:)],
-             @"videoFirstQuartileFn" : [NSValue valueWithPointer:@selector(videoFirstQuartileFn:)],
-             @"videoMidQuartileFn" : [NSValue valueWithPointer:@selector(videoMidQuartileFn:)],
-             @"videoThirdQuartileFn" : [NSValue valueWithPointer:@selector(videoThirdQuartileFn:)],
-             @"videoEndedFn" : [NSValue valueWithPointer:@selector(videoEndedFn:)],
-             };
 }
 
 
@@ -474,6 +414,7 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
 }
 
 - (void)setOnPlayerStatusDelegate:(onChange) block {
+         [[EventManager sharedEventManager] setEventHanlderBlock:block];
 }
 - (void)setController:(id<ISlikePlayerControl>) control {
     //self.slikeControl = control;
@@ -613,6 +554,120 @@ const NSString *const prefixUrl = @"https://videoplayer.indiatimes.com/v2/veblr.
     });
 }
 
+#pragma mark - WKWebkit implementation
+- (void)createWebKit {
+    
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.allowsInlineMediaPlayback = true;
+    configuration.requiresUserActionForMediaPlayback = false;
+    configuration.allowsAirPlayForMediaPlayback = true;
+    configuration.allowsPictureInPictureMediaPlayback = NO;
+    
+    self.playerWebView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:configuration];
+    _playerWebView.opaque = NO;
+    _playerWebView.backgroundColor = [UIColor clearColor];
+    
+    // Hack: prevent vertical bouncing
+    for (id subview in _playerWebView.subviews) {
+        if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
+            ((UIScrollView *)subview).bounces = NO;
+            ((UIScrollView *)subview).scrollEnabled = NO;
+        }
+    }
+    [self.playerContainerView addSubview:_playerWebView];
+    _playerWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+}
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+    if (!_isReplayed) {
+    }
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
+    decisionHandler(WKNavigationActionPolicyAllow);
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+    
+    
+}
+
+- (void)webView:(WKWebView *)webView didCommitNavigation:(null_unspecified WKNavigation *)navigation {
+    [_loadingView stopAnimating];
+    [self setVideoPlaceHolder:NO];
+    
+    if (!self.playerLoaded) {
+        self.playerLoaded=YES;
+        if (_uopts==-1) {
+            _uopts = ([[NSDate date] timeIntervalSince1970] * 1000);
+        }
+        
+        self.sdkConfiguration.streamingInfo.strSS = @"";
+        if([self.sdkConfiguration.streamingInfo.strSS length] == 0)
+            self.sdkConfiguration.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:self.sdkConfiguration.mediaId];
+        NSString *analyticsString = [NSString stringWithFormat:@"&urts=%ld&uopts=%ld",(long)_urts, (long) _uopts];
+        [self prepareAndSendAnaltytics:@"1" withTimeStamp:analyticsString];
+    }
+    _loadingView.hidden = YES;
+    [_loadingView stopAnimating];
+    [self setVideoPlaceHolder:NO];
+    
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    _loadingView.hidden = YES;
+    [_loadingView stopAnimating];
+    [self setVideoPlaceHolder:NO];
+    
+    //Its is sending the Cancel error message
+    if(error.code != NSURLErrorCancelled && error) {
+        StatusInfo *progressInfo = [StatusInfo initWithBuffer:0 withPosition:0 withDuration:0 muteStatus:0];
+        [self _dispatchEventsToParent:SL_ERROR withProgress:progressInfo];
+    }
+    
+    if (!self.loadingFailed && !self.playerLoaded) {
+        self.loadingFailed=YES;
+        [self prepareAndSendAnaltytics:@"-10" withTimeStamp:nil];
+    }
+}
+
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler{
+    completionHandler();
+}
+- (nullable WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    
+    WKFrameInfo* targetFrame = navigationAction.targetFrame;
+    if (!targetFrame.isMainFrame) {
+        NSLog(@"asdkajksd");
+    }
+    return nil;
+}
+
+/**
+ The JS interface
+ @return - JS methods that needs to be called from the JS side
+ */
+- (NSDictionary<NSString *, NSValue *> *) javascriptInterfaces {
+    return @{
+        @"videoStartFn" : [NSValue valueWithPointer:@selector(videoStartFn:)],
+        @"videoFirstQuartileFn" : [NSValue valueWithPointer:@selector(videoFirstQuartileFn:)],
+        @"videoMidQuartileFn" : [NSValue valueWithPointer:@selector(videoMidQuartileFn:)],
+        @"videoThirdQuartileFn" : [NSValue valueWithPointer:@selector(videoThirdQuartileFn:)],
+        @"videoEndedFn" : [NSValue valueWithPointer:@selector(videoEndedFn:)],
+    };
+}
+
 @end
-
-

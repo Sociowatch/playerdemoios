@@ -11,8 +11,7 @@
 #import "SlikeDeviceSettings.h"
 #import "SlikeReachability.h"
 #import "NSBundle+Slike.h"
-#import "YTPlayerView.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikePlayerEvent.h"
 #import "EventManagerProtocol.h"
 #import "EventManager.h"
@@ -56,6 +55,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.noNetworkLbl.text = [SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr;
     
     [self.btnClose setImage:[UIImage imageNamed:@"player_closebtn" inBundle:[NSBundle slikeImagesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
     [self.btnCloseInternet setImage:[UIImage imageNamed:@"player_closebtn" inBundle:[NSBundle slikeImagesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
@@ -70,15 +70,10 @@
     [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(handleNoInternetTap:)];
     [self.noNetworkWindow addGestureRecognizer:singleFingerTap];
-    
     [[EventManager sharedEventManager]registerEvent:self];
-    
     [_loadingView startAnimating];
     _loadingView.hidesWhenStopped=YES;
-    
     [self.view bringSubviewToFront:_loadingView];
-
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -162,7 +157,6 @@
 #pragma mark FBPlayerViewDelegate
 - (void)playerViewDidBecomeReady:(SlikeFBVideoView *)playerView {
     SlikeDLog(@"The FB player is start ready to play.");
-    playerStatus = SL_START;
 }
 
 - (void)playerView:(SlikeFBVideoView *)playerView didChangeToState:(FBPlayerState)state {
@@ -170,24 +164,37 @@
     switch (state) {
             
         case kFBPlayerStatePlaying:
-            SlikeDLog(@"The YT player playback is started.");
+            SlikeDLog(@"The FB player playback is started.");
             isPlaying = YES;
-            
-            if(playerStatus == SL_COMPLETED) {
+            if(playerStatus == SL_PAUSE) {
+            [self sendPlayerStatus:SL_PLAY];
+            [self sendData:SL_PLAY forced:YES];
+                SlikeDLog(@"The FB player playback is play.");
+            }
+            if(playerStatus == SL_READY) {
+                playerStatus = SL_START;
+            [self sendPlayerStatus:playerStatus];
+            [self sendData:playerStatus forced:YES];
+                
+            }
+             if(playerStatus == SL_COMPLETED) {
                 playerStatus = SL_REPLAY;
                 [self sendPlayerStatus:playerStatus];
-                [self sendData:playerStatus forced:NO];
+                [self sendData:playerStatus forced:YES];
+                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+                     self->playerStatus = SL_START;
+                     [self sendPlayerStatus:self->playerStatus];
+                     [self sendData:self->playerStatus forced:YES];                 });
+                 
+            }else {
+            playerStatus = SL_PLAYING;
+            [self sendPlayerStatus:playerStatus];
+            [self sendData:playerStatus forced:NO];
             }
             break;
         case kFBPlayerStatePaused:
-            if(playerStatus == SL_PAUSE || playerStatus == SL_SEEKED) {
-                SlikeDLog(@"The YT player playback is Seeked.");
-                playerStatus = SL_SEEKED;
-                [self sendData:playerStatus forced:YES];
-                return;
-            }
             
-            SlikeDLog(@"The YT player playback is paused.");
+            SlikeDLog(@"The FB player playback is paused.");
             isPlaying = NO;
             playerStatus = SL_PAUSE;
             [self sendPlayerStatus:playerStatus];
@@ -196,7 +203,7 @@
             
         case kFBPlayerStateEnded:
             isPlaying = NO;
-            SlikeDLog(@"The YT player playback is done. Means competed");
+            SlikeDLog(@"The FB player playback is done. Means competed");
             playerStatus = SL_COMPLETED;
             [self sendPlayerStatus:playerStatus];
             [self sendData:playerStatus forced:YES];
@@ -241,7 +248,7 @@
         default:
             break;
     }
-    SlikeDLog(@"The YT player playback getting error (%@).", strError);
+    SlikeDLog(@"The fb player playback getting error (%@).", strError);
     
     if(strError) {
         
@@ -257,7 +264,7 @@
 }
 
 - (void)hideLoading {
-     [self.loadingView stopAnimating];
+    [self.loadingView stopAnimating];
 }
 
 #pragma ISlikePlayer implementation-
@@ -270,7 +277,7 @@
     //For Error handlation
 }
 
--(void) playMovieStreamWithObject:(SlikeConfig *)si withParent:(id) parent {
+- (void)playMovieStreamWithObject:(SlikeConfig *)si withParent:(id) parent {
     [[SlikeDeviceSettings sharedSettings] setPlayerViewArea:parent];
     si.streamingInfo.strSS = @"";
     if([self.slikeConfig.streamingInfo.strSS length] == 0)
@@ -427,13 +434,17 @@
 
 - (void)sendData:(SlikePlayerState)playerState forced:(BOOL) forced {
     
-    EventModel *eventModel;
+    SLEventModel *eventModel;
     if(playerState ==  SL_PAUSE)
     {
-        eventModel = [EventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventPause withPayload:nil];
-    }else
+        eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventPause withPayload:nil];
+    } else if(playerState ==  SL_PLAY)
+       {
+           eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventPlay withPayload:nil];
+       }
+    else
     {
-        eventModel = [EventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:nil];
+        eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:nil];
     }
     eventModel.isImmediateDispatch = forced;
     eventModel.slikeConfigModel = self.slikeConfig;
@@ -457,6 +468,7 @@
 }
 
 -(void) setOnPlayerStatusDelegate:(onChange)block {
+         [[EventManager sharedEventManager] setEventHanlderBlock:block];
 }
 
 - (id<ISlikePlayerControl>)getControl{
@@ -515,7 +527,7 @@
         if(!doesContain)[self.view addSubview:self.noNetworkWindow];
         
         [_loadingView stopAnimating];
-
+        
     } else {
         [self.noNetworkWindow removeFromSuperview];
     }

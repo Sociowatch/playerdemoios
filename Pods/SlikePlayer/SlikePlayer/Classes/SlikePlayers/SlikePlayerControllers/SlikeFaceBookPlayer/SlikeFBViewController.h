@@ -9,6 +9,18 @@
 #import "ISlikePlayer.h"
 #import "SlikeFBVideoView.h"
 #import "SlikeMaterialDesignSpinner.h"
+
+/** These enums represent error codes thrown by the player. */
+typedef NS_ENUM(NSInteger, YTPlayerError) {
+    kYTPlayerErrorInvalidParam,
+    kYTPlayerErrorHTML5Error,
+    kYTPlayerErrorVideoNotFound, // Functionally equivalent error codes 100 and
+    // 105 have been collapsed into |kYTPlayerErrorVideoNotFound|.
+    kYTPlayerErrorNotEmbeddable, // Functionally equivalent error codes 101 and
+    // 150 have been collapsed into |kYTPlayerErrorNotEmbeddable|.
+    kYTPlayerErrorUnknown
+};
+
 @interface SlikeFBViewController : UIViewController <SlikeFBPlayerViewDelegate, ISlikePlayer>
 {
     NSInteger nHideTime;
@@ -39,6 +51,7 @@
     
 }
 
+@property (weak, nonatomic) IBOutlet UILabel *noNetworkLbl;
 @property (weak, nonatomic) IBOutlet UIButton *btnCloseInternet;
 @property (weak, nonatomic) IBOutlet UILabel *lblTitle;
 @property(nonatomic, strong) IBOutlet SlikeFBVideoView *playerView;

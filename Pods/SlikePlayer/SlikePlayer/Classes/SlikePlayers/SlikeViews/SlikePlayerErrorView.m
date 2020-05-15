@@ -37,7 +37,8 @@
 }
 
 - (void)setErrorMessage:(NSString *)errMessage withCloseEnable:(BOOL)isCloseEnable withReloadEnable:(BOOL)isReloadEnable {
-    
+    [self.reloadButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.reloadButtonTitle forState:UIControlStateNormal];
+
     _messageLabel.text = errMessage;
     
     if (isCloseEnable) {

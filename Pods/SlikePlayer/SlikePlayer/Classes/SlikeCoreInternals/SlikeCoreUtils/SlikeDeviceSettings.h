@@ -27,6 +27,7 @@
 @property(assign) NSTimeInterval nAdContentLoadTime;
 @property(assign) NSTimeInterval nAdLoadTime;
 @property(assign) NSInteger nAdSuccess;
+@property(nonatomic,assign) BOOL tryHlsAds;
 
 //Ad custom Params
 
@@ -153,4 +154,10 @@
 - (BOOL)hasCoachMarkShown;
 //Update the coachmark status
 - (void)updateCoachMarkStatus:(BOOL)hasShown;
+
+/// SDK Version or player version
+- (NSString*)getSDKVersion;
+
+/// Speed Player
+-(float)getAvplayerSpeed;
 @end

@@ -24,43 +24,90 @@ NSString static *const kFBPlayerErrorVideoNotFoundErrorCode = @"100";
 NSString static *const kFBPlayerErrorNotEmbeddableErrorCode = @"101";
 NSString static *const kFBPlayerErrorCannotFindVideoErrorCode = @"105";
 NSString static *const kFBPlayerErrorSameAsNotEmbeddableErrorCode = @"150";
-
-
 NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIReady = @"onFacebookIframeAPIReady";
 NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFacebookIframeAPIFailedToLoad";
 
-
-@interface SlikeFBVideoView ()
-{
+@interface SlikeFBVideoView () {
     NSString *strAppID;
 }
+
 @property (nonatomic, strong) NSURL *originURL;
 @property (nonatomic, weak) UIView *initialLoadingView;
+@property (nonatomic, assign) float duration;
+@property (nonatomic, assign) float volume;
+@property (nonatomic, assign) BOOL isMuted;
+@property (nonatomic, assign) float position;
+@property (strong, nonatomic) NSTimer *timer;
+
 @end
 
 @implementation SlikeFBVideoView
+
+- (void)createTimer {
+    [self stopTimer];
+    if(self.timer == nil) {
+        self.timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(timerCallback:) userInfo:nil repeats:YES];
+        NSRunLoop *runner = [NSRunLoop currentRunLoop];
+        [runner addTimer:self.timer forMode: NSDefaultRunLoopMode];
+    }
+}
+
+- (void)stopTimer {
+    if(self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+}
+
+- (void)timerCallback:(NSTimer *) timer {
+    if(!self) return;
+    
+    [self stringFromEvaluatingJavaScript:@"javascript:console.log(getCurrentPosition())" completion:^(NSString *message) {
+        self.position = [message floatValue];
+    }];
+    
+    [self stringFromEvaluatingJavaScript:@"javascript:console.log(getDuration())" completion:^(NSString *message) {
+        self.duration = [message floatValue];
+    }];
+
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
+    _duration = 0;
+    _volume = 0;
+    _isMuted = false;
+    _position = 0;
 }
 #pragma mark - Player methods
 
 - (void)seek:(float)seekToSeconds{
-    [self stringFromEvaluatingJavaScript:[NSString stringWithFormat:@"javascript:seekVideo(%f)", seekToSeconds]];
+    [self stringFromEvaluatingJavaScript:[NSString stringWithFormat:@"javascript:seekVideo(%f)", seekToSeconds] completion:^(NSString *message) {
+        
+    }];
 }
 - (void)stop{
-    [self stringFromEvaluatingJavaScript:@"javascript:stopVideo()"];
+    [self stringFromEvaluatingJavaScript:@"javascript:stopVideo()" completion:^(NSString *message) {
+        
+    }];
 }
 - (void)play{
-    [self stringFromEvaluatingJavaScript:@"javascript:playVideo()"];
+    [self stringFromEvaluatingJavaScript:@"javascript:playVideo()" completion:^(NSString *message) {
+        
+    }];
 }
 
 - (void)pause{
     // [self notifyDelegateOfYouTubeCallbackUrl:[NSURL URLWithString:[NSString stringWithFormat:@"fbplayer://onStateChange?data=%@", kFBPlayerStatePausedCode]]];
-    [self stringFromEvaluatingJavaScript:@"javascript:pauseVideo()"];
+    [self stringFromEvaluatingJavaScript:@"javascript:pauseVideo()" completion:^(NSString *message) {
+        
+    }];
 }
 
 - (void)mute{
-    [self stringFromEvaluatingJavaScript:@"javascript:muteVideo()"];
+    [self stringFromEvaluatingJavaScript:@"javascript:muteVideo()" completion:^(NSString *message) {
+        
+    }];
 }
 -(void)playerMute:(BOOL)isMute
 {
@@ -76,36 +123,50 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
 {
     return [self isMuted];
 }
-- (void)unmute{
-    [self stringFromEvaluatingJavaScript:@"javascript:unMuteVideo()"];
+- (void)unmute {
+    [self stringFromEvaluatingJavaScript:@"javascript:unMuteVideo()" completion:^(NSString *message) {
+        
+    }];
 }
 
-- (void)setVolume:(float) vol{
-    [self stringFromEvaluatingJavaScript:[NSString stringWithFormat:@"javascript:setVolume(%f)", vol]];
+- (void)setVolume:(float)vol {
+    [self stringFromEvaluatingJavaScript:[NSString stringWithFormat:@"javascript:setVolume(%f)", vol] completion:^(NSString *message) {
+    }];
 }
 
-- (float)getDuration{
-    NSString *returnValue = [self stringFromEvaluatingJavaScript:@"javascript:console.log(getDuration())"];
-    return [returnValue floatValue];
+- (float)getDuration {
+    [self stringFromEvaluatingJavaScript:@"javascript:console.log(getDuration())" completion:^(NSString *message) {
+        self.duration = [message floatValue];
+    }];
+    return _duration;
 }
 
-- (float)getVolume{
-    NSString *returnValue = [self stringFromEvaluatingJavaScript:@"javascript:console.log(getVolume())"];
-    return [returnValue floatValue];
+- (float)getVolume {
+    [self stringFromEvaluatingJavaScript:@"javascript:console.log(getVolume())" completion:^(NSString *message) {
+        self->_volume =  [message floatValue];
+    }];
+    return _volume;
 }
 
-- (BOOL)isMuted{
-    NSString *returnValue = [self stringFromEvaluatingJavaScript:@"javascript:console.log(isMuted())"];
-    return [returnValue boolValue];
+- (BOOL)isMuted {
+    [self stringFromEvaluatingJavaScript:@"javascript:console.log(isMuted())" completion:^(NSString *message) {
+        self.isMuted = [message boolValue];
+    }];
+    return _isMuted;
 }
 
-- (float)getCurrentPosition{
-    NSString *returnValue = [self stringFromEvaluatingJavaScript:@"javascript:console.log(getCurrentPosition())"];
-    return [returnValue floatValue];
+- (float)getCurrentPosition {
+    [self stringFromEvaluatingJavaScript:@"javascript:console.log(getCurrentPosition())" completion:^(NSString *message) {
+        self.position = [message floatValue];
+    }];
+    return _position;
 }
 
 - (BOOL)loadWithVideoId:(nonnull NSString *)videoId withAppId:(nonnull NSString *) appId {
     strAppID = appId;
+    if(!strAppID || [strAppID isEqualToString:@""]) {
+        strAppID = @"258750801975729";
+    }
     return [self loadWithVideoId:videoId playerVars:nil];
 }
 
@@ -126,14 +187,7 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
     [self.webView removeFromSuperview];
     _webView = [self createNewWebView];
     [self addSubview:self.webView];
-    
     NSError *error = nil;
-    //old
-    //    NSString *path = [[NSBundle bundleForClass:[SlikeFBVideoView class]] pathForResource:@"facebook-slike-helper"
-    //                                                                              ofType:@"html"
-    //                                                                         inDirectory:@"ui"];
-    
-    
     NSBundle *nibBundle = [NSBundle slikeNibsBundle];
     NSString * path = [nibBundle pathForResource:@"facebook-slike-helper" ofType:@"html"];
     
@@ -161,9 +215,8 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
     }
     
     [self.webView loadHTMLString:embedHTMLTemplate baseURL: self.originURL];
-    [self.webView setDelegate:self];
-    self.webView.allowsInlineMediaPlayback = YES;
-    self.webView.mediaPlaybackRequiresUserAction = NO;
+    [self.webView setUIDelegate:self];
+    [self.webView setNavigationDelegate:self];
     [self.webView setOpaque:YES];
     self.webView.backgroundColor = [UIColor clearColor];
     
@@ -180,36 +233,52 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
     return YES;
 }
 
-- (void)setWebView:(UIWebView *)webView {
+- (void)setWebView:(WKWebView *)webView {
     _webView = webView;
 }
 
-- (UIWebView *)createNewWebView {
-    UIWebView *webView = [[UIWebView alloc] initWithFrame:self.bounds];
-    webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-    webView.scrollView.scrollEnabled = NO;
-    webView.scrollView.bounces = NO;
+- (WKWebView *)createNewWebView {
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.allowsInlineMediaPlayback = true;
+    configuration.requiresUserActionForMediaPlayback = false;
+    configuration.allowsAirPlayForMediaPlayback = true;
+    configuration.allowsPictureInPictureMediaPlayback = NO;
+    WKWebView *playerWebView = [[WKWebView alloc] initWithFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height) configuration:configuration];
+    playerWebView.opaque = NO;
+    playerWebView.backgroundColor = [UIColor clearColor];
     
-    webView.opaque = YES;
-    webView.backgroundColor = [UIColor clearColor];
+    // Hack: prevent vertical bouncing
+    for (id subview in playerWebView.subviews) {
+        if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
+            ((UIScrollView *)subview).bounces = NO;
+            ((UIScrollView *)subview).scrollEnabled = NO;
+        }
+    }
+    playerWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    playerWebView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+    playerWebView.scrollView.scrollEnabled = NO;
+    playerWebView.scrollView.bounces = NO;
+    
     if ([self.delegate respondsToSelector:@selector(playerViewPreferredWebViewBackgroundColor:)]) {
-        webView.backgroundColor = [self.delegate playerViewPreferredWebViewBackgroundColor:self];
-        if (webView.backgroundColor == [UIColor clearColor]) {
-            webView.opaque = NO;
+        playerWebView.backgroundColor = [self.delegate playerViewPreferredWebViewBackgroundColor:self];
+        if (playerWebView.backgroundColor == [UIColor clearColor]) {
+            playerWebView.opaque = NO;
         }
     }
     
-    return webView;
+    return playerWebView;
 }
 
 - (void)removeWebView {
     [self.webView removeFromSuperview];
+    self.webView.UIDelegate = nil;
+    self.webView.navigationDelegate = nil;
     self.webView = nil;
 }
 
 - (NSString *)stringFromVideoIdArray:(NSArray *)videoIds {
     NSMutableArray *formattedVideoIds = [[NSMutableArray alloc] init];
-    
     for (id unformattedId in videoIds) {
         [formattedVideoIds addObject:[NSString stringWithFormat:@"'%@'", unformattedId]];
     }
@@ -217,8 +286,10 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
     return [NSString stringWithFormat:@"[%@]", [formattedVideoIds componentsJoinedByString:@", "]];
 }
 
-- (NSString *)stringFromEvaluatingJavaScript:(NSString *)jsToExecute {
-    return [self.webView stringByEvaluatingJavaScriptFromString:jsToExecute];
+- (void)stringFromEvaluatingJavaScript:(NSString *)jsToExecute completion:(void(^)(NSString *message))completed {
+    [self.webView evaluateJavaScript:jsToExecute completionHandler:^(NSString *message, NSError * _Nullable error) {
+        completed(message);
+    }];
 }
 
 - (NSString *)stringForJSBoolean:(BOOL)boolValue {
@@ -226,35 +297,35 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
 }
 
 #pragma --
-#pragma mark UIWebviewDelegate
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    
-    if ([request.URL.scheme isEqual:@"fbplayer"]) {
-        [self notifyDelegateOfYouTubeCallbackUrl:request.URL];
-        return NO;
+#pragma mark WKWebviewDelegates
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
+    if ([navigationAction.request.URL.scheme isEqual:@"fbplayer"]) {
+        [self notifyDelegateOfYouTubeCallbackUrl:navigationAction.request.URL];
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
         
     } else {
         if ([self.delegate respondsToSelector:@selector(playerViewDidBecomeReady:)]) {
             [self.delegate playerViewDidBecomeReady:self];
         }
     }
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [self.delegate playerView:self receivedError:kFBPlayerErrorUnknown];
-    
     if (self.initialLoadingView) {
         [self.initialLoadingView removeFromSuperview];
         
     }
 }
-- (void)webViewDidFinishLoad:(UIWebView *)webView
-{
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     float time = [self getDuration];
     [self.delegate playerView:self didPlayTime:time];
 }
+
 + (NSBundle *)frameworkBundle {
     static NSBundle* frameworkBundle = nil;
     static dispatch_once_t predicate;
@@ -270,7 +341,7 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
 /**
  * Private method to handle "navigation" to a callback URL of the format
  * fbplayer://action?data=someData
- * This is how the UIWebView communicates with the containing Objective-C code.
+ * This is how the WKWebView communicates with the containing Objective-C code.
  * Side effects of this method are that it calls methods on this class's delegate.
  *
  * @param url A URL of the format ytplayer://action?data=value.
@@ -316,5 +387,7 @@ NSString static *const kFBPlayerCallbackOnYouTubeIframeAPIFailedToLoad = @"onFac
     
 }
 
-
+- (void)dealloc {
+    [self stopTimer];
+}
 @end

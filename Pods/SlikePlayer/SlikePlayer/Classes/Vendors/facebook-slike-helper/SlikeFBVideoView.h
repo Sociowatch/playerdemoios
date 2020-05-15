@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WKWebView.h>
+#import <WebKit/WebKit.h>
 
 @class SlikeFBVideoView;
 
@@ -73,8 +75,9 @@ typedef NS_ENUM(NSInteger, FBPlayerError) {
 @end
 
 
-@interface SlikeFBVideoView : UIView<UIWebViewDelegate>
-@property(nonatomic, strong, nullable, readonly) UIWebView *webView;
+@interface SlikeFBVideoView : UIView<WKUIDelegate, WKNavigationDelegate>
+@property(nonatomic, strong, readonly) WKWebView * _Nonnull webView;
+
 @property(nonatomic, weak, nullable) id<SlikeFBPlayerViewDelegate> delegate;
 
 - (BOOL)loadWithVideoId:(nonnull NSString *)videoId withAppId:(nonnull NSString *) appId;

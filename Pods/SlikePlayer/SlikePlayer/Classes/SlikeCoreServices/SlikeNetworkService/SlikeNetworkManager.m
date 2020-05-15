@@ -139,14 +139,39 @@ static void TWEndNetworkActivity() {
 {
     strBaseURL =  [[SlikeSharedDataCache sharedCacheManager]slikeBaseUrlString];
     strAnalyticsBaseURL = [[SlikeSharedDataCache sharedCacheManager]slikeAnalyticsBaseURLString];
-    //strAnalyticsBaseURL =  @"http://devslike.indiatimes.com:8081/";
 }
 -(void)updateAnalyticURLsBase:(NSString*)an
 {
     strAnalyticsBaseURL = an;
-    //strAnalyticsBaseURL =  @"http://devslike.indiatimes.com:8081/";
 }
 #pragma mark - Public methods
+- (void)requestURLWithData:(NSURL*)url withData:(NSData*)postData withPostLength:(NSString*)postLength completion:(void(^)(NSData *data,
+                                                                                  NSString *localFilepath,
+                                                                                  BOOL isFromCache,
+                                                                                  NSInteger statusCode,
+                                                                                  NSError *error))completion {
+    if(!url) {
+        completion(nil, nil, NO, 901, SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier], SlikeServiceErrorWrongConfiguration, [NSDictionary dictionaryWithObjectsAndKeys:@"Information", @"message", @"Data not available.", @"description", nil]));
+        return;
+    }
+    
+  
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]
+                                    initWithURL:url
+                                    cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                                    timeoutInterval:kDownloadTimeout];
+    
+    [request setHTTPShouldHandleCookies:isHandleCookies];
+    [request setHTTPMethod:@"POST"];
+
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+                   [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Current-Type"];
+                   [request setHTTPBody:postData];
+    
+    [self sendRequest:request completion:completion];
+}
+
 
 - (void)requestURL:(NSURL*)url type:(NetworkHTTPMethod)method completion:(void(^)(NSData *data,
                                                                                   NSString *localFilepath,
@@ -581,7 +606,6 @@ static void TWEndNetworkActivity() {
     NSString *strLatLong = @"";
     if(config.strLatLong && [config.strLatLong length] == 0) {
         strLatLong = [[SlikeDeviceSettings sharedSettings] getDeviceLocation];
-        
     } else {
         strLatLong = config.strLatLong;
     }
@@ -616,22 +640,18 @@ static void TWEndNetworkActivity() {
     }
     
     if([userInformation length]>0) {
-        
         if(config.gender && config.gender!=nil && config.gender.length>0) {
             userInformation = [NSString stringWithFormat:@"%@&g=%@",userInformation,config.gender];
         }
     } else {
-        
         if(config.gender && config.gender!=nil && config.gender.length>0) {
             userInformation = [NSString stringWithFormat:@"&g=%@",config.gender];
         }
     }
     
-    if(isAdCall)
-    {
+    if(isAdCall) {
         return [NSString stringWithFormat:@"%@&st=%ld&sr=%ld&te=%d&ce=%d&pt=%ld&stt=%ld&t=%d&tg=%@&nt=%ld%@%@&l=%@%@%@&me=%@&cdn=%@&va=%.2f&tpl=%@&av=%@", strHa, (long)streamingInfo.nStartTime, (long)[[SlikeDeviceSettings sharedSettings] getScreenResEnum], 1, [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy == NSHTTPCookieAcceptPolicyNever ? 0 : 1, (long)[streamingInfo getConstantValueForPlayerType], (long)[streamingInfo getCurrentPlayer], 0, @"", (long)[SlikeReachability getNetworkTypeEnum], [config toString], [[SlikeDeviceSettings sharedSettings] getSlikeAnalyticsCache],strLatLong,countyAndCity,userInformation,@"0",[[SlikeDeviceSettings sharedSettings] getM3U8HostName],[[SlikeDeviceSettings sharedSettings] getPlayerViewArea],config.pageTemplate,config.appVersion];
-    }else
-    {
+    }else {
         return [NSString stringWithFormat:@"%@&tit=%ld&tis=%ld&tim=%ld&tsm=%ld&du=%ld&st=%ld&sr=%ld&te=%d&ce=%d&pt=%ld&stt=%ld&t=%d&tg=%@&nt=%ld%@%@&l=%@%@%@&me=%@&cdn=%@&va=%.2f&tpl=%@&av=%@", strHa, tit, tis, tim, tsm,playerDuration, (long)streamingInfo.nStartTime, (long)[[SlikeDeviceSettings sharedSettings] getScreenResEnum], 1, [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy == NSHTTPCookieAcceptPolicyNever ? 0 : 1, (long)[streamingInfo getConstantValueForPlayerType], (long)[streamingInfo getCurrentPlayer], 0, @"", (long)[SlikeReachability getNetworkTypeEnum], [config toString], [[SlikeDeviceSettings sharedSettings] getSlikeAnalyticsCache],strLatLong,countyAndCity,userInformation,@"0",[[SlikeDeviceSettings sharedSettings] getM3U8HostName],[[SlikeDeviceSettings sharedSettings] getPlayerViewArea],config.pageTemplate,config.appVersion];
     }
 }
@@ -644,9 +664,9 @@ static void TWEndNetworkActivity() {
     NSInteger nBitrateEnum = [SlikeUtilities getCBR:nBitrate];
     StreamingInfo *streamingInfo = config.streamingInfo;
     
-    if(config.section && config.section.length>0) {
+    if(config.pageSection && config.pageSection.length>0) {
         
-        NSArray * componentData = [config.section componentsSeparatedByString:@"."];
+        NSArray * componentData = [config.pageSection componentsSeparatedByString:@"."];
         NSString *l1=@"";
         NSString *l2=@"";
         NSString *l3=@"";
@@ -832,19 +852,14 @@ static void TWEndNetworkActivity() {
         else if (analyticInfo.state == SL_VIDEOPLAYED) nStatus = 14;
         else if (analyticInfo.state == SL_PLAYEDPERCENTAGE) nStatus = 15;
         else if (analyticInfo.state == SL_VIDEO_COMPLETED) nStatus = 16;
-        
         if(!analyticInfo.config && !analyticInfo.config.mediaId && [analyticInfo.config.mediaId isEqualToString:@""]) {
             return;
         }
         
-        if(nStatus == 105)
-        {
-            // [self sendDataForVideoRequest:nStatus withConfigModel:analyticInfo.config];
+        if(nStatus == 105){
             nPlayTimeCol = 0;
             nBufferTimeCol = 0;
-            //            return;
         }
-        
         nPlayTimeCol += analyticInfo.nTotalPlayedDuration;
         nBufferTimeCol += analyticInfo.nTotalBufferDuration;
         
@@ -942,6 +957,13 @@ static void TWEndNetworkActivity() {
             }
             
             streamingInfo.strID = [NSString stringWithFormat:@"%@.%@",videoType,mediaUrl];
+           
+        }
+        if((analyticInfo.state == SL_REPLAY &&  streamingInfo.isExternalPlayer && analyticInfo.rid && [analyticInfo.rid length] >0) || (analyticInfo.state == SL_READY &&  streamingInfo.isExternalPlayer && analyticInfo.rid && [analyticInfo.rid length] >0) )
+        {
+            if(analyticInfo.rid && [analyticInfo.rid length] > 0) {
+                          analyticInfo.rid =  streamingInfo.strID;
+                       }
         }
         
         BOOL isYT = NO;
@@ -979,8 +1001,6 @@ static void TWEndNetworkActivity() {
                  }
                  }
                  */
-                
-                
                 [self callSendToServer:nStatus withPlayer:player withConfigModel:analyticInfo.config withPD:self->nPlayTimeCol-self->nBufferTimeCol withDuration:streamingInfo.nEndTime withBufferDuration:self->nBufferTimeCol withrpc:analyticInfo.rpc with_rid:analyticInfo.rid withCurrentPlayerTime:pCurrentTime  withCompletionBlock:^(id result, NSError *error) {
                     if(result)
                     {
@@ -1002,8 +1022,6 @@ static void TWEndNetworkActivity() {
                 self->nBufferTimeCol = 0;
             });
         }
-        
-        
     }
 }
 - (void)sendAdLogToServer:(SlikeConfig *) config withStatus:(NSInteger)nStatus withAdID:(NSString *)adID withAdCampaign:(NSString *)strID withRetryCount:(NSInteger)retryCount withMediaDuration:(NSInteger) dur withMediaPosition:(NSInteger)pos withAdDuration:(NSInteger)adDur andWithAdPosition:(NSInteger) adPos DeviceVolume:(BOOL)isOn DeviceVolumeLevel:(float)vl adMoreInformation:(NSString*)adMoreInfo adLoadError:(NSString*)errDespriction addType:(NSInteger)adt strIu:(NSString*)iu strAdResion:(NSString*)adResionType withPreFetchInfo:(BOOL)isPreFetched withPFID:(NSString*)pfid withAdProvider:(NSString*)adProvider withCompletionBlock:(SlikeNetworkManagerCompletionBlock) completionBlock {
@@ -1061,13 +1079,9 @@ static void TWEndNetworkActivity() {
         
     }else
     {
-        if(streamingInfo.isExternalPlayer)
-        {
-            
+        if(streamingInfo.isExternalPlayer) {
             analyticInfo = [NSString stringWithFormat:@"adstats?%@vai=%@&src=%ld&k=%@&atl=%ld&atc=%ld&vp=%ld&adu=%ld&cp=%ld&rt=%ld&evt=%ld&ci=%@%@&m=%i&err=%@&atr=0&adt=%li&s=%@&vl=%f%@&usid=%@&sg=%@&iu1=%@&iu2=%@&iu3=%@&ha=%@&pf=%d&pfid=%@", self.strPrefix, adID,(long)[self getSrcType:streamingInfo.strID],streamingInfo.strID, atl, atc, (long)pos, (long)adDur, (long)adPos, (long)retryCount, (long)nStatus, strID, [self getVARegularString:config withAdCall:YES],isOn,errDespriction == nil ? @"" : errDespriction,(long)adt,adProvider,vl*100,adMoreInfo,[[SlikeDeviceSettings sharedSettings] getUserSession : config],sg,iu1,iu2,iu3,adResionType,isPreFetched, pfid];
-            
-        }else
-        {
+        }else {
             analyticInfo = [NSString stringWithFormat:@"adstats?%@vai=%@&k=%@&atl=%ld&atc=%ld&vp=%ld&adu=%ld&cp=%ld&rt=%ld&evt=%ld&ci=%@%@&m=%i&err=%@&atr=0&adt=%li&s=%@&vl=%f%@&usid=%@&sg=%@&iu1=%@&iu2=%@&iu3=%@&ha=%@&pf=%d&pfid=%@", self.strPrefix, adID, streamingInfo.strID, atl, atc, (long)pos, (long)adDur, (long)adPos, (long)retryCount, (long)nStatus, strID, [self getVARegularString:config withAdCall:YES],isOn,errDespriction == nil ? @"" : errDespriction,(long)adt,adProvider,vl*100,adMoreInfo,[[SlikeDeviceSettings sharedSettings] getUserSession : config],sg,iu1,iu2,iu3,adResionType,isPreFetched, pfid];
         }
     }
@@ -1235,7 +1249,7 @@ static void TWEndNetworkActivity() {
         analyticInfo = [NSString stringWithFormat:@"%@&rid=%@",analyticInfo,rid];
     }
     
-    SlikeDLog(@"analyticInfo %@" , analyticInfo);
+    SlikeDLog(@"analyticInfo Snajay %@" , analyticInfo);
     
     if(playerStatus == 1)
     {
@@ -1573,18 +1587,21 @@ static void TWEndNetworkActivity() {
             if (![self.encodedString isValidString] ) {
                 return;
             }
-        
-            self.loadAnalyticsDataURL = [[NSString alloc] initWithFormat:@"%@multistats?%@", strAnalyticsBaseURL, self.encodedString];
             
-            self.loadAnalyticsDataURL = [self.loadAnalyticsDataURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//            self.loadAnalyticsDataURL = [[NSString alloc] initWithFormat:@"%@multistats?%@", strAnalyticsBaseURL, self.encodedString];
+            
+            self.loadAnalyticsDataURL = [self.encodedString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             [self removeAnalyticFileFromLocal];
             
 //            if(!ENABLE_LOG) {
 //                //NSLog(@"urlurlurlurlurl-> %@",url);
 //            }
-            [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:self.loadAnalyticsDataURL] type:NetworkHTTPMethodPOST completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
+          NSData *postData = [self.loadAnalyticsDataURL dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+         NSString  *postLength = [NSString stringWithFormat:@"%ld",(unsigned long)[postData length]];
+            if(!postData) return;
+            [[SlikeNetworkManager defaultManager] requestURLWithData:[NSURL URLWithString:[NSString stringWithFormat:@"%@multistats",strAnalyticsBaseURL]] withData:postData withPostLength:postLength completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
                 
-                SlikeDLog(@"status code -> %ld",(long)statusCode);
+                NSLog(@"status code -> %ld",(long)statusCode);
                 if(statusCode != 200) {
                     [self writeAnalyticsInDocumnet:strData];
                     self->isServerUp = NO;
@@ -1608,7 +1625,6 @@ static void TWEndNetworkActivity() {
                 }
                 
             }];
-            
         }
     } else {
         
@@ -1846,12 +1862,13 @@ static void TWEndNetworkActivity() {
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",baseUrl, analyticInfoString];
     requestUrl = [requestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
+    SlikeDLog(@"analyticInfo %@",requestUrl);
+
 //    if(ENABLE_LOG)
 //    {
 //        // NSLog(@"Sanajay_Ad_Log  Pre %@",analyticInfoString);
 //    }
-//    
+//
     [[SlikeNetworkManager defaultManager] requestURL:[NSURL URLWithString:requestUrl] type:NetworkHTTPMethodGET completion:^(NSData *data, NSString *localFilepath, BOOL isFromCache, NSInteger statusCode, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{

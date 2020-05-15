@@ -9,7 +9,6 @@
 #import "AppDelegate.h"
 #define apikey @"test165ios5aps9gok6z"
 #import <SlikePlayer/SlikePlayer.h>
-#import <IQKeyboardManager.h>
 
 @interface AppDelegate ()
 
@@ -32,9 +31,6 @@
     if ([apikey length]> 0) {
         [[SlikePlayerSettings playerSettingsInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
     }
-//    [[SlikePlayerSettings playerSettingsInstance] setAdPriority:[NSArray arrayWithObjects:@"SL_IMA",@"SL_FAN", nil] withSoftCancellation:YES];
-    [IQKeyboardManager sharedManager].enable = YES;
-
     return YES;
 }
 

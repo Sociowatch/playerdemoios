@@ -8,9 +8,9 @@
 
 
 #import "ISlikePlayer.h"
-#import "YTPlayerView.h"
+#import "SLWKYTPlayerView.h"
 
-@interface NewYTViewController : UIViewController<YTPlayerViewDelegate, ISlikePlayer>
+@interface NewYTViewController : UIViewController<SLWKYTPlayerViewDelegate, ISlikePlayer>
 {
     NSInteger nHideTime;
     BOOL isNavigationControllerAvailable;
@@ -39,7 +39,8 @@
     NSInteger lastPlayerPostion;
     
 }
-@property(nonatomic, strong) IBOutlet YTPlayerView *playerView;
+@property (weak, nonatomic) IBOutlet UILabel *noNetworkLbl;
+@property(nonatomic, strong) IBOutlet SLWKYTPlayerView *playerView;
 @property(nonatomic, strong) NSTimer *timer;
 @property (nonatomic, strong) IBOutlet UIButton *btnClose;
 

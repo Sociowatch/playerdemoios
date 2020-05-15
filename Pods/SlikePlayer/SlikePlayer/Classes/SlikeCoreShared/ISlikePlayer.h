@@ -300,10 +300,20 @@ typedef void(^onConfigUpdateChange)(id slikeResponseModel, NSError *parseError);
 /**
  Play audio strem
  
- @param audioTrackArray slike audio array
+ @param mediaTrackArray slike audio array
  @param itemIndex item index to play in this list;
  */
-- (void)playAudioStreamWithObject:(NSArray<id> *)audioTrackArray startItemIndex:(NSInteger) itemIndex;
+- (void)playMedia:(NSArray<id> *)mediaTrackArray startItemIndex:(NSInteger) itemIndex;
+
+- (NSArray *_Nullable)getMediaQueue;
+
+- (NSInteger)getCurrentMediaIndex;
+
+@property (nonatomic, copy, nullable) void(^mediaIndexDidChanged)(NSArray * _Nullable mediaQueue, NSInteger itemIndex);
+
+@property (nonatomic, copy, nullable) void(^mediaQueueDidChanged)(NSArray * _Nullable mediaQueue , NSInteger itemIndex);
+
+
 @end
 
 @protocol ICueHandler<NSObject>

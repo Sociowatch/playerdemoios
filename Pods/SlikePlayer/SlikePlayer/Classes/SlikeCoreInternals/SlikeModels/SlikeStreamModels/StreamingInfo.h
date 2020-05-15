@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, SLKMediaPlayerStreamType) {
 
 @property (nonatomic, assign)BOOL preRollEnabled;
 @property (nonatomic, assign)BOOL midRollEnabled;
+@property(nonatomic,strong) NSArray *midroll_arr;
 @property (nonatomic, assign)BOOL postRollEnabled;
 @property (nonatomic, strong)Stream *currentStream;
 

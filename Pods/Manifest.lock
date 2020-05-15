@@ -1,41 +1,59 @@
 PODS:
-  - FBAudienceNetwork (5.6.0):
+  - FBAudienceNetwork (5.8.0):
     - FBSDKCoreKit/Basics (>= 5.6.0)
-  - FBSDKCoreKit/Basics (5.8.0)
-  - GoogleAds-IMA-iOS-SDK (3.10.1)
-  - IQKeyboardManager (6.5.3)
-  - SlikePlayer (2.7.8):
+  - FBSDKCoreKit/Basics (7.0.0)
+  - FLAnimatedImage (1.0.12)
+  - GoogleAds-IMA-iOS-SDK (3.11.3)
+  - IQKeyboardManager (6.5.5)
+  - MBProgressHUD (1.2.0)
+  - SlikePlayer (2.9.5):
     - FBAudienceNetwork
-    - GoogleAds-IMA-iOS-SDK (~> 3.10.1)
+    - GoogleAds-IMA-iOS-SDK (~> 3.11.0)
+  - SlikePodcast (1.1.2):
+    - FLAnimatedImage (~> 1.0)
+    - SlikePlayer (= 2.9.5)
 
 DEPENDENCIES:
   - IQKeyboardManager
-  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.7.8`)
+  - MBProgressHUD (~> 1.2.0)
+  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.9.5`)
+  - SlikePodcast (from `https://bitbucket.org/times_internet/SlikePodcast.git`, tag `1.1.2`)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - FBAudienceNetwork
     - FBSDKCoreKit
+    - FLAnimatedImage
     - GoogleAds-IMA-iOS-SDK
     - IQKeyboardManager
+    - MBProgressHUD
 
 EXTERNAL SOURCES:
   SlikePlayer:
     :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
-    :tag: 2.7.8
+    :tag: 2.9.5
+  SlikePodcast:
+    :git: https://bitbucket.org/times_internet/SlikePodcast.git
+    :tag: 1.1.2
 
 CHECKOUT OPTIONS:
   SlikePlayer:
     :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
-    :tag: 2.7.8
+    :tag: 2.9.5
+  SlikePodcast:
+    :git: https://bitbucket.org/times_internet/SlikePodcast.git
+    :tag: 1.1.2
 
 SPEC CHECKSUMS:
-  FBAudienceNetwork: 1ea63543665445a3a5b4a059e8210a343b6ab3c1
-  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
-  GoogleAds-IMA-iOS-SDK: 0e37ab83b22075ad631a70dcba9528cb246c92bf
-  IQKeyboardManager: c2f901164d56807a35788483584d09fa69192e8e
-  SlikePlayer: 7e24efc3350d235b778437d290e451f700f19ea1
+  FBAudienceNetwork: 98c125767300048ad46c756680644f4ecb7c4040
+  FBSDKCoreKit: 8ad31cd09f793d1d7e84cf20fd6cebfe80ad318d
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  GoogleAds-IMA-iOS-SDK: 134b35758455576aaa6b3d2d3146699dcf8af4f1
+  IQKeyboardManager: 3a8b9e603f8b0eeaf5f096a1f2b2cfcf121992ef
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
+  SlikePlayer: deacf58ba0b904bbd35678eb871d8b17b0404c37
+  SlikePodcast: bc90be282bb7c95450bb070ef8b1cba73a5114a5
 
-PODFILE CHECKSUM: 46fb99f2c527d4d4d6f354ea8f6b3844aeac9489
+PODFILE CHECKSUM: 3eb46947f15c91f07a7d64dbaa747d48b83adbb5
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1

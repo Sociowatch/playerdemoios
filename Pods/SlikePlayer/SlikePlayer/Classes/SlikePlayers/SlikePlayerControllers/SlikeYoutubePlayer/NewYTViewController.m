@@ -13,12 +13,12 @@
 #import "EventManager.h"
 #import "SlikePlayerConstants.h"
 #import "EventManagerProtocol.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikeMaterialDesignSpinner.h"
 #import "UIImageView+SlikePlaceHolderImageView.h"
 
 @interface NewYTViewController ()<EventManagerProtocol> {
-
+    
     NSString *strMovieID;
     NSString *strMovieTitle;
     NSInteger nDuration, nBufferingTime;
@@ -28,6 +28,9 @@
 
 @property (weak, nonatomic) IBOutlet SlikeMaterialDesignSpinner *loadingView;
 @property (weak, nonatomic) IBOutlet UIImageView *placeholderImageView;
+@property (assign, nonatomic) float mediaDuration;
+@property (assign, nonatomic) float mediaPosition;
+
 @end
 
 @implementation NewYTViewController
@@ -40,9 +43,18 @@
 
 - (void)startTimer {
     if(self.playerView) {
-        if(self.playerView.playerState != kYTPlayerStatePlaying) return;
+        __weak typeof(self) _self = self;
+        [self.playerView getPlayerState:^(SLWKYTPlayerState playerState, NSError * _Nullable error) {
+            if (playerState != kSLWKYTPlayerStatePlaying) {
+                return;
+            } else {
+                [_self createTimer];
+            }
+        }];
     }
-    
+}
+
+- (void)createTimer {
     [self stopTimer];
     if(self.timer == nil) {
         self.timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(timerCallback:) userInfo:nil repeats:YES];
@@ -50,6 +62,7 @@
         [runner addTimer:self.timer forMode: NSDefaultRunLoopMode];
     }
 }
+
 
 - (void)stopTimer {
     if(self.timer != nil) {
@@ -67,8 +80,26 @@
     }
 }
 
--(void) timerCallback:(NSTimer *) timer {
+- (void)updatePosition {
+    [self.playerView getDuration:^(NSTimeInterval duration, NSError * _Nullable error) {
+        if (!error) {
+            self->_mediaDuration = duration;
+        }
+    }];
+    
+    if(self.playerView){
+        [self.playerView getCurrentTime:^(float currentTime, NSError * _Nullable error) {
+            if (!error) {
+                self->_mediaPosition = currentTime;
+            }
+        }];
+    }
+}
+
+- (void)timerCallback:(NSTimer *) timer {
     if(!self.playerView) return;
+    
+    [self updatePosition];
     /**
      kYTPlayerStateUnstarted,
      kYTPlayerStateEnded,
@@ -78,37 +109,41 @@
      kYTPlayerStateQueued,
      kYTPlayerStateUnknown
      */
-    if(self.playerView.playerState == kYTPlayerStatePlaying) {
-        playerStatus = SL_PLAYING;
-        [self sendPlayerStatus:playerStatus];
-        [self sendData:playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
-        nDuration++;
+    __weak typeof(self) _self = self;
+    [self.playerView getPlayerState:^(SLWKYTPlayerState playerState, NSError * _Nullable error) {
         
-    } else if(self.playerView.playerState == kYTPlayerStateBuffering) {
-        nBufferingTime++;
-        playerStatus = SL_BUFFERING;
-    }
-    
-    //    if(nDuration > 30)
-    if([[SlikeReachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable && playerStatus == SL_BUFFERING)
-    {
-        BOOL doesContain = [self.view.subviews containsObject:self.noNetworkWindow];
-        if(!doesContain)
-        {
-            [self.view addSubview:self.noNetworkWindow];
-            self.noNetworkWindow.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
+        if(playerState == kSLWKYTPlayerStatePlaying) {
+            self->playerStatus = SL_PLAYING;
+            [_self sendPlayerStatus:self->playerStatus];
+            [_self sendData:self->playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
+            self->nDuration++;
+            
+        } else if(playerState == kSLWKYTPlayerStateBuffering) {
+            self->nBufferingTime++;
+            self->playerStatus = SL_BUFFERING;
         }
-    }
-    else
-    {
-        BOOL doesContain = [self.view.subviews containsObject:self.noNetworkWindow];
-        if(doesContain)
+        
+        //    if(nDuration > 30)
+        if([[SlikeReachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable && self->playerStatus == SL_BUFFERING)
         {
-            [self.noNetworkWindow removeFromSuperview];
+            BOOL doesContain = [_self.view.subviews containsObject:_self.noNetworkWindow];
+            if(!doesContain)
+            {
+                [_self.view addSubview:self.noNetworkWindow];
+                _self.noNetworkWindow.frame = CGRectMake(_self.view.frame.origin.x, _self.view.frame.origin.y, _self.view.frame.size.width, _self.view.frame.size.height);
+            }
         }
-    }
-    [self sendData:playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
-    
+        else
+        {
+            BOOL doesContain = [_self.view.subviews containsObject:_self.noNetworkWindow];
+            if(doesContain)
+            {
+                [_self.noNetworkWindow removeFromSuperview];
+            }
+        }
+        [_self sendData:self->playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
+        
+    }];
 }
 
 - (void)playerWillExitFullscreen:(NSNotification *)notification {
@@ -124,10 +159,15 @@
 }
 
 - (void)viewDidLoad {
-    
     [super viewDidLoad];
+    
+    _mediaDuration = 0;
+    _mediaPosition = 0;
+    
+    self.noNetworkLbl.text = [SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr;
+    
     _errorLabel.text = @"";
-     _errorLabel.alpha = 0;
+    _errorLabel.alpha = 0;
     [self.btnClose setImage:[UIImage imageNamed:@"player_closebtn" inBundle:[NSBundle slikeImagesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
     [self.btncloseInternet setImage:[UIImage imageNamed:@"player_closebtn" inBundle:[NSBundle slikeImagesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
     
@@ -194,15 +234,15 @@
         playInline = 0;
     }
     [self.playerView loadWithVideoId:strID playerVars:@{
-                                                        @"playsinline" : @(playInline),
-                                                        @"modestbranding" : @1,
-                                                        @"rel" : @0,
-                                                        @"controls":self.isNativeControls ? @1
-                                                        : @0 ,
-                                                        @"showinfo" : @0,
-                                                         @"autoplay" :self.slikeConfig.isAutoPlay ? @1 : @0,
-                                                        @"origin" : @"http://www.youtube.com"
-                                                        }];
+        @"playsinline" : @(playInline),
+        @"modestbranding" : @1,
+        @"rel" : @0,
+        @"controls":self.isNativeControls ? @1
+        : @0 ,
+        @"showinfo" : @0,
+        @"autoplay" :self.slikeConfig.isAutoPlay ? @1 : @0,
+        @"origin" : @"http://www.youtube.com"
+    }];
 }
 
 - (CGRect) adjustDimenAfterRoatation:(CGRect) theFrame {
@@ -236,11 +276,11 @@
 
 #pragma --
 #pragma mark YTPlayerViewDelegate
-- (nonnull UIColor *)playerViewPreferredWebViewBackgroundColor:(nonnull YTPlayerView *)playerView {
+- (nonnull UIColor *)playerViewPreferredWebViewBackgroundColor:(nonnull SLWKYTPlayerView *)playerView {
     return [UIColor clearColor];
 }
 
-- (void)playerViewDidBecomeReady:(YTPlayerView *)playerView
+- (void)playerViewDidBecomeReady:(SLWKYTPlayerView *)playerView
 {
     SlikeDLog(@"The YT player is ready to play.");
     playerStatus = SL_START;
@@ -250,12 +290,11 @@
     [_loadingView stopAnimating];
     [self setVideoPlaceHolder:NO];
 }
-- (void)playerView:(YTPlayerView *)playerView didChangeToState:(YTPlayerState)state
+
+- (void)playerView:(SLWKYTPlayerView *)playerView didChangeToState:(SLWKYTPlayerState)state
 {
-    
-    switch (state)
-    {
-        case kYTPlayerStatePlaying:
+    switch (state){
+        case kSLWKYTPlayerStatePlaying:
             SlikeDLog(@"The YT player playback is started.");
             
             isPlaying = YES;
@@ -265,48 +304,46 @@
                 playerStatus = SL_REPLAY;
                 [self sendPlayerStatus:playerStatus];
                 [self sendData:playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
-
+                
             }
             else
             {
-                SlikeDLog(@"%ld",(long)lastPlayerPostion);
-                SlikeDLog(@"%ld",(long)self.playerView.currentTime);
-                SlikeDLog(@"%f",self.playerView.currentTime -lastPlayerPostion);
                 
-                float playerDiff = self.playerView.currentTime -lastPlayerPostion;
+                // [playerView getCurrentTime:^(float currentTime, NSError * _Nullable error) {
+                
+                float currentTime = _mediaPosition;
+                float playerDiff = currentTime - self->lastPlayerPostion;
                 if(playerDiff<0)
                 {
                     playerDiff = -playerDiff;
                 }
                 
                 
-                if(lastPlayerPostion !=  self.playerView.currentTime && lastPlayerPostion!=0 && playerStatus ==SL_PAUSE && playerDiff>2.0)
-                {
+                if(self->lastPlayerPostion !=  currentTime && self->lastPlayerPostion!=0 && self->playerStatus ==SL_PAUSE && playerDiff>2.0) {
                     SlikeDLog(@"Seeked");
-                    playerStatus = SL_SEEKED;
-                    [self sendPlayerStatus:playerStatus];
-                    [self sendData:playerStatus forced:YES withBehaviorEvent:SlikeUserBehaviorEventNone];
+                    self->playerStatus = SL_SEEKED;
+                    [self sendPlayerStatus:self->playerStatus];
+                    [self sendData:self->playerStatus forced:YES withBehaviorEvent:SlikeUserBehaviorEventNone];
                     return;
-                }else
-                {
-                    SlikeDLog(@"%ld",(long)lastPlayerPostion);
-                    SlikeDLog(@"%ld",(long)self.playerView.currentTime);
                     
+                } else {
+                    SlikeDLog(@"%ld",(long)self->lastPlayerPostion);
                     SlikeDLog(@"Not Seeked");
                     
                 }
                 
-                playerStatus = SL_PLAY;
-                [self sendPlayerStatus:playerStatus];
+                self->playerStatus = SL_PLAY;
+                [self sendPlayerStatus:self->playerStatus];
                 if(self.isUserPaused)
-                    [self sendData:playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventPlay];
-                else  [self sendData:playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
+                    [self sendData:self->playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventPlay];
+                else  [self sendData:self->playerStatus forced:NO withBehaviorEvent:SlikeUserBehaviorEventNone];
+                
+                // }];
                 
                 
             }
             break;
-        case kYTPlayerStatePaused:
-            
+        case kSLWKYTPlayerStatePaused:
             
             if(playerStatus == SL_PAUSE || playerStatus == SL_SEEKED)
             {
@@ -326,7 +363,7 @@
             [self stopTimer];
             self.isUserPaused =  YES;
             break;
-        case kYTPlayerStateEnded:
+        case kSLWKYTPlayerStateEnded:
             isPlaying = NO;
             SlikeDLog(@"The YT player playback is done. Means competed");
             playerStatus = SL_COMPLETED;
@@ -336,7 +373,7 @@
             
             //            [self clbClose:nil];
             break;
-        case kYTPlayerStateBuffering:
+        case kSLWKYTPlayerStateBuffering:
             
             if(playerStatus == SL_PAUSE )
             {
@@ -355,37 +392,37 @@
             }
             
             break;
-        case kYTPlayerStateQueued:
-        case kYTPlayerStateUnknown:
+        case kSLWKYTPlayerStateQueued:
+        case kSLWKYTPlayerStateUnknown:
             break;
         default:
             break;
     }
     
 }
-- (void)playerView:(YTPlayerView *)playerView didChangeToQuality:(YTPlaybackQuality)quality
+- (void)playerView:(SLWKYTPlayerView *)playerView didChangeToQuality:(SLWKYTPlaybackQuality)quality
 {
     SlikeDLog(@"The YT player playback quality is changed to (%ld).", (long)quality);
 }
-- (void)playerView:(YTPlayerView *)playerView receivedError:(YTPlayerError)error
+- (void)playerView:(SLWKYTPlayerView *)playerView receivedError:(SLWKYTPlayerError)error
 {
     [self sendPlayerStatus:SL_ERROR];
     isPlaying = NO;
     NSString *strError;
     switch (error) {
-        case kYTPlayerErrorInvalidParam:
+        case kSLWKYTPlayerErrorInvalidParam:
             strError = @"Invalid parameter while playing video.";
             break;
-        case kYTPlayerErrorHTML5Error:
+        case kSLWKYTPlayerErrorHTML5Error:
             strError = @"HTML5 error while playing video.";
             break;
-        case kYTPlayerErrorVideoNotFound:
+        case kSLWKYTPlayerErrorVideoNotFound:
             strError = @"Video not found. Please again later.";
             break;
-        case kYTPlayerErrorNotEmbeddable:
+        case kSLWKYTPlayerErrorNotEmbeddable:
             strError = @"The video is not possible to embed.";
             break;
-        case kYTPlayerErrorUnknown:
+        case kSLWKYTPlayerErrorUnknown:
             strError = @"Playback is failed due to some unknown error.";
             break;
         default:
@@ -394,7 +431,7 @@
     SlikeDLog(@"The YT player playback getting error (%@).", strError);
     if(strError) {
         //_errorLabel.alpha = 1;
-       // _errorLabel.text = @"Video not available";
+        // _errorLabel.text = @"Video not available";
         //[SlikeUtilities showAlert:@"" withTitle:@"Playback failed" withController:self];
         //[[SlikePlayer getInstance] stopPlayer];
     }
@@ -441,13 +478,11 @@
 
 
 - (NSUInteger)getPosition {
-    if(self.playerView) return [self.playerView currentTime]*1000;
-    else return 0;
+    return _mediaPosition *1000;
 }
--(NSUInteger) getDuration
-{
-    if(self.playerView) return [self.playerView duration]*1000;
-    return 0;
+
+- (NSUInteger)getDuration {
+    return _mediaDuration *1000;
 }
 
 -(NSUInteger) getBufferTime {
@@ -690,7 +725,7 @@
         //
         ///
     }
-    EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:behaviorEvent withPayload:nil];
+    SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:behaviorEvent withPayload:nil];
     eventModel.isImmediateDispatch = forced;
     eventModel.slikeConfigModel = self.slikeConfig;
     [[EventManager sharedEventManager]dispatchEvent:MEDIA playerState:playerState dataPayload:@{kSlikeEventModelKey:eventModel} slikePlayer:self];

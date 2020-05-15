@@ -6,7 +6,7 @@
 //
 
 #import "EventManager.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikeGlobals.h"
 #import "ISlikePlayer.h"
 #import "EventManagerProtocol.h"
@@ -168,6 +168,11 @@
             }
             
         } else if (eventType == AD) {
+            if(progressInfo.adStatusInfo.isPrefetchRequest)
+            {
+                self.callBackHandler(eventType, SL_READY, progressInfo);
+                self.callBackHandler(eventType, SL_LOADED, progressInfo);
+            }
             self.callBackHandler(eventType, state, progressInfo);
             
         }  if (eventType == CONTROLS) {

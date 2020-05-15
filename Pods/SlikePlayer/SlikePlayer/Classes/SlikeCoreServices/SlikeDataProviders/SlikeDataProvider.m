@@ -73,7 +73,7 @@
     [[SlikeNetworkInterface sharedNetworkInteface]performGetServiceRequest:[NSURL URLWithString:configURL] withCompletionBlock:^(id responseData, NSError *error) {
         
         if(error) {
-            completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+            completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
             return;
         }
         
@@ -108,18 +108,18 @@
 - (NSError *)_isConfigInstanceValid:(SlikeConfig *)slikeConfigModel   {
     
     if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
-        return SlikeServiceCreateError(SlikeServiceErrorNoNetworkAvailable, NO_NETWORK);
+        return SlikeServiceCreateError(SlikeServiceErrorNoNetworkAvailable, [SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr);
     }
     
     if(!slikeConfigModel) {
-        return SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, INSUFFICIENT_INFORMATION);
+        return SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.missingInfoErr);
     }
     else if(!slikeConfigModel && [slikeConfigModel.channel isEqualToString:@""]) {
-        return SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, INSUFFICIENT_INFORMATION);
+        return SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.missingInfoErr);
         
     }else if ([[SlikeDeviceSettings sharedSettings] getKey] == nil || [[[SlikeDeviceSettings sharedSettings] getKey] isKindOfClass:[NSNull class]] || [[[SlikeDeviceSettings sharedSettings] getKey] length] ==0) {
         
-        return SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorInvalidApiKey, @{NSLocalizedDescriptionKey:INVALID_API_KEY});
+        return SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorInvalidApiKey, @{NSLocalizedDescriptionKey:[SlikePlayerSettings playerSettingsInstance].slikestrings.apiKeyErr});
     }
     return nil;
 }
@@ -147,17 +147,17 @@
         if(error) {
             
             if(![SlikeNetworkMonitor sharedSlikeNetworkMonitor]) {
-                completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorNetworkConnectionLost, NETWORK_ERROR));
+                completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorNetworkConnectionLost, [SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr));
             }
             else  {
-                completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorInvalidMediaId, NO_VIDEO));
+                completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorInvalidMediaId, [SlikePlayerSettings playerSettingsInstance].slikestrings.videoUnAvailableErr));
             }
         } else {
             
             if(responseStreamData != nil) {
                 [self _parseSlikeStreamData:responseStreamData configInfoData:configDataDict playerConfig:slikeConfigModel resultBlock:completionHandler];
             } else {
-                completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+                completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
             }
         }
     }];
@@ -205,6 +205,11 @@
     NSDictionary *configJsonDict = [SlikeUtilities jsonDataToDictionary:responseData];
     NSDictionary *dictSettings = [configJsonDict dictionaryForKey:@"settings"];
     if (dictSettings) {
+        NSString *analyticsUrlString = [dictSettings stringForKey:@"analytics-url"];
+          if(analyticsUrlString != nil) {
+              [[SlikeSharedDataCache sharedCacheManager]updateSlikeAnalyticsBaseUrl:analyticsUrlString];
+          }
+        
     NSString *gaIdString =  [dictSettings stringForKey:@"gaId"];
     if(gaIdString) {
         [SlikeDeviceSettings sharedSettings].gaId = gaIdString;
@@ -223,7 +228,7 @@
     }
     
     [[SlikeSharedDataCache sharedCacheManager]cacheSlikeConfigData:responseData];
-    [parser parsePrefetchedAds:responseData resultBlock:^(id response, NSError *parseError) {
+    [parser parsePrefetchedAds:responseData forAdNode:[SlikePlayerSettings playerSettingsInstance].prefetchNode resultBlock:^(id response, NSError *parseError) {
         if (parseError) {
             completionHandler(nil, parseError);
         } else {
@@ -243,7 +248,7 @@
     [[SlikeNetworkInterface sharedNetworkInteface]performGetServiceRequest:[NSURL URLWithString:streamURL] withCompletionBlock:^(id responseStreamData, NSError *error) {
         
         if(error || responseStreamData ==nil) {
-            completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorRequestDataError, ERR_EMPTY_RESPONSE));
+            completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorRequestDataError, [SlikePlayerSettings playerSettingsInstance].slikestrings.emptyResponseErr));
         } else {
             
             SlikeDataParser * parser = [SlikeDataParser slikeDataParser];
@@ -269,7 +274,7 @@
         [self _parseAndUpdateSlikeConfigModel:slikeConfigModel sourceData:slikeConfigData resultBlock:^(NSDictionary *configDataDict, NSError *errExists) {
             
             if (errExists) {
-                completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorRequestDataError, ERR_EMPTY_RESPONSE));
+                completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorRequestDataError, [SlikePlayerSettings playerSettingsInstance].slikestrings.emptyResponseErr));
                 
             } else {
                 
@@ -278,7 +283,7 @@
                 [self _parseSlikeStreamData:cachedStreamData configInfoData:configDataDict playerConfig:slikeConfigModel resultBlock:^(id responseObject, NSError *errExists) {
                     
                     if (errExists) {
-                        completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorRequestDataError, ERR_EMPTY_RESPONSE));
+                        completionHandler(nil, SlikeServiceCreateError(SlikeServiceErrorRequestDataError, [SlikePlayerSettings playerSettingsInstance].slikestrings.emptyResponseErr));
                     } else {
                         completionHandler(responseObject, nil);
                     }
@@ -297,6 +302,13 @@
  @param completionHandler - Completion handler
  */
 - (void)downloadAudioPlaylist:(NSString *)slikeIds resultBlock:(SlikeDataProviderCompletionBlock)completionHandler  {
+    
+    NSData *slikeConfigData = [[SlikeSharedDataCache sharedCacheManager]cachedSlikeConfigData];
+     if (!slikeConfigData) {
+         completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
+                   return;
+     }
+       
     
     NSString *strBaseURL = [[SlikeSharedDataCache sharedCacheManager]slikeBaseUrlString];
     NSString *downloadUrl = [NSString stringWithFormat:@"%@feed/playerconfig/%@/r001/%@.json", strBaseURL, @"beta", [[SlikeDeviceSettings sharedSettings] getKey]];
@@ -398,10 +410,7 @@
     
     NSString *strBaseURL =  [[SlikeSharedDataCache sharedCacheManager]slikeBaseUrlString];
     
-    strBaseURL = @"http://devslike.indiatimes.com:8081";
-    NSString *playlistURL = [NSString stringWithFormat:@"%@/feed/playlist?sids=%@", strBaseURL,playlistSuffix];
-    
-    playlistURL = @"http://videoplayer.indiatimes.com/dev/klug-playlist.json";
+    NSString *playlistURL = [NSString stringWithFormat:@"%@feed/playlist?sids=%@", strBaseURL,playlistSuffix];
     [[SlikeNetworkInterface sharedNetworkInteface]performGetServiceRequest:[NSURL URLWithString:playlistURL] withCompletionBlock:^(id responseData, NSError *error) {
         
         if(!error && responseData) {
@@ -409,7 +418,7 @@
             completionBlock(playlistJsonDict, nil);
             
         } else {
-            completionBlock(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+            completionBlock(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
         }
     }];
 }
@@ -448,7 +457,7 @@
             [[SlikeSharedDataCache sharedCacheManager]cacheSlikeConfigData:responseData];
             completionHandler(configJsonDict, nil);
         } else {
-            completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+            completionHandler(nil ,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
         }
     }];
 }

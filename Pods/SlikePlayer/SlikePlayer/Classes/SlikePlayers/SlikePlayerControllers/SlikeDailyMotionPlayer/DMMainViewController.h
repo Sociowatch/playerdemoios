@@ -32,7 +32,6 @@
 }
 
 @property (weak, nonatomic) IBOutlet DMPlayerViewController *playerView;
-@property (strong, nonatomic) IBOutlet UIView *noNetworkWindow;
 @property (nonatomic,assign) BOOL isNativeControls;
 
 @end

@@ -10,6 +10,7 @@
 #import "SlikeGlobals.h"
 #import "ISlikePlayerControl.h"
 #import "StreamingInfo.h"
+#import "SlikeLanguageStrings.h"
 
 /// <#Description#>
 @interface SlikeConfig : NSObject
@@ -77,6 +78,10 @@
  By Default: NO for all IOS device type
  */
 @property(nonatomic,assign) BOOL orientationTypeiPad;
+
+/// Video will be in Portrait mode after full screen orientation will not be changed .
+/// To make this work "orientationTypeiPad = true" also
+@property(nonatomic,assign) BOOL fullScreenPortraitMode;
 
 /**
  Orientation will be disabled
@@ -472,7 +477,9 @@
  */
 @property (nonatomic, assign) SlikeAdPriority isPrerollEnabled;
 @property (nonatomic, assign) SlikeAdPriority isPostrollEnabled;
-
+//Mili Seconds
+@property (nonatomic, assign) NSInteger failOverTime;
+@property (nonatomic, assign) BOOL skipPre;
 
 /**
  * Title of next video (for playlist)
@@ -563,5 +570,18 @@
 //Making this property YES does not guarantee for cache
 //It depends upon Server Config for that media
 @property(nonatomic, assign) BOOL enableManifestCache;
+
+
+/// Try Hls Support First
+//0 Menas false
+//1 true
+//2 owner Api keys
+@property(nonatomic, assign) NSInteger tryHlsAds;
+
+/// Third Party Ad
+@property(nonatomic, strong) NSArray *tpAds;
+
+/// Daily Motion external link Default is YES
+@property(nonatomic, assign) BOOL isDMExternalLinkHandle;
 
 @end

@@ -7,11 +7,11 @@
 
 #import "SlikeRumblePlayerViewController.h"
 #import "SlikePlayer.h"
-#import "UIWebView+SlikeJavascriptInterface.h"
+#import "WKWebView+SlikeJavascriptInterface.h"
 #import "SlikeInterfaceProvider.h"
 #import "SlikeUtilities.h"
 #import "NSBundle+Slike.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikePlayerEvent.h"
 #import "EventManagerProtocol.h"
 #import "EventManager.h"
@@ -19,14 +19,11 @@
 #import "SlikeMaterialDesignSpinner.h"
 #import "UIView+SlikeAlertViewAnimation.h"
 
-
-@interface SlikeRumblePlayerViewController () <SlikeInterfaceProvider,
-EventManagerProtocol,
-UIWebViewDelegate> {
+@interface SlikeRumblePlayerViewController () <
+EventManagerProtocol,WKUIDelegate, WKNavigationDelegate, SlikeInterfaceProvider> {
     id _playerContainer;
 }
 
-@property (weak, nonatomic) IBOutlet UIWebView *playerWebView;
 @property (nonatomic,assign)  BOOL isNativeControls;
 @property (assign, nonatomic) BOOL playerLoaded;
 @property (assign, nonatomic) BOOL playerDidStarted;
@@ -36,6 +33,11 @@ UIWebViewDelegate> {
 @property (assign, nonatomic) SlikePlayerState playerStatus;
 @property (weak, nonatomic) IBOutlet SlikeMaterialDesignSpinner *loadingView;
 @property (weak, nonatomic) IBOutlet UIImageView *posterImage;
+
+@property (weak, nonatomic) IBOutlet UIView *playerContainerView;
+@property (nonatomic) WKWebView *playerWebView;
+@property (nonatomic, assign) BOOL isVideoCompleted;
+
 
 @end
 
@@ -49,17 +51,44 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _playerWebView.delegate=self;
-    [_playerWebView initializeWebKit];
+    
     [[EventManager sharedEventManager]registerEvent:self];
-    [_playerWebView addJavascriptInterface:self forName:@"JsHandler"];
     [_playerWebView setBackgroundColor:[UIColor clearColor]];
     [_playerWebView setOpaque:NO];
-    _playerWebView.allowsInlineMediaPlayback = YES;
     
     self.playerLoaded = NO;
     self.playerDidStarted = NO;
     self.loadingFailed = NO;
+    
+    [self createWebKit];
+    [_playerWebView initJavascriptInterface];
+    [_playerWebView enableJavascriptInterface:self];
+    [_playerWebView addJavascriptInterface:self forName:@"JsHandler"];
+    
+}
+
+#pragma mark - WKWebkit implementation
+- (void)createWebKit {
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.allowsInlineMediaPlayback = true;
+    configuration.requiresUserActionForMediaPlayback = false;
+    configuration.allowsAirPlayForMediaPlayback = true;
+    configuration.allowsPictureInPictureMediaPlayback = NO;
+    
+    self.playerWebView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:configuration];
+    _playerWebView.opaque = NO;
+    _playerWebView.backgroundColor = [UIColor clearColor];
+    
+    // Hack: prevent vertical bouncing
+    for (id subview in _playerWebView.subviews) {
+        if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
+            ((UIScrollView *)subview).bounces = NO;
+            ((UIScrollView *)subview).scrollEnabled = NO;
+        }
+    }
+    [self.playerContainerView addSubview:_playerWebView];
+    _playerWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
 }
 
 /**
@@ -67,9 +96,11 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
  @param playerURL - Stream URL
  */
 - (void)loadPlayer:(NSString *)playerURL {
+    
+    self.playerWebView.UIDelegate = self;
     NSURLRequest *nsrequest= [NSURLRequest requestWithURL:[NSURL URLWithString:playerURL]];
     [_playerWebView loadRequest:nsrequest];
-
+    
 }
 
 #pragma mark - ISlikePlayer Protocolimplementation
@@ -81,7 +112,7 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 }
 
 - (void)playMovieStreamWithObject:(SlikeConfig *)configuration withParent:(id) parent {
-    
+    self.isVideoCompleted  = NO;
     self.sdkConfiguration = configuration;
     self.slikeConfig =  configuration;
     
@@ -132,11 +163,11 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 }
 
 - (void)stop {
-    
     if ([self.playerWebView isLoading]) {
         [self.playerWebView stopLoading];
     }
-    self.playerWebView.delegate=nil;
+    self.playerWebView.UIDelegate=nil;
+    self.playerWebView.navigationDelegate = nil;
 }
 
 - (BOOL)cleanup {
@@ -148,32 +179,53 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
     return YES;
 }
 
-#pragma mar- UIWebViewDelegate
-- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
-    return YES;
+#pragma mar- WKWebViewDelegate
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+    [self prepareAndSendAnaltytics:SL_READY withEventType:MEDIA];
+
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    if (!self.playerLoaded) {
-        self.playerLoaded=YES;
-        
-        self.sdkConfiguration.streamingInfo.strSS = @"";
-        if([self.sdkConfiguration.streamingInfo.strSS length] == 0)
-            self.sdkConfiguration.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:self.sdkConfiguration.mediaId];
-    
-        //Send the Event to server for loading the video
-        [self prepareAndSendAnaltytics:SL_LOADED withEventType:MEDIA];
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
 
-    }
-    _loadingView.hidden = YES;
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+   
+}
+
+- (void)webView:(WKWebView *)webView didCommitNavigation:(null_unspecified WKNavigation *)navigation {
     [_loadingView stopAnimating];
     [self setVideoPlaceHolder:NO];
+    
+    if (!self.playerLoaded) {
+           self.playerLoaded=YES;
+           
+           self.sdkConfiguration.streamingInfo.strSS = @"";
+           if([self.sdkConfiguration.streamingInfo.strSS length] == 0)
+               self.sdkConfiguration.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:self.sdkConfiguration.mediaId];
+           
+           //Send the Event to server for loading the video
+           [self prepareAndSendAnaltytics:SL_LOADED withEventType:MEDIA];
+           
+       }
+       _loadingView.hidden = YES;
+       [_loadingView stopAnimating];
+       [self setVideoPlaceHolder:NO];
+    
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error{
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     
     _loadingView.hidden = YES;
     [_loadingView stopAnimating];
@@ -189,7 +241,7 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
         
         //Send the Event to server for loading error the video
         [self prepareAndSendAnaltytics:SL_ERROR withEventType:MEDIA];
-
+        
     }
 }
 
@@ -203,14 +255,39 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
     
     if (eventType == MEDIA) {
         
-        EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeRumble withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
+        SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeRumble withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
         eventModel.slikeConfigModel = self.sdkConfiguration;
         eventModel.playerEventModel.playerState = playerState;
-        [[EventManager sharedEventManager]dispatchEvent:MEDIA playerState:_playerStatus dataPayload:@{kSlikeEventModelKey:eventModel} slikePlayer:self];
+        NSInteger nStatus = 3;
+        if(playerState == SL_READY) nStatus = 1;
+        else if(playerState == SL_VIDEO_REQUEST) nStatus = 105;
+        else if(playerState == SL_START || playerState == SL_LOADED) nStatus = 2;
+        else if(playerState == SL_PLAYING) nStatus = 3;
+        else if(playerState == SL_COMPLETED) nStatus = 4;
+        else if(playerState == SL_REPLAY) nStatus = 5;
+        else if(playerState == SL_PAUSE) nStatus = 6;
+        else if(playerState == SL_SEEKED) nStatus = 7;
+        else if(playerState == SL_QUALITYCHANGE) nStatus = 8;
+        else if(playerState == SL_BUFFERING) nStatus = 9;
+        else if(playerState == SL_PLAY) nStatus = 10;
+        else if(playerState == SL_FSENTER || playerState == SL_FSEXIT) nStatus = 11;
+        else if (playerState == SL_ENDED) nStatus = 12;
+        else if (playerState == SL_VIDEOPLAYED) nStatus = 14;
+        else if (playerState == SL_PLAYEDPERCENTAGE) nStatus = 15;
+        else if (playerState == SL_VIDEO_COMPLETED) nStatus = 16;
+      
+        NSLog(@"nStatus = >  nStatus = > %ld",(long)nStatus);
+        
 
+        
+        eventModel.playerEventModel.eventType = [NSString stringWithFormat:@"%ld",(long)nStatus];
+        
+        
+        [[EventManager sharedEventManager]dispatchEvent:MEDIA playerState:_playerStatus dataPayload:@{kSlikeEventModelKey:eventModel} slikePlayer:self];
+        
     } else {
         
-        EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeRumbleAd withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
+        SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeRumbleAd withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
         eventModel.slikeConfigModel = self.sdkConfiguration;
         [[EventManager sharedEventManager]dispatchEvent:AD playerState:playerState dataPayload:@{kSlikeEventModelKey:eventModel} slikePlayer:nil];
     }
@@ -224,8 +301,8 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 #pragma mark -  JS call backs implementation
 - (NSDictionary<NSString *, NSValue *> *) javascriptInterfaces{
     return @{
-             @"playerEvent" : [NSValue valueWithPointer:@selector(playerEvent: :)],
-             };
+        @"playerEvent" : [NSValue valueWithPointer:@selector(playerEvent: :)],
+    };
 }
 
 - (void)playerEvent:(NSString *)eventName  :(id)customData {
@@ -233,6 +310,11 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
     if([eventName isEqualToString:@"loadVideo"]) {
     }
     else if([eventName isEqualToString:@"play"]){
+        if(self.isVideoCompleted) {
+            [self prepareAndSendAnaltytics:SL_READY withEventType:MEDIA];
+            [self prepareAndSendAnaltytics:SL_LOADED withEventType:MEDIA];
+            self.isVideoCompleted = NO;
+        }
         [self prepareAndSendAnaltytics:SL_PLAY withEventType:MEDIA];
     }
     else if([eventName isEqualToString:@"pause"]){
@@ -242,19 +324,20 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
         [self prepareAndSendAnaltytics:SL_PAUSE withEventType:MEDIA];
     }
     else if([eventName isEqualToString:@"videoEnd"]){
+        self.isVideoCompleted = YES;
         [self prepareAndSendAnaltytics:SL_VIDEO_COMPLETED withEventType:MEDIA];
     }
     else if([eventName isEqualToString:@"preAd"]){
-       [self prepareAndSendAnaltytics:SL_AD_REQUESTED withEventType:AD];
+        [self prepareAndSendAnaltytics:SL_AD_REQUESTED withEventType:AD];
     }
     else if([eventName isEqualToString:@"adError"]){
-      [self prepareAndSendAnaltytics:SL_ERROR withEventType:AD];
+        [self prepareAndSendAnaltytics:SL_ERROR withEventType:AD];
     }
     else if([eventName isEqualToString:@"adImpression"]){
-      [self prepareAndSendAnaltytics:SL_ERROR withEventType:AD];
+        [self prepareAndSendAnaltytics:SL_ERROR withEventType:AD];
     }
     else if([eventName isEqualToString :@"adClick"]){
-       [self prepareAndSendAnaltytics:SL_CLICKED withEventType:AD];
+        [self prepareAndSendAnaltytics:SL_CLICKED withEventType:AD];
     }
 }
 
@@ -357,6 +440,7 @@ static  NSString *const kRumbleUrl = @"https://videoplayer.indiatimes.com/v2/rum
 }
 
 - (void)setOnPlayerStatusDelegate:(onChange) block {
+         [[EventManager sharedEventManager] setEventHanlderBlock:block];
 }
 - (void)setController:(id<ISlikePlayerControl>) control {
     //self.slikeControl = control;

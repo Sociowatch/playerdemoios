@@ -61,6 +61,7 @@
         _tileImageURLString = @"http://imgslike.akamaized.net/";
         _cacahedAudioConfigs = [[NSMutableDictionary alloc]init];
         _storagelimit = 90;
+        _currentStreamSpeed = SlikeMediaSpeed100;
     }
     
     return self;
@@ -192,8 +193,8 @@
     return _adPrefetchQueue;
 }
 -(BOOL)isValidArray:(NSArray *)itemsArray {
-    if(![itemsArray isKindOfClass:[NSNull class]] && itemsArray != (id)[NSNull null] && [itemsArray isKindOfClass:[NSArray class]]
-       && itemsArray !=nil) {
+    if(itemsArray !=nil && ![itemsArray isKindOfClass:[NSNull class]] && itemsArray != (id)[NSNull null] && [itemsArray isKindOfClass:[NSArray class]]
+       ) {
         return YES;
     }
     return NO;
@@ -336,6 +337,10 @@
 - (void)resetSlikeBitratesModel {
     [_bitratesArray removeAllObjects];
     _currentStreamBitrate = SlikeMediaBitrateNone;
+    [self resetSlikeSpeed];
+}
+- (void)resetSlikeSpeed {
+    _currentStreamSpeed = SlikeMediaSpeed100;
 }
 
 /**

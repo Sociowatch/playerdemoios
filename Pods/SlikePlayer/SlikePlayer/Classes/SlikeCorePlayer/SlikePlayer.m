@@ -9,10 +9,7 @@
 #import "SlikePlayerDecision.h"
 #import "SlikePlayer.h"
 #import "DMMainViewController.h"
-#import "SlikeFBViewController.h"
 #import "SlikeGifPlayerViewController.h"
-#import "SlikeWebPlayerViewController.h"
-#import "SlikeRumblePlayerViewController.h"
 #import "SlikeMemePlayerViewController.h"
 #import "ISlikeAnlytics.h"
 #import "SlikeStringCommon.h"
@@ -40,6 +37,10 @@
 #import "SlikeAdManager.h"
 #import "SlikeAnalytics.h"
 #import "SLManifestlessDataCache.h"
+#import "SlikeWebPlayerViewController.h"
+#import "SlikeRumblePlayerViewController.h"
+#import "SlikeFBViewController.h"
+#import "SlikeDataParser.h"
 
 static NSString *const kAllowTracking = @"allowTracking";
 @interface SlikePlayer()  <EventManagerProtocol> {
@@ -125,13 +126,13 @@ static NSString *const kAllowTracking = @"allowTracking";
  */
 - (void)stopPlayer {
     if ([NSThread isMainThread]) {
-    [self releaseSlikePlayer];
+        [self releaseSlikePlayer];
     }else
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self releaseSlikePlayer];
-            });
-        }
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self releaseSlikePlayer];
+        });
+    }
 }
 
 /**
@@ -194,7 +195,8 @@ static NSString *const kAllowTracking = @"allowTracking";
         
     } else {
         UIView *parentView = (UIView *)parent;
-        [parentView addSubviewWithContstraints:self.slikeAlertView];
+        if(parentView)
+            [parentView addSubviewWithContstraints:self.slikeAlertView];
     }
     
     if (error.code == SlikeServiceErrorNoNetworkAvailable) {
@@ -318,7 +320,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 - (void)showNetworkErrorWindow:(SlikeConfig *)configModel inParentView:(UIView *)parent withProgressHandler:(onChange)stateBlock {
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSError *networkErr = SlikeServiceCreateError(SlikeServiceErrorNoNetworkAvailable, NO_NETWORK);
+        NSError *networkErr = SlikeServiceCreateError(SlikeServiceErrorNoNetworkAvailable, [SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr);
         [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:stateBlock withError:networkErr];
         if(stateBlock) {
             stateBlock(MEDIA, SL_ERROR, [StatusInfo initWithError:[networkErr localizedDescription]]);
@@ -327,13 +329,18 @@ static NSString *const kAllowTracking = @"allowTracking";
 }
 
 #pragma mark -  Version 2.0
+
 - (void)playVideo:(SlikeConfig *)configModel inParentView:(UIView *)parent withProgressHandler:(onChange)stateBlock {
     
+    if(configModel.pageSection && [configModel.pageSection containsString:@"/"])
+    {
+        configModel.pageSection =  [configModel.pageSection stringByReplacingOccurrencesOfString:@"/" withString:@"."];
+    }
     if (![parent isKindOfClass:[UIView class]] || !parent) {
         
-        [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:stateBlock withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, INVALID_INSTANCE_ERROR)];
+        [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:stateBlock withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration,[SlikePlayerSettings playerSettingsInstance].slikestrings.sdkInitError)];
         if(stateBlock) {
-            stateBlock(MEDIA, SL_ERROR, [StatusInfo initWithError:INVALID_INSTANCE_ERROR]);
+            stateBlock(MEDIA, SL_ERROR, [StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.sdkInitError]);
         }
         return;
     }
@@ -360,16 +367,13 @@ static NSString *const kAllowTracking = @"allowTracking";
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            
             if(configModel.streamingInfo) {
-                
                 BOOL isGeoAllowed = [[SlikeDeviceSettings sharedSettings] isGeoAllowed:configModel.gca GCB:configModel.gcb];
                 if (self.playlistArray && [self.playlistArray count]>0 && !isGeoAllowed) {
                     [self skipVideoToNextIndex];
                 } else {
                     [self _playVideoWithInfo:configModel inParent:parent withProgressHandler:stateBlock];
                 }
-                
             } else {
                 [self _downloadMediaConfigData:configModel inParentView:parent withProgressHandler:stateBlock];
             }
@@ -384,7 +388,8 @@ static NSString *const kAllowTracking = @"allowTracking";
  */
 - (void)_downloadMediaConfigData:(SlikeConfig *)configModel inParentView:(UIView *)parent withProgressHandler:(onChange)stateBlock {
     
-    [[SlikePlayerSettings playerSettingsInstance] setIdsForAnalyticsEvents:[SlikeDeviceSettings sharedSettings].gaId withCS_publisherId:[SlikeDeviceSettings sharedSettings].comscoreId];
+    [[SlikePlayerSettings playerSettingsInstance] setIdsForAnalyticsEvents:[SlikeDeviceSettings sharedSettings].gaId withCS_publisherId:@""];
+    
     [[SlikeAnalytics sharedManager] processVideoRequest:configModel];
     
     [self downloadSlikeData:configModel resultBlock:^(id slikeDataResponse, NSError *parseError) {
@@ -429,10 +434,10 @@ static NSString *const kAllowTracking = @"allowTracking";
     }
     
     if(block) {
-        block(MEDIA, SL_ERROR, [StatusInfo initWithError:WRONG_CONFIGARATION]);
+        block(MEDIA, SL_ERROR, [StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.configError]);
     }
     
-    [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, WRONG_CONFIGARATION)];
+    [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.configError)];
     return NO;
     
 }
@@ -455,10 +460,9 @@ static NSString *const kAllowTracking = @"allowTracking";
     if(isFB) {
         if(configModel.fbAppId == nil || [configModel.fbAppId isEqualToString:@""]) {
             if(block) {
-                block(MEDIA, SL_ERROR, [StatusInfo initWithError:FB_ERROR]);
+                block(MEDIA, SL_ERROR, [StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.fbError]);
             }
-            
-            [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, FB_ERROR)];
+            [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.fbError)];
             return NO;
         }
     }
@@ -505,7 +509,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 }
 
 - (void)_openRumblePlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
-    
+    //[self _throwVideoNotSupportedMessage:configModel inParent:parent withProgressHandler:block];
     if ([self isPlayerAlreadyExists:[SlikeRumblePlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
     } else {
@@ -518,6 +522,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 }
 
 - (void)_openWeblrPlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
+    //  [self _throwVideoNotSupportedMessage:configModel inParent:parent withProgressHandler:block];
     
     if ([self isPlayerAlreadyExists:[SlikeWebPlayerViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
@@ -556,6 +561,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 }
 
 - (void)_openFacebookPlayer:(SlikeConfig *)configModel resourceBundle:(NSBundle *)rsBundle parent:(id)parent eventBlock:(onChange)block {
+    // [self _throwVideoNotSupportedMessage:configModel inParent:parent withProgressHandler:block];
     
     if ([self isPlayerAlreadyExists:[SlikeFBViewController class]]) {
         [self playStreamWithExistInstance:configModel inParent:parent];
@@ -566,6 +572,7 @@ static NSString *const kAllowTracking = @"allowTracking";
         
         [self initiatePlayerController:configModel inParent:parent withProgressHandler:block];
     }
+    
 }
 /**
  Play Stream the config file for the stream and play the current stream
@@ -629,9 +636,9 @@ static NSString *const kAllowTracking = @"allowTracking";
 - (void)_throwVideoNotSupportedMessage:(SlikeConfig *)configModel inParent:(id)parent withProgressHandler:(onChange)block {
     
     if(block) {
-        block(MEDIA, SL_ERROR, [StatusInfo initWithError:NOT_SUPPORTED]);
+        block(MEDIA, SL_ERROR, [StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.videoNotSupportedErr]);
     }
-    [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceVideoNotSupported, NOT_SUPPORTED)];
+    [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceVideoNotSupported, [SlikePlayerSettings playerSettingsInstance].slikestrings.videoNotSupportedErr)];
 }
 
 /**
@@ -682,10 +689,10 @@ static NSString *const kAllowTracking = @"allowTracking";
         }
         if(slikePlayerController ==  nil) {
             self.slikePlayer =  nil;
-                   if(block) {
-                       block(MEDIA, SL_ERROR, [StatusInfo initWithError:UNKNOWN_ERROR]);
-                   }
-            [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, UNKNOWN_ERROR)];
+            if(block) {
+                block(MEDIA, SL_ERROR, [StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.commonErr]);
+            }
+            [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.commonErr)];
             return ;
         }
         id cntrlr = [self traverseResponderChainForUIViewController:parevtView];
@@ -719,9 +726,9 @@ static NSString *const kAllowTracking = @"allowTracking";
     BOOL isGeoAllowed = [[SlikeDeviceSettings sharedSettings] isGeoAllowed:configModel.gca GCB:configModel.gcb];
     
     if(!isGeoAllowed) {
-        [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, WRONG_GEO)];
+        [self playVideoWithInfoWithError:configModel inParent:parent withProgressHandler:block withError:SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.videoUnAvailableForReagionErr)];
         if(block) {
-            block(MEDIA, SL_ERROR, [StatusInfo initWithError:WRONG_GEO]);
+            block(MEDIA, SL_ERROR, [StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.videoUnAvailableForReagionErr]);
         }
         return YES;
         
@@ -789,7 +796,7 @@ static NSString *const kAllowTracking = @"allowTracking";
     _currentPlaylistIndex = currrentIndex;
     _nextCardIndex = currrentIndex;
     
-    [[SlikeSharedDataCache sharedCacheManager]updatePlylistIndex:currrentIndex];
+    [[SlikeSharedDataCache sharedCacheManager] updatePlylistIndex:currrentIndex];
     SlikeConfig *slikeConfigModel = _playlistArray[currrentIndex];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self resetAlertView];
@@ -1099,7 +1106,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 @implementation SlikePlayerSettings {
     
 }
-
+@synthesize prefetchNode  = _prefetchNode;
 /**
  Shared Instance of player class
  @return  - Shared Player instance
@@ -1118,6 +1125,7 @@ static NSString *const kAllowTracking = @"allowTracking";
 - (id)init {
     if (self = [super init]) {
         _arrAnalyticsTrackers = [NSMutableArray array];
+        _prefetchNode = @"";
     }
     return self;
 }
@@ -1132,6 +1140,8 @@ static NSString *const kAllowTracking = @"allowTracking";
 
 - (void)initPlayerWithApikey:(NSString *)apiKey andWithDeviceUID:(NSString *)uuid debugMode:(BOOL)isDebug {
     
+    _slikestrings = [SlikeLanguageStrings languageStrings];
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if([defaults objectForKey:@"saved_bitrate"]) [[SlikeDeviceSettings sharedSettings] setMediaBitrate:[defaults objectForKey:@"saved_bitrate"]];
     [[SlikeNetworkManager defaultManager] initWithApikey:apiKey andWithDeviceUID:uuid debugMode:isDebug];
@@ -1140,6 +1150,8 @@ static NSString *const kAllowTracking = @"allowTracking";
     NSString *downloadUrl = [NSString stringWithFormat:@"%@feed/playerconfig/%@/r001/%@.json", strBaseURL, @"beta", [[SlikeDeviceSettings sharedSettings] getKey]];
     SlikeDataProvider* dataProvider = [SlikeDataProvider  slikeDataProvider];
     [dataProvider downloadAndCacheConfigData:downloadUrl resultBlock:^(id response, NSError *errExists) {
+        [[SlikePlayerSettings playerSettingsInstance] setIdsForAnalyticsEvents:@"" withCS_publisherId:[SlikeDeviceSettings sharedSettings].comscoreId];
+        
         if (!errExists) {
             [[SlikeAdManager sharedInstance] showAd:nil adContainerView:nil forAdPosition:0];
         } else {
@@ -1147,6 +1159,11 @@ static NSString *const kAllowTracking = @"allowTracking";
         }
     }];
 }
+-(void)resetSlikeStrings
+{
+    self.slikestrings =  [SlikeLanguageStrings languageStrings];
+}
+
 
 /**
  GDPAEnabledenable information
@@ -1157,6 +1174,35 @@ static NSString *const kAllowTracking = @"allowTracking";
 {
     [SlikeSharedDataCache sharedCacheManager].isGDPREnable =  isGDPREnabled;
 }
+-(void)setPrefetchNode:(NSString*)prefetchNode shouldRemovedLastPrefectData:(BOOL)isRemoved {
+  
+    if(prefetchNode && [prefetchNode isKindOfClass:[NSString class]]) {
+    _prefetchNode =  prefetchNode;
+    }
+    NSData *slikeConfigData = [[SlikeSharedDataCache sharedCacheManager]cachedSlikeConfigData];
+    if (slikeConfigData) {
+        SlikeDataParser * parser = [SlikeDataParser slikeDataParser];
+        [parser parsePrefetchedAds:slikeConfigData forAdNode:_prefetchNode resultBlock:^(id response, NSError *parseError) {
+         
+            if(isRemoved) {
+                        //cancel Prefetch if any
+                        [[SlikeAdManager sharedInstance] cleanupAdManager:^{
+                            if (!parseError) {
+                                [[SlikeAdManager sharedInstance] showAd:nil adContainerView:nil forAdPosition:0];
+                            } else {
+                                SlikeDLog(@"ADS LOG: Something went wrong : Not able to get prefetch Ads");
+                            }
+                            
+                        }];
+                     
+                    }
+        }];
+    }
+   
+}
+-(void)cancelLastPrefectData {
+    
+}
 /// set Ad Priority  array if any other wise set nil;
 /// @param adPriority array like [NSArray arrayWithObjects:@"SL_FAN", @"SL_IMA", nil];
 /// @param isSoftCncl YES  if reset all ad pass NO
@@ -1165,8 +1211,8 @@ static NSString *const kAllowTracking = @"allowTracking";
     if(!isSoftCncl)
     {
         //cancel Prefetch if any
-       [[SlikeAdManager sharedInstance] cleanupAdManager:^{
-       }];
+        [[SlikeAdManager sharedInstance] cleanupAdManager:^{
+        }];
     }
     [SlikeSharedDataCache sharedCacheManager].adPriority = adPriority;
     

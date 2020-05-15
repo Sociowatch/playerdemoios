@@ -12,7 +12,7 @@
 #import "SlikeStringCommon.h"
 #import "SlikeUtilities.h"
 #import "NSBundle+Slike.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikePlayerEvent.h"
 #import "EventManagerProtocol.h"
 #import "EventManager.h"
@@ -67,7 +67,7 @@
                 
                 [self prepareAndSendAnaltytics:@"-10"];
                     if([[SlikeReachability reachabilityForInternetConnection] currentReachabilityStatus] == NotReachable)  {
-                        [self sendPlayerStatus:(SL_ERROR) withProgress:[StatusInfo initWithError:NO_NETWORK]];
+                        [self sendPlayerStatus:(SL_ERROR) withProgress:[StatusInfo initWithError:[SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr]];
                     } else {
                          [self sendPlayerStatus:(SL_ERROR) withProgress:progressInfo];
                     }
@@ -221,6 +221,7 @@
 }
 
 - (void)setOnPlayerStatusDelegate:(onChange) block {
+         [[EventManager sharedEventManager] setEventHanlderBlock:block];
 }
 - (void)setController:(id<ISlikePlayerControl>) control {
     //self.slikeControl = control;
@@ -296,7 +297,7 @@
  */
 - (void)prepareAndSendAnaltytics:(NSString *) eventTypeString  {
     
-    EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeMeme withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
+    SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMeme withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
     eventModel.slikeConfigModel = self.sdkConfiguration;
     eventModel.playerEventModel.eventType = eventTypeString;
     eventModel.playerEventModel.type = @"meme";

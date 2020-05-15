@@ -20,11 +20,13 @@
         _muted = 0;
         _retryCount = 0;
         _adTypeEnum = SL_NONE;
+        _errCode = @"";
+        _errMessage = @"";
     }
     return self;
 }
 
-+ (SlikeAdStatusInfo *)initWithID:(NSString *) adId withAdPos:(NSInteger) nAdPos withCampaign:(NSString *) cid withPosition:(NSInteger) pos withDuration:(NSInteger) dur withRetryCount:(NSInteger) count withState:(SlikePlayerState) state withAdType:(NSInteger)adType {
++ (SlikeAdStatusInfo *)initWithID:(NSString *) adId withAdPos:(NSInteger) nAdPos withCampaign:(NSString *) cid withPosition:(NSInteger) pos withDuration:(NSInteger) dur withRetryCount:(NSInteger) count withState:(SlikePlayerState) state withAdType:(NSInteger)adType witherrCode:(NSString*)errCode witherrMessage:(NSString*)errMessage {
     
     SlikeAdStatusInfo *adStatusInfo = [[SlikeAdStatusInfo alloc] init];
     adStatusInfo.adId = adId == nil ? @"" : adId;
@@ -33,9 +35,11 @@
     adStatusInfo.position = pos;
     adStatusInfo.duration = dur;
     adStatusInfo.state = state;
-    
+    adStatusInfo.errCode = errCode;
+    adStatusInfo.errMessage = errMessage;
     return adStatusInfo;
 }
+
 
 - (void)setAdTypeByPosition:(NSInteger) nAdPos {
     

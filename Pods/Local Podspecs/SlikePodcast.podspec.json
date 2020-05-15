@@ -1,0 +1,43 @@
+{
+  "name": "SlikePodcast",
+  "version": "1.1.2",
+  "summary": "A short description of SlikePodcast.",
+  "description": "Please refer to example demo and README.md for details of implementation.",
+  "homepage": "http://timesinternet.in",
+  "license": {
+    "type": "Commercial",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Pravin Ranjan": "pravin.ranjan@timesinternet.in"
+  },
+  "source": {
+    "git": "https://bitbucket.org/times_internet/SlikePodcast.git",
+    "tag": "1.1.2"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "libraries": "c++",
+  "static_framework": true,
+  "ios": {
+    "resource_bundles": {
+      "SLAudioResources": [
+        "SlikePodcast/SLAudioResources/*"
+      ]
+    }
+  },
+  "source_files": "SlikePodcast/Classes/**/*",
+  "frameworks": "UIKit",
+  "dependencies": {
+    "SlikePlayer": [
+      "2.9.5"
+    ],
+    "FLAnimatedImage": [
+      "~> 1.0"
+    ]
+  },
+  "pod_target_xcconfig": {
+    "OTHER_LDFLAGS": "-all_load -lc++ -ObjC"
+  }
+}

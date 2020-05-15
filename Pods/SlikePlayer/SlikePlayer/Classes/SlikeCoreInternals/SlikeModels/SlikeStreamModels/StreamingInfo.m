@@ -45,6 +45,7 @@
         _hurl = @"";
         _containsDVR = NO;
         _dvrURLString = @"";
+        _midroll_arr = [NSArray array];
 
         
         //Fill in empty MutableArray into the dictVideos see VideoSourceType count => 6
@@ -192,7 +193,7 @@
     }
     //Video is HLS or the FHLS
     if((aVideoType == VIDEO_SOURCE_HLS || aVideoType == VIDEO_SOURCE_FHLS) && videosList.count == 0) {
-        stream.strLabel = @"Auto";
+        stream.strLabel = [SlikePlayerSettings playerSettingsInstance].slikestrings.autoBitrateTitle;
         //Download  contents
         [self downloadHLSContents:aSourceURL withType:aVideoType withDVR:stream.dvrURL];
     }

@@ -18,8 +18,11 @@
 @property(nonatomic, assign) NSInteger retryCount;
 @property(nonatomic, assign) SlikePlayerState state;
 @property(nonatomic, assign) SlikeAdType adTypeEnum;
+@property(nonatomic, assign) BOOL isPrefetchRequest;
+@property(nonatomic,strong) NSString *errCode;
+@property(nonatomic,strong) NSString *errMessage;
 
-+ (SlikeAdStatusInfo *)initWithID:(NSString *) adId withAdPos:(NSInteger) nAdPos withCampaign:(NSString *) cid withPosition:(NSInteger) pos withDuration:(NSInteger) dur withRetryCount:(NSInteger) count withState:(SlikePlayerState) state withAdType:(NSInteger)adType;
++ (SlikeAdStatusInfo *)initWithID:(NSString *) adId withAdPos:(NSInteger) nAdPos withCampaign:(NSString *) cid withPosition:(NSInteger) pos withDuration:(NSInteger) dur withRetryCount:(NSInteger) count withState:(SlikePlayerState) state withAdType:(NSInteger)adType witherrCode:(NSString*)errCode witherrMessage:(NSString*)errMessage;
 
 - (void)setAdTypeByPosition:(NSInteger) nAdPos;
 -(NSString *)getString;

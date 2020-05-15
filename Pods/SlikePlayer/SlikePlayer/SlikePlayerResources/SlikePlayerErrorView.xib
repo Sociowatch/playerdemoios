@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,8 +14,9 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Yen-8i-r36">
+                <imageView userInteractionEnabled="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yen-8i-r36">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.40000000000000002" colorSpace="calibratedWhite"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TeI-qc-ea5" userLabel="CenterView">
@@ -104,10 +105,6 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="TeI-qc-ea5" secondAttribute="trailing" id="1rM-7g-tul"/>
                 <constraint firstItem="TeI-qc-ea5" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="HNi-m5-db1"/>
                 <constraint firstItem="BFd-vr-QON" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="J5T-BQ-33N"/>
-                <constraint firstItem="Yen-8i-r36" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="SuF-8Q-NSc"/>
-                <constraint firstItem="Yen-8i-r36" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="UbR-8D-Qd3"/>
-                <constraint firstItem="Yen-8i-r36" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="UkJ-4K-bkp"/>
-                <constraint firstItem="Yen-8i-r36" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="iMK-47-4JX"/>
                 <constraint firstItem="TeI-qc-ea5" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="tpQ-W7-gNW"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>

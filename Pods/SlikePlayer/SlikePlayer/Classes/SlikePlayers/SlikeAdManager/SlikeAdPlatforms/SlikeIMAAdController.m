@@ -35,6 +35,7 @@
 @property(nonatomic, weak)id<SlikeAdPlateformEvents> eventsDelegate;
 @property(nonatomic,readwrite) BOOL isViewVissible;
 @property(nonatomic, assign) NSInteger adTime;
+@property(nonatomic,assign) BOOL isHlsSupport;
 
 @end
 
@@ -45,6 +46,7 @@
 - (instancetype)initWithAdContainerView:(UIView *)parentView withAd:(SlikeAdsUnit *)adModel delegate:(id<SlikeAdPlateformEvents>)delegate {
     self = [super init];
     
+    self.isHlsSupport = [SlikeDeviceSettings sharedSettings].tryHlsAds;
     self.containerView = parentView;
     self.adUnitModel = adModel;
     self.eventsDelegate = delegate;
@@ -61,6 +63,7 @@
     if (self.adsLoader) {
         self.adsLoader = nil;
     }
+
     IMASettings *settings = [[IMASettings alloc] init];
     settings.language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     settings.disableNowPlayingInfo=YES;
@@ -92,7 +95,10 @@
  */
 - (void)requestAdsWithTag:(NSString *)adTagUrl
 {
+    NSLog(@"adTagUrl = > %@",adTagUrl);
     self.adTime = 0;
+   
+ //   adTagUrl = @"https://pubads.g.doubleclick.net/gampad/ads?iu=/7176/NBT_App_Android/NBT_App_AOS_Video/NBT_APP_AOS_VDO_Prefetch_Video&description_url=[placeholder]&tfcd=0&npa=0&sz=300x230%7C300x400%7C300x415%7C320x240%7C320x480%7C400x300%7C400x315%7C420x320%7C480x320%7C640x360&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
     
     SlikeDLog(@"Requesting ad: %@", adTagUrl);
     NSString * q = adTagUrl;
@@ -284,15 +290,41 @@
     if (self.eventsDelegate && [self.eventsDelegate respondsToSelector:@selector(slikeAdEventDidReceiveAdEvent:withPayload:)]) {
         [_eventsDelegate slikeAdEventDidReceiveAdEvent:_adEvent withPayload:@{}];
     }
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         IMAAdsRenderingSettings *adsRenderingSettings = [[IMAAdsRenderingSettings alloc] init];
         //adsRenderingSettings.webOpenerPresentingController =  [SlikeUtilities topMostController];
         adsRenderingSettings.webOpenerDelegate = self;
+        
+        if(self.isHlsSupport)
+        adsRenderingSettings.mimeTypes=  [[NSArray alloc] initWithObjects:@"application/x-mpegURL", nil];
+        
         [self.adsManager initializeWithAdsRenderingSettings:adsRenderingSettings];
     });
 }
+- (void)setUpAdsLoaderAfterHlsTryNormal {
+    dispatch_async(dispatch_get_main_queue(), ^{
+           self.adEvent = kSlikeAdEventNone;
+           [self setUpIMA];
+  if (self.adsLoader) {
+      self.adsLoader = nil;
+  }
 
+  IMASettings *settings = [[IMASettings alloc] init];
+  settings.language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
+  settings.disableNowPlayingInfo=YES;
+  self.adsLoader = [[IMAAdsLoader alloc] initWithSettings:settings];
+  
+  self.ha = @"1";
+  [self getAdResion:self.adUnitModel];
+//Don't sent analytics
+        [self requestAdsWithTag:self->_adUnitModel.strAdURL];
+    });
+}
+
+-(void)setDataForHLS
+{
+    [self setUpAdsLoaderAfterHlsTryNormal];
+}
 - (void)adsLoader:(IMAAdsLoader *)loader failedWithErrorData:(IMAAdLoadingErrorData *)adErrorData {
     
     _isAdPlaying = NO;
@@ -457,6 +489,10 @@
 
 - (void)adsManager:(IMAAdsManager *)adsManager didReceiveAdError:(IMAAdError *)error {
     SlikeDLog(@"AdsManager error: %@", error.message);
+    if(error.code == 403 && self.isHlsSupport) {
+        self.isHlsSupport = NO;
+        [self setUpAdsLoaderAfterHlsTryNormal];
+    }else {
     _adEvent = kSlikeAdEventPlayingError;
     _isAdPlaying = NO;
     
@@ -476,6 +512,7 @@
     
     if (self.eventsDelegate && [self.eventsDelegate respondsToSelector:@selector(slikeAdEventDidReceiveAdEvent:withPayload:)]) {
         [_eventsDelegate slikeAdEventDidReceiveAdEvent:_adEvent withPayload:payload];
+    }
     }
 }
 

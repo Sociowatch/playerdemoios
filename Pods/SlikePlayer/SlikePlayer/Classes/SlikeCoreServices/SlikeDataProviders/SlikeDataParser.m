@@ -63,7 +63,7 @@
     
     NSDictionary *dictSettings = [configJsonDict dictionaryForKey:@"settings"];
     if (!dictSettings) {
-        completionBlock(nil, SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+        completionBlock(nil, SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
         return;
     }
     [self parseSlikeSettingsData:slikeConfigModel settingsData:dictSettings];
@@ -89,7 +89,7 @@
             NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
             if(![packageNameString isEqualToString:bundleIdentifier]) {
                 
-                return  SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorRequestDataError, @{NSLocalizedDescriptionKey:ERROR_CONTENT_DISABLE});
+                return  SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorRequestDataError, @{NSLocalizedDescriptionKey:[SlikePlayerSettings playerSettingsInstance].slikestrings.contentSecurityErr});
             }
         }
     }
@@ -98,10 +98,10 @@
         
         NSString * errorCode =  [jsonInfoDict stringForKey:@"error"];
         if ([errorCode isEqualToString:@"404"]) {
-            return SlikeServiceCreateError(SlikeServiceErrorInvalidApiKey, INVALID_API_KEY);
+            return SlikeServiceCreateError(SlikeServiceErrorInvalidApiKey, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiKeyErr);
         }
         
-        return  SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorWrongConfiguration, [NSDictionary dictionaryWithObjectsAndKeys:@"Information", @"message", UNKNOWN_ERROR, @"description", nil]);
+        return  SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorWrongConfiguration, [NSDictionary dictionaryWithObjectsAndKeys:@"Information", @"message", [SlikePlayerSettings playerSettingsInstance].slikestrings.commonErr, @"description", nil]);
     }
     
     NSArray *arrError = [[jsonInfoDict objectForKey:@"header"] objectForKey:@"errors"];
@@ -112,7 +112,7 @@
         for(dictErr in arrError) {
             
             NSString *strErr = [dictErr objectForKey:@"message"];
-            if([strErr isEqualToString:@"Invalid Token"] || [strErr isEqualToString:INVALID_API_KEY]) {
+            if([strErr isEqualToString:@"Invalid Token"] || [strErr isEqualToString:[SlikePlayerSettings playerSettingsInstance].slikestrings.apiKeyErr]) {
                 
                 SlikeDLog(@"Invalid token found. Logging out from the SlikePlayer --- %@", [jsonInfoDict objectForKey:@"header"]);
                 
@@ -150,7 +150,7 @@
         
         return SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle]bundleIdentifier],SlikeServiceErrorRequestDataError, @{NSLocalizedDescriptionKey:strDataError});
         
-    } else if([responseString isEqualToString:INVALID_API_KEY]) {
+    } else if([responseString isEqualToString:[SlikePlayerSettings playerSettingsInstance].slikestrings.apiKeyErr]) {
         return SlikeServiceCreateErrorWithDomain([[NSBundle mainBundle] bundleIdentifier],SlikeServiceErrorInvalidApiKey, nil);
         
     } else if([responseString isEqualToString:@"Invalid Token"]) {
@@ -167,7 +167,7 @@
         
         NSDictionary *streamInfoDict = [SlikeUtilities jsonStringToDictionary:responseString];
         if ([streamInfoDict stringForKey:@"error"] && streamInfoDict) {
-            return SlikeServiceCreateError(SlikeServiceErrorInvalidMediaId, NO_VIDEO);
+            return SlikeServiceCreateError(SlikeServiceErrorInvalidMediaId, [SlikePlayerSettings playerSettingsInstance].slikestrings.videoUnAvailableErr);
         }
     }
     
@@ -326,6 +326,11 @@
         slikeConfigModel.adPlayed = [adPlayedString integerValue];
     }
     
+    NSArray *tpAds =  [dictSettings arrayForKey:@"tpAds"];
+    if(tpAds) {
+        slikeConfigModel.tpAds = tpAds;
+    }
+    
     NSString *gaIdString =  [dictSettings stringForKey:@"gaId"];
     if(gaIdString) {
         slikeConfigModel.gaId =  gaIdString;
@@ -380,7 +385,7 @@
     
     NSDictionary *streamInfoDict = [SlikeUtilities jsonDataToDictionary:streamData];
     if ([streamInfoDict count] ==0) {
-        completionBlock(nil, SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, NO_API_RESPONSE));
+        completionBlock(nil, SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.apiResponseErr));
         return;
     }
     
@@ -448,10 +453,9 @@
     
     NSString *embedString = [streamDict stringForKey:@"embed"];
     if(embedString) {
-        [self parseEmbedTypeVideoWithStreamInfo:streamDict withConfigModel:slikeConfigModel resultBlock:^(StreamingInfo *updatedStreamInfo, BOOL parseError) {
-            
+        [self parseEmbedTypeVideoWithStreamInfo:slikeConfigModel withConfigInfo:configDict withStremDict:streamDict  resultBlock:^(StreamingInfo *updatedStreamInfo, BOOL parseError) {
             if (parseError) {
-                completionBlock(nil,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, @"Video is not available"));
+                completionBlock(nil,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.videoUnAvailableErr));
                 return;
             } else {
                 slikeStreamModel = updatedStreamInfo;
@@ -462,7 +466,7 @@
         
         [self parseNormalTypeVideo:streamDict withConfigModel:slikeConfigModel resultBlock:^(StreamingInfo *updatedStreamInfo, BOOL parseError)  {
             if (parseError) {
-                completionBlock(nil,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, @"Video is not available"));
+                completionBlock(nil,SlikeServiceCreateError(SlikeServiceErrorWrongConfiguration, [SlikePlayerSettings playerSettingsInstance].slikestrings.videoUnAvailableErr));
                 return;
             } else {
                 slikeStreamModel = updatedStreamInfo;
@@ -480,7 +484,83 @@
     } else {
         slikeStreamModel.vendorName = [streamDict stringOrEmptyStringForKey:@"vendor_name"];
     }
+    [SlikeDeviceSettings sharedSettings].tryHlsAds = [configDict boolForKey:@"tryHlsAds"];
     
+    if(slikeConfigModel.tryHlsAds == 0)
+        [SlikeDeviceSettings sharedSettings].tryHlsAds = NO;
+    else if(slikeConfigModel.tryHlsAds == 1)
+        [SlikeDeviceSettings sharedSettings].tryHlsAds = YES;
+    
+    
+    
+    NSString *postEnabledString = [configDict stringForKey:@"post"];
+    if(postEnabledString && [preEnabledString isEqualToString:@"0"]) {
+        slikeStreamModel.postRollEnabled = YES;
+    }
+    
+    //Fillin ads...
+    /* old
+    NSArray *midPostionArray = @[];
+    NSString *midPositionsString = [configDict stringForKey:@"mid"];
+    if(midPositionsString ) {
+        midPostionArray = [midPositionsString componentsSeparatedByString:@","];
+        if ([midPostionArray count]>0) {
+            slikeStreamModel.midRollEnabled = YES;
+        }
+    }
+    */
+    NSArray *midPostionArray = [streamDict arrayForKey:@"midroll_arr"];
+        if ([midPostionArray count]>0) {
+            slikeStreamModel.midRollEnabled = YES;
+            slikeStreamModel.midroll_arr = midPostionArray;
+        }
+    //Setting the interval
+    NSString *intervalString = [configDict stringForKey:@"interval"];
+    if(intervalString) {
+        NSInteger intervalValue = [intervalString integerValue];
+        if(intervalValue < 1000) {
+            slikeStreamModel.strID = @"";
+        }
+        [[SlikeDeviceSettings sharedSettings]setServerPingInterval:intervalValue];
+    }
+    
+    NSString *metaString = [streamDict stringForKey:@"meta"];
+    if(metaString) {
+        slikeStreamModel.strMeta = metaString;
+    }
+    
+    //Aravind Need to discuss
+    
+    NSDictionary * adsDictonary = [configDict dictionaryForKey:@"ads"];
+    if (adsDictonary && [adsDictonary count]>0) {
+        [self parseAds:slikeStreamModel adsInfo:adsDictonary sectionTitle:slikeConfigModel.section midRollPostions:midPostionArray];
+    }
+    
+    
+    slikeConfigModel.streamingInfo = slikeStreamModel;
+    slikeConfigModel.streamingInfo.nStartTime = slikeConfigModel.timecode;
+    //Return the parsed result
+    completionBlock(slikeStreamModel, nil);
+}
+-(void)parseAdEmbedPlayer:(SlikeConfig *)slikeConfigModel withStreamModel:(StreamingInfo*)slikeStreamModel withStreamInfo:(NSDictionary *)streamDict withConfigInfo:(NSDictionary *)configDict resultBlock:(void(^)(StreamingInfo* slikeStreamModel, NSError* parseError))completionBlock
+{
+    
+    NSString *preEnabledString = [configDict stringForKey:@"pre"];
+    if([preEnabledString isEqualToString:@"-1"] && preEnabledString) {
+        slikeStreamModel.preRollEnabled = YES;
+    }
+    
+    NSString *agMsgString = [streamDict stringForKey:@"AG"];
+    if (agMsgString) {
+        slikeStreamModel.vendorName = agMsgString;
+    } else {
+        slikeStreamModel.vendorName = [streamDict stringOrEmptyStringForKey:@"vendor_name"];
+    }
+    [SlikeDeviceSettings sharedSettings].tryHlsAds = [configDict boolForKey:@"tryHlsAds"];
+    if(slikeConfigModel.tryHlsAds == 0)
+        [SlikeDeviceSettings sharedSettings].tryHlsAds = NO;
+    else if(slikeConfigModel.tryHlsAds == 1)
+        [SlikeDeviceSettings sharedSettings].tryHlsAds = YES;
     NSString *postEnabledString = [configDict stringForKey:@"post"];
     if(postEnabledString && [preEnabledString isEqualToString:@"0"]) {
         slikeStreamModel.postRollEnabled = YES;
@@ -515,41 +595,54 @@
     
     NSDictionary * adsDictonary = [configDict dictionaryForKey:@"ads"];
     if (adsDictonary && [adsDictonary count]>0) {
+        slikeStreamModel.adContentsArray = [NSMutableArray array];
+        
         [self parseAds:slikeStreamModel adsInfo:adsDictonary sectionTitle:slikeConfigModel.section midRollPostions:midPostionArray];
     }
     
     
     slikeConfigModel.streamingInfo = slikeStreamModel;
-    slikeConfigModel.streamingInfo.nStartTime = slikeConfigModel.timecode;
-    //Return the parsed result
     completionBlock(slikeStreamModel, nil);
+    
 }
-
 /**
  Parse Embeded Types of videos..
  
  @param streamDict - Steam Info Dictonary
  @param completionBlock - Completion block
  */
-- (void)parseEmbedTypeVideoWithStreamInfo:(NSDictionary *)streamDict  withConfigModel:(SlikeConfig *)slikeConfigModel resultBlock:(void(^)(StreamingInfo * streamInfo, BOOL parseError))completionBlock {
+- (void)parseEmbedTypeVideoWithStreamInfo:(SlikeConfig *)slikeConfigModel withConfigInfo:(NSDictionary *)configDict withStremDict:(NSDictionary *)streamDict  resultBlock:(void(^)(StreamingInfo * streamInfo, BOOL parseError))completionBlock {
     
     BOOL isError = NO;
-    StreamingInfo *streamInfo;
+    __block StreamingInfo *streamInfo;
     
     NSString *embedString = [streamDict stringForKey:@"embed"];
     NSArray * videoInfo = [embedString componentsSeparatedByString:@"::"];
-    
+    NSString *vendorName = [streamDict stringForKey:@"vendor_name"].lowercaseString;
     if(videoInfo.count>1) {
         
         if([videoInfo.firstObject isEqualToString:@"dm"]) {
+            
             streamInfo = [StreamingInfo createStreamURL:[videoInfo objectAtIndex:1] withType:VIDEO_SOURCE_DM withTitle:[streamDict stringForKey:@"name" defaultValue:@""] withSubTitle:@"" withDuration:0L withAds:nil];
+            //Parse Add
+            if(slikeConfigModel.tpAds && [slikeConfigModel.tpAds containsObject:@"dm"]) {
+            [self parseAdEmbedPlayer:slikeConfigModel withStreamModel:streamInfo withStreamInfo:streamDict withConfigInfo:configDict resultBlock:^(StreamingInfo *slikeStreamModel, NSError *parseError) {
+                if(!parseError)
+                    streamInfo = slikeStreamModel;
+            }];
+            }
             streamInfo.vendorName = [streamDict stringForKey:@"pp" defaultValue:@"slike"];
             
         } else if([videoInfo.firstObject isEqualToString:@"yt"]) {
             streamInfo = [StreamingInfo createStreamURL:[videoInfo objectAtIndex:1] withType:VIDEO_SOURCE_YT withTitle:[streamDict stringForKey:@"name" defaultValue:@""] withSubTitle:@"" withDuration:0L withAds:nil];
             streamInfo.vendorName = [streamDict stringForKey:@"pp" defaultValue:@"slike"];
             
-        } else if([videoInfo.firstObject isEqualToString:@"url"] || [videoInfo.firstObject isEqualToString:@"ru"]) {
+        }
+        else if([vendorName isEqualToString:@"facebook"] || [videoInfo.firstObject isEqualToString:@"fb"]) {
+            // vendorName is for safty check not for that
+        streamInfo = [StreamingInfo createStreamURL:[videoInfo objectAtIndex:1] withType:VIDEO_SOURCE_FB withTitle:[streamDict stringForKey:@"name" defaultValue:@""] withSubTitle:@"" withDuration:0L withAds:nil];
+        }
+        else if([videoInfo.firstObject isEqualToString:@"url"] || [videoInfo.firstObject isEqualToString:@"ru"]) {
             
             if ([videoInfo.firstObject isEqualToString:@"url"]) {
                 streamInfo = [StreamingInfo createStreamURL:[videoInfo objectAtIndex:1] withType:VIDEO_SOURCE_VEBLR withTitle:[streamDict stringForKey:@"name" defaultValue:@""] withSubTitle:@"" withDuration:0L withAds:nil];
@@ -740,7 +833,8 @@
                 [streamInfo updateStreamSource:[dict stringForKey:@"url"] withBitrates:bitrate withFlavor:[dict stringForKey:@"flavor"] withSize:theSize withLabel:strLabel ofType:[streamInfo getVideoSourceTypeEnumByString:[dict stringForKey:@"type"]] withDVR:dvrString];
                 
                 if (hsContent){
-                    if ([[dict stringForKey:@"type"] isEqualToString:@"hls"] && [hsContent count]>0) {
+                    if (([[dict stringForKey:@"type"] isEqualToString:@"hls"]  || [[dict stringForKey:@"type"] isEqualToString:@"fhls"]
+                         )&& [hsContent count]>0) {
                         SLManifestlessDataParser *parser = [[SLManifestlessDataParser alloc]initWithStreamData:hsContent];
                         [parser prepareManifesForMediaFile:[dict stringForKey:@"url"]];
                     }
@@ -871,14 +965,29 @@
         }
         
         if([adsResponseDict objectForKey:@"mid"] && midPostionArray.count>0) {
-            
+          
             for(NSString* strPostion in midPostionArray) {
                 
                 SlikeAdsQueue *adInfo = [[SlikeAdsQueue alloc] init];
                 adInfo.adType = SL_MID;
+                // is mid roll fall back
                 NSArray *midRollsArray = [adsResponseDict arrayForKey:@"mid"];
+                
                 if (midRollsArray && [midRollsArray count]==2) {
-                    [adInfo addPosition:[strPostion intValue] withAdUnit:[[SlikeAdsUnit alloc] initWithCategory:[midRollsArray objectAtIndex:0] andAdURL:[midRollsArray objectAtIndex:1]]];
+                    NSString *adId = midRollsArray[0];
+                    NSString *adURL = midRollsArray[1];
+                    SlikeAdProvider provider = IMA;
+                    if ([adURL hasPrefix:@"FAN"]) {
+                        NSArray *itemsArray = [adURL componentsSeparatedByString:@"::"];
+                        if ([itemsArray count]==2) {
+                            provider = FAN;
+                            adURL = itemsArray[1];
+                        }
+                    }
+                    SlikeAdsUnit *adUnit = [[SlikeAdsUnit alloc] initWithCategory:adId andAdURL:adURL];
+                    adUnit.adProvider = provider;
+                    [adInfo addPosition:[strPostion intValue] withAdUnit:adUnit];
+//                    [adInfo addPosition:[strPostion intValue] withAdUnit:[[SlikeAdsUnit alloc] initWithCategory:[midRollsArray objectAtIndex:0] andAdURL:[midRollsArray objectAtIndex:1]]];
                 }
                 if(adInfo.adContents > 0) {
                     [streamInfo.adContentsArray addObject:adInfo];
@@ -953,7 +1062,7 @@
 }
 
 #pragma mark - Prefetch Functionaliy
-- (void)parsePrefetchedAds:(NSData *)jsonData resultBlock:(void(^)(id responseInstance, NSError* parseError))completionBlock {
+- (void)parsePrefetchedAds:(NSData *)jsonData forAdNode:(NSString *)node resultBlock:(void(^)(id responseInstance, NSError* parseError))completionBlock {
     
     NSDictionary *configJsonDict = [SlikeUtilities jsonDataToDictionary:jsonData];
     NSDictionary *configDict = [configJsonDict dictionaryForKey:@"settings"];
@@ -968,7 +1077,7 @@
         return;
     }
     
-    SlikeAdsQueue *prefetchAdQueue =  [self _parsePrefetchAds:adsDictonary];
+    SlikeAdsQueue *prefetchAdQueue =  [self _parsePrefetchAds:adsDictonary forAdNode:node];
     if (prefetchAdQueue.adContents> 0) {
         
         NSString *adTimeoutString = [configDict stringForKey:@"adtimeout"];
@@ -988,9 +1097,15 @@
  Parse the Ads from the response JSON
  @param adsInfoDictonary -  Dictonary containg the Ads Information
  */
-- (SlikeAdsQueue *)_parsePrefetchAds:(NSDictionary *)adsInfoDictonary {
+- (SlikeAdsQueue *)_parsePrefetchAds:(NSDictionary *)adsInfoDictonary forAdNode:(NSString *)node{
     
     NSDictionary *adsResponseDict = [adsInfoDictonary dictionaryForKey:@"_prefetch"];
+    if(node &&  ![node isEqualToString:@""]) {
+        NSDictionary *prefetchadsResponseDictNode = [adsResponseDict dictionaryForKey:node];
+        if (prefetchadsResponseDictNode !=nil) {
+        adsResponseDict = prefetchadsResponseDictNode;
+        }
+    }
     if (adsResponseDict !=nil) {
         
         //Here pre=> It  is used only for the precahing purpose. Don't confuse with tag name 'pre'

@@ -33,7 +33,7 @@
  */
 - (void)parseStreamDataAndUpdateSlikeConfig:(SlikeConfig *)slikeConfigModel withStreamJson:(NSData *)streamData withConfigJson:(NSDictionary *)configDataDict resultBlock:(void(^)(StreamingInfo* slikeStreamModel, NSError* parseError))completionBlock;
 
-- (void)parsePrefetchedAds:(NSData *)jsonData resultBlock:(void(^)(id responseInstance, NSError* parseError))completionBlock;
+- (void)parsePrefetchedAds:(NSData *)jsonData forAdNode:(NSString *)node resultBlock:(void(^)(id responseInstance, NSError* parseError))completionBlock;
 
 - (NSError *)validateConfigJsonReponse:(NSDictionary *)jsonInfoDict;
 - (NSError *)validateStreamResponseString:(NSString *)responseString;

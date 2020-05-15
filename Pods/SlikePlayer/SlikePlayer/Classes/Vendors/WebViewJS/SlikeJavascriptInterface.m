@@ -63,7 +63,7 @@
             }
             
             [invocation invoke];
-
+            
             Method m = class_getInstanceMethod([self.interfaceProvider class], targetSelector);
             void *returnValue;
             
@@ -75,8 +75,10 @@
             
             if (!([returnS hasPrefix:@"v"] && type[1] == '\0')) {
                 [invocation getReturnValue:&returnValue];
+                [self.webView evaluatingJavascriptFunction:[NSString stringWithFormat:@"%@.retValue=\"%@\";", self.interfaceName, returnValue] completion:^(NSString *message) {
+                    
+                }];
                 
-                [self.webView evaluatingJavascript:[NSString stringWithFormat:@"%@.retValue=\"%@\";", self.interfaceName, returnValue]];
             }
             
             return YES;
@@ -87,10 +89,10 @@
     return NO;
 }
 
-- (void) injectJSMethod{
+- (void) injectJSMethod {
     NSDictionary<NSString *, NSValue *> *list = [self.interfaceProvider javascriptInterfaces];
     
-   
+    
     if([self validateInterfaceName:self.interfaceName] && list != nil && list.allKeys.count > 0){
         NSMutableString *injectString = [[NSMutableString alloc] init];
         [injectString appendString:[NSString stringWithFormat:@"window.%@ = {", self.interfaceName]];
@@ -110,22 +112,24 @@
         
         [injectString appendString:@"};"];
         
-        [self.webView evaluatingJavascript:injectString];
+        [self.webView evaluatingJavascriptFunction:injectString completion:^(NSString *message) {
+            
+        }];
     }
 }
 
 - (NSString *) injectMethodStringForSelector:(SEL) selector withJSName:(NSString *) jsName interfaceName:(NSString *) interfaceName{
     Method m = class_getInstanceMethod([_interfaceProvider class], selector);
     int paramsCount = method_getNumberOfArguments(m) - 2;
-
+    
     NSMutableString *resultString = [[NSMutableString alloc] init];
     [resultString appendString:[NSString stringWithFormat:@"%@: function (", jsName]];
-
+    
     NSMutableString *locationString = [[NSMutableString alloc] init];
     [locationString appendString:[NSString stringWithFormat:@"\"%@://%@", interfaceName, jsName]];
     if(paramsCount > 0) [locationString appendString:@"?"];
     [locationString appendString:@"\""];
-
+    
     for(int i = 0; i < paramsCount; i++){
         if(i == paramsCount - 1){
             [resultString appendString:[NSString stringWithFormat:@"arg%d", i]];

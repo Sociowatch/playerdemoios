@@ -326,6 +326,7 @@
     else if ( status == SL_ENDED)
     {
         nStatus = 12;
+        [self _addComScoreMetaDataVideo:self.slikeconfig PlayerStatus:status];
     }
     
     BOOL isPdCalculate =  YES;
@@ -426,7 +427,6 @@
     NSString *returnString =  @"";
     if(self.slikeconfig.streamingInfo != nil)
     {
-        //        returnString = [NSString stringWithFormat:@"%@/%@/%@/%@",[SlikeUtilities getVideoTitle:self.slikeconfig],self.slikeconfig.streamingInfo.vendorName,self.slikeconfig.streamingInfo.isLive?@"LIVE":@"VOD",[SlikeUtilities formatTime:self.slikeconfig.streamingInfo.nDuration / 1000]];
         returnString = [NSString stringWithFormat:@"%@/%@/%@/%ld",[SlikeUtilities getVideoTitle:self.slikeconfig],self.slikeconfig.streamingInfo.vendorName,self.slikeconfig.streamingInfo.isLive?@"LIVE":@"VOD",(long)self.slikeconfig.streamingInfo.nDuration];
         
     }else
@@ -464,11 +464,11 @@
     }
 }
 
-- (void)addComScoreMetaDataAd:(SlikeConfig*)config adLength:(NSInteger)ad_length  adType:(NSInteger)adtype  PlayerStatus:(SlikePlayerState) state {
+- (void)addComScoreMetaDataAd:(SlikeConfig*)config adLength:(NSInteger)ad_length  adType:(NSInteger)adtype  adStatus:(NSInteger) state {
     
     id <ISlikeAnlytics> slikeAnalytics = [[SlikePlayerSettings playerSettingsInstance] getComScoreAnalyticsTrackers];
     if(slikeAnalytics == nil) return;
-    [slikeAnalytics addComScoreMetaDataAd:config adLength:ad_length adType:adtype PlayerStatus:state];
+    [slikeAnalytics addComScoreMetaDataAd:config adLength:ad_length adType:adtype adStatus:(NSInteger) state];
 }
 
 - (void)_addComScoreMetaDataVideo:(SlikeConfig*)config PlayerStatus:(SlikePlayerState) state {
@@ -480,14 +480,14 @@
 #pragma mark
 -(void)processVideoRequest:(SlikeConfig*)slikeConfigModel
 {
-    EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:nil];
+    SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:nil];
     eventModel.slikeConfigModel = slikeConfigModel;
     self.eventType = MEDIA;
     self.playerState = SL_VIDEO_REQUEST;
     self.slikeconfig = eventModel.slikeConfigModel;
     [self _processAVPlayerAnalytics:eventModel];
 }
--(NSString*)sendSlikePlayerAnalytics:(SlikeEventType)eventType playerState:(SlikePlayerState)state dataPayload:(EventModel *)eventModel withCurrentPlayerTime:(NSInteger)pCurrentTime
+-(NSString*)sendSlikePlayerAnalytics:(SlikeEventType)eventType playerState:(SlikePlayerState)state dataPayload:(SLEventModel *)eventModel withCurrentPlayerTime:(NSInteger)pCurrentTime
 {
     
     if (![self isValidAnalyticsEvent:state]) {
@@ -536,7 +536,7 @@
         return;
     }
     
-    EventModel *eventModel = payload[kSlikeEventModelKey];
+    SLEventModel *eventModel = payload[kSlikeEventModelKey];
     if (!eventModel) {
         return;
     }
@@ -615,7 +615,7 @@
  Process the avplayer Analytics
  @param eventModel - Event Model
  */
-- (void)_processAVPlayerAnalytics:(EventModel *)eventModel  {
+- (void)_processAVPlayerAnalytics:(SLEventModel *)eventModel  {
     //Need to discusswith sanjay sir
     
     
@@ -666,7 +666,7 @@
  @param eventModel - Event Model
  */
 
--(void)sendGAAnalytics:(EventModel *)eventModel
+-(void)sendGAAnalytics:(SLEventModel *)eventModel
 {
     //    NSLog(@"returnString %@ == %@",eventModel.adEventModel.adStatusAnalytics,[self _getActionForCurrentAdSource:eventModel]);
     [self sendEvent:eventModel.adEventModel.adStatusAnalytics Action:[self _getActionForCurrentAdSource:eventModel] Label:[self _getLabelForCurrentAdSource:eventModel]];
@@ -677,19 +677,20 @@
  @param eventModel - Event Model
  */
 
-- (void)_processAdAnalytics:(EventModel *)eventModel {
+- (void)_processAdAnalytics:(SLEventModel *)eventModel {
     
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
     if(eventModel.adEventModel.adStatus != 3) {
         [self sendGAAnalytics:eventModel];
     }
-    
+    [self addComScoreMetaDataAd:eventModel.slikeConfigModel adLength:eventModel.adEventModel.adDuration adType:eventModel.adEventModel.slikeAdType adStatus:eventModel.adEventModel.adStatus];
+
     if(eventModel.adEventModel.adStatus == -1) return;
     
     [[SlikeNetworkManager defaultManager]sendAdLogToServer:eventModel.slikeConfigModel withStatus:eventModel.adEventModel.adStatus withAdID:eventModel.adEventModel.slikeAdId withAdCampaign:eventModel.adEventModel.adCampaign withRetryCount:eventModel.adEventModel.retryCount withMediaDuration:eventModel.adEventModel.mediaDuration withMediaPosition:eventModel.adEventModel.mediaPoistion withAdDuration:eventModel.adEventModel.adDuration andWithAdPosition:eventModel.adEventModel.adPosition DeviceVolume:eventModel.adEventModel.isVolumeOn DeviceVolumeLevel:eventModel.adEventModel.volumeLevel adMoreInformation:eventModel.adEventModel.adMoreInfo adLoadError:eventModel.adEventModel.errDespription addType:eventModel.adEventModel.slikeAdType strIu:eventModel.adEventModel.iu strAdResion:eventModel.adEventModel.adResgion withPreFetchInfo:eventModel.adEventModel.isAdPrefetched withPFID:eventModel.adEventModel.pfid withAdProvider:[NSString stringWithFormat:@"%ld",(long)eventModel.adEventModel.adProviderType] withCompletionBlock:nil];
 }
 
-- (NSString*)_getActionForCurrentAdSource :(EventModel *)eventModel
+- (NSString*)_getActionForCurrentAdSource :(SLEventModel *)eventModel
 {
     
     NSString *returnString =  @"";
@@ -735,7 +736,7 @@
     }
     return returnString;
 }
-- (NSString*)_getLabelForCurrentAdSource :(EventModel *)eventModel
+- (NSString*)_getLabelForCurrentAdSource :(SLEventModel *)eventModel
 {
     
     NSString *returnString =  @"";
@@ -765,7 +766,7 @@
  Process the Embeded Player analytics
  @param eventModel - Event Model that contains information about the analytics
  */
-- (void)_processEmbededAnalytics:(EventModel *)eventModel {
+- (void)_processEmbededAnalytics:(SLEventModel *)eventModel {
     
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
     
@@ -779,7 +780,7 @@
     
     if(ENABLE_LOG)
     {
-        NSLog(@"analyticsString %@",analyticsString);
+        //NSLog(@"analyticsString %@",analyticsString);
     }
     [self processAnalyticsRequest:analyticsString];
 }
@@ -788,7 +789,7 @@
  Process the Embeded Player analytics
  @param eventModel - Event Model that contains information about the analytics
  */
-- (void)_processGIFAnalytics:(EventModel *)eventModel {
+- (void)_processGIFAnalytics:(SLEventModel *)eventModel {
     
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
     
@@ -802,7 +803,7 @@
  Process the meme Player analytics
  @param eventModel - Event Model that contains information about the analytics
  */
-- (void)_processMemeAnalytics:(EventModel *)eventModel {
+- (void)_processMemeAnalytics:(SLEventModel *)eventModel {
     
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;
     
@@ -848,7 +849,7 @@
  Process the Rumble Ads Analytics
  @param eventModel - Event Model
  */
-- (void)_processRumbleAdAnalytics:(EventModel *)eventModel {
+- (void)_processRumbleAdAnalytics:(SLEventModel *)eventModel {
     SlikeDLog(@"_processRumbleAdAnalytics");
 }
 
@@ -856,7 +857,7 @@
  Process the meme Player analytics
  @param eventModel - Event Model that contains information about the analytics
  */
-- (void)_processRumbleAnalytics:(EventModel *)eventModel {
+- (void)_processRumbleAnalytics:(SLEventModel *)eventModel {
     
     SlikeDLog(@"_processRumbleAnalytics - %ld", (long)eventModel.playerEventModel.playerState);
     if([SlikeSharedDataCache sharedCacheManager].isGDPREnable) return;

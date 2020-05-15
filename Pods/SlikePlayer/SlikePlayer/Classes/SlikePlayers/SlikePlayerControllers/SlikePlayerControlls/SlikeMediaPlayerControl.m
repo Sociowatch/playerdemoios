@@ -47,7 +47,16 @@ static NSInteger kDraggingViewBottomOffset = 5;
 
 @interface SlikeMediaPlayerControl()<CPSliderDelegate, EventManagerProtocol, SlikeCoachmarkViewDelegate> {
 }
+@property (weak, nonatomic) IBOutlet UILabel *dvrCurrentTime;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthCurrentTimeConst;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthDurationConst;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *seekBarBottomConst;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomBufferingConst;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *trailingDuraionFullScreen;
+
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *lblTitleXPoint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *gotoLiveTrailingOutlet;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewLeadinConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topViewTraillingConstraint;
@@ -133,7 +142,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
 }
 - (void)awakeFromNib {
     [super awakeFromNib];
-    
+    _dvrCurrentTime.hidden = YES;
     _liveButton.alpha = 0;
     _draggingLeftPadding = 20;
     _draggingRightPadding = 10;
@@ -171,7 +180,13 @@ static NSInteger kDraggingViewBottomOffset = 5;
     _airPlayView.contentMode = UIViewContentModeScaleAspectFill;
     _viewAirPlayContainer.backgroundColor = [UIColor clearColor];
 }
-
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if ([touch.view isDescendantOfView:self.viewBottomControls]) {
+        return NO;
+    }
+    return YES;
+}
 - (void)hideAirPlayMode {
     if (self.airPlayView && [_airPlayView superview]) {
         [_airPlayView removeFromSuperview];
@@ -287,7 +302,7 @@ static NSInteger kDraggingViewBottomOffset = 5;
     self.lblNowPlaying.font =[UIFont fontWithName:@"HelveticaNeue" size: 14];
     self.progressBuffering.progress =  0.0;
     self.btnBackToLive.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size: 14];
-    self.btnBackToLive.titleLabel.text = @"LIVE";
+    [self.btnBackToLive setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.liveButtonTitle forState:UIControlStateNormal];
     self.btnBackToLive.userInteractionEnabled = NO;
     
     _tapGesture = [[SlikeTapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapOnControlsView:)];
@@ -406,8 +421,11 @@ static NSInteger kDraggingViewBottomOffset = 5;
     if(!self.mediaConfig.isFullscreenControl && self.mediaConfig) {
         self.btnFullScreenWidthConstrain.constant = 0.0;
         self.btnFullScreen.hidden =  YES;
+        self.gotoLiveTrailingOutlet.constant = 15;
+
+    }else {
+        self.gotoLiveTrailingOutlet.constant = 15 + self.btnFullScreenWidthConstrain.constant;
     }
-    
     [self nextPreviousAppearance];
 }
 
@@ -645,7 +663,18 @@ static NSInteger kDraggingViewBottomOffset = 5;
     }
     
     if ([self isMediaTypeDVR] && playerCurrentPosition) {
+       // NSLog(@"data Aravind medicontrol== %ld",(long)playerCurrentPosition);
+        //NSLog(@"data Aravind medicontrol== %ld",(long)playerCurrentPosition/100);
+       dispatch_async(dispatch_get_main_queue(), ^{
+           [self.dvrCurrentTime setText:[SlikeUtilities formatTime:playerCurrentPosition/1000]];
+           [self.dvrCurrentTime setNeedsDisplay];
+       });
         
+       // self.dvrCurrentTime.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
+
+      //  NSLog(@"data Aravind medicontrol==== %@",[SlikeUtilities formatTime:playerCurrentPosition/1000]);
+       // NSLog(@"data Aravind medicontrol label ==== %@",self.dvrCurrentTime.text);
+
         if((!_isSlideing && self.playerCurrentState == SL_PLAYING) || self.playerCurrentState == SL_COMPLETED) {
             CMTime time = CMTimeMakeWithSeconds(playerCurrentPosition/1000, NSEC_PER_SEC);
             [self updateStatusForDVR:time];
@@ -1292,10 +1321,10 @@ static NSInteger kDraggingViewBottomOffset = 5;
     [self _invalidateTimerAndHideControls];
     
     if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeLive) {
-        [_liveButton setTitle:@"GO TO DVR" forState:UIControlStateNormal];
+        [_liveButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.goToDvrButtonTitle forState:UIControlStateNormal];
         [self.slikePlayer switchToStream:SLKMediaPlayerStreamTypeDVR];
     } else if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
-        [_liveButton setTitle:@"GO TO LIVE" forState:UIControlStateNormal];
+        [_liveButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.goToLiveButtonTitle forState:UIControlStateNormal];
                [self.slikePlayer switchToStream:SLKMediaPlayerStreamTypeLive];
     }
     [self updateSlikeMediaData];
@@ -1303,9 +1332,16 @@ static NSInteger kDraggingViewBottomOffset = 5;
 
 - (void)updateDVRButtonTitle {
     if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeLive) {
-           [_liveButton setTitle:@"GO TO DVR" forState:UIControlStateNormal];
+           [_liveButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.goToDvrButtonTitle forState:UIControlStateNormal];
+        [_liveButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.goToDvrButtonTitle forState:UIControlStateSelected];
+
+        _dvrCurrentTime.hidden = YES;
        } else if (self.mediaConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
-           [_liveButton setTitle:@"GO TO LIVE" forState:UIControlStateNormal];
+           [_liveButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.goToLiveButtonTitle forState:UIControlStateNormal];
+           [_liveButton setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.goToLiveButtonTitle forState:UIControlStateSelected];
+
+           _dvrCurrentTime.hidden = NO;
+
     }
 }
 
@@ -1314,19 +1350,47 @@ static NSInteger kDraggingViewBottomOffset = 5;
 /// @param time - time  data
 
 - (void)updateStatusForDVR:(CMTime)time {
-    [self bringSubviewToFront:_liveButton];
+   // [self bringSubviewToFront:_liveButton];
     if (SLK_CMTIMERANGE_IS_NOT_EMPTY([_slikePlayer getTimeRange]) && SRG_CMTIMERANGE_IS_DEFINITE([_slikePlayer getTimeRange])) {
         
+        float timeseSlapsed = CMTimeGetSeconds([_slikePlayer getTimeRange].duration);
+        /*
+        NSLog(@"timeseSlapsed float %f",timeseSlapsed);
+
+        NSLog(@"timeseSlapsed start %f",CMTimeGetSeconds([_slikePlayer getTimeRange].start));
+        NSLog(@"timeseSlapsed duration %f", CMTimeGetSeconds([_slikePlayer getTimeRange].duration));
+        
+        NSLog(@"timeseSlapsed seekValue %f",CMTimeGetSeconds(CMTimeSubtract(time, [_slikePlayer getTimeRange].start)));
+        */
+        if (timeseSlapsed <= 60) {
+           self.lblDuration.hidden = YES;
+           self.lblCurrentTime.hidden = YES;
+           self.seekBar.hidden = YES;
+            self.progressBuffering.hidden = YES;
+           return;
+        }
+        self.lblDuration.hidden = NO;
+        self.lblCurrentTime.hidden = NO;
+        self.seekBar.hidden = NO;
+        self.progressBuffering.hidden = NO;
+
+
         self.seekBar.maximumValue = CMTimeGetSeconds([_slikePlayer getTimeRange].duration);
         self.seekBar.value = CMTimeGetSeconds(CMTimeSubtract(time, [_slikePlayer getTimeRange].start));
-        
-        if ([self isLiveDVR]) {
-            self.lblDuration.text =@"__:__";
-            self.lblCurrentTime.text =@"__:__";
-        } else {
+
+        self.widthDurationConst.constant = 0.0;
+        self.widthCurrentTimeConst.constant = 0.0;
+        self.seekBarBottomConst.constant = 6.0 + 25.0;
+        self.bottomBufferingConst.constant = 18.0 + 25.0;
+        if (!self.btnFullScreen.hidden) {
+            self.trailingDuraionFullScreen.constant = -30;
+        }
+        _dvrCurrentTime.hidden = NO;
+        dispatch_async(dispatch_get_main_queue(), ^{
             self.lblCurrentTime.text = [SlikeUtilities formatTime:self.seekBar.value];
             self.lblDuration.text = [SlikeUtilities formatTime:(self.seekBar.maximumValue - self.seekBar.value)];
-        }
+        });
+    
     }
 }
 

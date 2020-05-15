@@ -22,6 +22,7 @@
 
 - (void)initializeData {
     
+    self.tryHlsAds = 2;
     self.isInitialPlayerMute =  NO;
     self.isBackGrounPlayEnable =  NO;
     self.isControlDisable = NO;
@@ -90,7 +91,7 @@
     self.isPostrollEnabled = ON;
     _nextVideoTitle = @"";
     _nextVideoThumbnail = @"";
-    _qualityName = @[@"Auto", @"Low", @"Medium", @"High"];
+    _qualityName = @[[SlikePlayerSettings playerSettingsInstance].slikestrings.autoBitrateTitle, [SlikePlayerSettings playerSettingsInstance].slikestrings.lowBitrateTitle, [SlikePlayerSettings playerSettingsInstance].slikestrings.mediumBitrateTitle, [SlikePlayerSettings playerSettingsInstance].slikestrings.highBitrateTitle];
     self.ispr =  FALSE;
     _isBitrateControl = YES;
     _enableCoachMark = NO;
@@ -116,8 +117,10 @@
     _trackLimit = 0;
     _enableManifestCache = YES;
     self.externalAdArray =  [NSArray array];
-    
-    
+    //PreRoll Skip
+    self.skipPre = NO;
+    self.tpAds = [NSArray array];
+    self.isDMExternalLinkHandle = YES;
 }
 
 - (id)initWithTitle:(NSString *) strTitle withID:(NSString *) strMediaId withSection:(NSString *) strSection withMSId:(NSString *) strMsId posterImage:(NSString*)strPosterImage {
@@ -151,7 +154,13 @@
     StreamingInfo *streamingInfo = [StreamingInfo createStreamURL:mediaURL withType:playerType withTitle:configModel.title withSubTitle:@"" withDuration:0.0 withAds:nil];
     streamingInfo.mediaId = configModel.mediaId;
     streamingInfo.isExternalPlayer = YES;
+    if(configModel.tryHlsAds == 0) {
+        [SlikeDeviceSettings sharedSettings].tryHlsAds = NO;
+    }else if(configModel.tryHlsAds == 1) {
+        [SlikeDeviceSettings sharedSettings].tryHlsAds = YES;
+    }
     configModel.streamingInfo = streamingInfo;
+    
     return configModel;
     
 }

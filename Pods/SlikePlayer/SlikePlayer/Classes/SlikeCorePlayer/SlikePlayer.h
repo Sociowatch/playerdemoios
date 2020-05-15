@@ -5,7 +5,7 @@
 //  Created by TIL on 29/11/16.
 //  Copyright © 2016 BBDSL. All rights reserved.
 //
-// SDK Version 2.7.8
+// SDK Version 2.9.5
 
 #import <UIKit/UIKit.h>
 #import "ISlikePlayer.h"
@@ -135,12 +135,27 @@
 
 - (void)initPlayerWithApikey:(NSString *)apiKey andWithDeviceUID:(NSString *)uuid debugMode:(BOOL)isDebug;
 
+/// SlikeStrings
+@property(nonatomic, strong) SlikeLanguageStrings *slikestrings;
+
+/// PreFetch Node for specific Language
+@property (nonatomic, strong,readonly) NSString *prefetchNode;
+
+/// User This method for updatevalues
+-(void)resetSlikeStrings;
+
 /**
  GDPAEnabledenable information
  
  @param isGDPREnabled value true if enable else false
  */
 -(void)setGDPAEnabled:(BOOL)isGDPREnabled;
+
+
+/// Node For Prectech
+/// @param prefetchNode Node value for pretch , If you want to default node then pass Empty
+/// @param isRemoved cancel last prefech Data
+-(void)setPrefetchNode:(NSString*)prefetchNode shouldRemovedLastPrefectData:(BOOL)isRemoved;
 
 
 /// set Ad Priority  array if any other wise set nil;

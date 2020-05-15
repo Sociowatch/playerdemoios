@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, SlikeOrientationType) {
 
 @interface SlikeOrientationObserver : NSObject
 @property(nonatomic, assign) BOOL disableOrientation;
+@property(nonatomic, assign) BOOL isAspectOreintation;
 
 - (instancetype)initWithTarget:(UIViewController *)viewController rotationCondition:(BOOL(^)(SlikeOrientationObserver *observer))rotationCondition;
 

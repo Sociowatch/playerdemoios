@@ -292,7 +292,7 @@
     }
     
     if (self.fullScreenWindow == nil) {
-
+        
         self.mainParent = parent.parentViewController;
         self.containerView = parent.view.superview;
         
@@ -324,12 +324,12 @@
                                        delay:0
                                      options:UIViewKeyframeAnimationOptionLayoutSubviews
                                   animations:^{
-                                      _self.fullScreenWindow.frame = _self.mainWindow.bounds;
-                                  } completion:^(BOOL finished) {
-                                      
-                                      [_self _forceIPadWindowOrentation];
-                                      if ( _self.orientationChanged ) _self.orientationChanged(_self, _self.fullScreen);
-                                  }];
+            _self.fullScreenWindow.frame = _self.mainWindow.bounds;
+        } completion:^(BOOL finished) {
+            
+            [_self _forceIPadWindowOrentation];
+            if ( _self.orientationChanged ) _self.orientationChanged(_self, _self.fullScreen);
+        }];
         
     } else {
         
@@ -337,7 +337,7 @@
         __weak typeof(self) _self = self;
         [self animatedNormalScreenWithDuration:0.3 animation:^(UIViewController *parent) {
             _self.fullScreenWindow.frame = _self.dummyView.frame;
-
+            
             if ( _self.orientationChanged ) _self.orientationChanged(self, _self.fullScreen);
         } completion:^(BOOL finished) {
             
@@ -360,23 +360,41 @@
     [UIView animateKeyframesWithDuration:duration
                                    delay:0        options:UIViewKeyframeAnimationOptionLayoutSubviews
                               animations:^{
-                                  if (animation)
-                                      animation(_self.mainParent);
-                                  _self.iPadOriginalPoint = [_self.containerView convertPoint:_self.fullScreenWindow.frame.origin toView:parent.view];
-                                  
-                                  _self.fullScreenWindow.frame = CGRectMake(_self.iPadOriginalPoint.x, _self.iPadOriginalPoint.y, parent.view.frame.size.width, parent.view.frame.size.height);
-                              }
+        if (animation)
+            animation(_self.mainParent);
+        _self.iPadOriginalPoint = [_self.containerView convertPoint:_self.fullScreenWindow.frame.origin toView:parent.view];
+        
+        _self.fullScreenWindow.frame = CGRectMake(_self.iPadOriginalPoint.x, _self.iPadOriginalPoint.y, parent.view.frame.size.width, parent.view.frame.size.height);
+    }
                               completion:^(BOOL finished) {
-                                  if (completion) {
-                                      completion(finished);
-                                      [_self _resetiPadNormal:parent];
-                                  }
-                              }];
+        if (completion) {
+            completion(finished);
+            [_self _resetiPadNormal:parent];
+        }
+    }];
 }
 
-
-- (void)_resetiPadNormal:(UIViewController *) parent {
+- (void)_resetWithAspect:(UIViewController *) parent {
+    [parent.view removeFromSuperview];
+    _fullScreenWindow.rootViewController = nil;
+    [_mainParent addChildViewController:parent];
+    [_containerView addSubview:parent.view];
+    parent.view.frame = _dummyView.frame;
+    [parent didMoveToParentViewController:_mainParent];
+    [_mainWindow makeKeyAndVisible];
+    [_dummyView removeFromSuperview];
+    _dummyView = nil;
+    _fullScreenWindow = nil;
+    _containerView = nil;
+    _mainParent = nil;
+    [self forceDeviceOrientation:UIInterfaceOrientationPortrait];
     
+}
+- (void)_resetiPadNormal:(UIViewController *) parent {
+    if (self.isAspectOreintation) {
+        [self _resetWithAspect:parent];
+        return;
+    }
     __weak typeof(self) _self = self;
     _dummyView.alpha = 0.0;
     [UIView animateWithDuration:0.0 animations:^(void){
@@ -398,9 +416,9 @@
         _self.containerView = nil;
         _self.mainParent = nil;
         _self.fullScreenWindow.rootViewController = nil;
-  
+        
     }];
-   
+    
     
 }
 
@@ -419,7 +437,7 @@
         if ( !_rotationCondition(self) )
             return;
     }
-
+    
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if (UIDeviceOrientationIsValidInterfaceOrientation(orientation)) {
         [self _forceIPadDeviceOrientation:orientation];

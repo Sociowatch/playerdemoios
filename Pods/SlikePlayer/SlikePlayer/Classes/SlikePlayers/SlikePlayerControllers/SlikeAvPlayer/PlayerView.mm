@@ -110,7 +110,6 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
     
     [asset.resourceLoader setDelegate:self.assetLoader queue:dispatch_get_main_queue()];
     __weak PlayerView *wself = self;
-    
     [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^() {
         // [wself _enqueueBlockOnMainQueue:^{
         
@@ -201,6 +200,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
     } else {
         [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
     }
+    
     [self updateBitrate];
     if (_requireCueEvents) {
         [self _setupItemForMediaTitle];
@@ -353,6 +353,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
         [self _postNetworkErrorMessage];
     }
     if(!_playerFinish && !_isSeeking) {
+        self.player.rate = [[SlikeDeviceSettings sharedSettings] getAvplayerSpeed];
         [[NSNotificationCenter defaultCenter] postNotificationName:SlikePlayerPlaybackStateTimeUpdateNotification object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInteger:currentSeconds], @"data", nil]];
     }
 }
@@ -682,9 +683,7 @@ static NSString * const SLKVideoPlayerControllerDurationKey = @"duration";
             }
             
             self.isSeeking = YES;
-            SlikeDLog(@"PLAYER SEEK SECONDS = %f", CMTimeGetSeconds(time));
-            
-            
+            SlikeDLog(@"PLAYER SEEK SECONDS = %f", CMTimeGetSeconds(time));          
             [self.player seekToTime:time toleranceBefore:isFastSeek ? kCMTimePositiveInfinity : kCMTimeZero toleranceAfter:isFastSeek ? kCMTimePositiveInfinity : kCMTimeZero completionHandler:^(BOOL finished) {
                 
                 SlikeDLog(@"PLAYER: seek %s", ((finished) ? "completed" : "incomplete"));

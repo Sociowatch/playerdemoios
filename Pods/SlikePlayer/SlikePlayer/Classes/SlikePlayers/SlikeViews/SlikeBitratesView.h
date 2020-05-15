@@ -19,6 +19,7 @@
 @property (weak, nonatomic) SlikeConfig *configModel;
 
 @property (copy, nonatomic) void (^selectedBirateBlock)(id bitrateType);
+@property (copy, nonatomic) void (^selectedSpeedBlock)(id speedType);
 @property (copy, nonatomic) void (^closeButtonBlock)(void);
 
 

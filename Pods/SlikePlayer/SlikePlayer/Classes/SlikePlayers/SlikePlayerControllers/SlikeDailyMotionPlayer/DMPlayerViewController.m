@@ -5,15 +5,13 @@
 
 #import "DMPlayerViewController.h"
 #import "SlikeInAppBrowserViewController.h"
+#import "DMEventParser.h"
 
-static NSString *const DMAPIVersion = @"2.9.3";
+static NSString *const DMAPIVersion = @"3.7.8";
 
 @interface DMPlayerViewController () <UIAlertViewDelegate>
-//@property (weak, nonatomic) IBOutlet UIView *playerView;
-//- (IBAction)clbCloseAction:(id)sender;
 
-@property (nonatomic) UIWebView *webView;
-
+@property (nonatomic) WKWebView *wkWebView;
 @property (nonatomic, readwrite) BOOL autoplay;
 @property (nonatomic, readwrite) float bufferedTime;
 @property (nonatomic, readwrite) float duration;
@@ -29,6 +27,9 @@ static NSString *const DMAPIVersion = @"2.9.3";
 @property (nonatomic, strong) NSURL *safariURL;
 - (void)openURLInSafari:(NSURL *)URL;
 
+//New Methods
+@property (strong, nonatomic) NSString *messageHandlerEvent;
+@property (strong, nonatomic) NSString *pathPrefix;
 @end
 
 
@@ -39,18 +40,21 @@ static NSString *const DMAPIVersion = @"2.9.3";
 }
 
 - (void)removeWebView {
-    if (_webView) {
-        _webView.delegate = nil;
-        [_webView removeFromSuperview];
-        [_webView stopLoading];
+    if (_wkWebView) {
+        [self pause];
+        [_wkWebView stopLoading];
+        [_wkWebView.configuration.userContentController removeScriptMessageHandlerForName:_messageHandlerEvent];
+        _wkWebView.UIDelegate = nil;
+        [_wkWebView removeFromSuperview];
+        [_wkWebView stopLoading];
     }
 }
 
-- (void)updateWebView:(UIWebView *)webView {
+- (void)updateWebView:(WKWebView *)webView {
     [self removeWebView];
-    self.webView = webView;
+    self.wkWebView = webView;
     if (webView) {
-        webView.delegate = self;
+        webView.UIDelegate = self;
         webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         webView.frame = self.bounds;
         [self addSubview:webView];
@@ -58,9 +62,8 @@ static NSString *const DMAPIVersion = @"2.9.3";
 }
 
 - (void)updatePlayerFrames {
-    self.webView.frame = self.bounds;
-    [self.webView reload];
-    
+    self.wkWebView.frame = self.bounds;
+    [self.wkWebView reload];
 }
 
 - (void)setup {
@@ -68,7 +71,6 @@ static NSString *const DMAPIVersion = @"2.9.3";
     _params = @{};
     
     _autoplay = [self.params[@"autoplay"] boolValue];
-    
     _currentTime = 0;
     _bufferedTime = 0;
     _duration = NAN;
@@ -83,6 +85,9 @@ static NSString *const DMAPIVersion = @"2.9.3";
     _webBaseURLString = @"http://www.dailymotion.com";
     _autoOpenExternalURLs = NO;
     
+    //New
+    _messageHandlerEvent = @"triggerEvent";
+    _pathPrefix  = @"/embed/";
 }
 
 - (void)awakeFromNib {
@@ -119,26 +124,27 @@ static NSString *const DMAPIVersion = @"2.9.3";
     if (self.inited) return;
     self.inited = YES;
     
-    UIWebView *webview = [[UIWebView alloc] init];
-    webview.delegate = self;
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.allowsInlineMediaPlayback = true;
+    configuration.requiresUserActionForMediaPlayback = false;
+    configuration.allowsAirPlayForMediaPlayback = true;
+    configuration.allowsPictureInPictureMediaPlayback = NO;
+    WKPreferences *preferences = [[WKPreferences alloc]init];
+    preferences.javaScriptCanOpenWindowsAutomatically = true;
+    configuration.preferences = preferences;
+    configuration.userContentController = [self newContentController];
+    
+    WKWebView *webview = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
+    webview.navigationDelegate = self;
+    webview.UIDelegate = self;
     
     // Remote white default background
     webview.opaque = NO;
     webview.backgroundColor = [UIColor clearColor];
     
-    // Allows autoplay (iOS 4+)
-    if ([webview respondsToSelector:@selector(setMediaPlaybackRequiresUserAction:)]) {
-        webview.mediaPlaybackRequiresUserAction = NO;
-    }
-    
-    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)]) {
-        webview.allowsInlineMediaPlayback = YES;
-    }
-    
     if ([self.params[@"fullscreen-state"] isEqualToString:@"fullscreen"]) {
         _fullscreen = YES;
     }
-    
     // Hack: prevent vertical bouncing
     for (id subview in webview.subviews) {
         if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
@@ -147,7 +153,8 @@ static NSString *const DMAPIVersion = @"2.9.3";
         }
     }
     
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@", self.webBaseURLString, video, DMAPIVersion];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@&api=nativeBridge&webkit-playsinline=1", self.webBaseURLString, video, DMAPIVersion];
+    
     for (NSString *param in [self.params keyEnumerator]) {
         id value = self.params[param];
         if ([value isKindOfClass:NSString.class]) {
@@ -158,136 +165,29 @@ static NSString *const DMAPIVersion = @"2.9.3";
         }
         [url appendFormat:@"&%@=%@", param, value];
 #pragma clang diagnostic pop
-        
     }
     
     NSString *appName = NSBundle.mainBundle.bundleIdentifier;
-    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [url appendFormat:@"&app=%@", [appName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 #pragma clang diagnostic pop
-    
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
-    
     [self updateWebView:webview];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    BOOL isFrame = ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];
-    
-    if (isFrame) return YES;
-    
-    if ([request.URL.scheme isEqualToString:@"dmevent"]) {
-        NSString *eventName = nil;
-        NSMutableDictionary *data = [NSMutableDictionary dictionary];
-        
-        // Use reverse order so that the first occurrence of a key replaces those subsequent.
-        for (NSString *component in [[request.URL.query componentsSeparatedByString:@"&"] reverseObjectEnumerator]) {
-            if ([component length] == 0) continue;
-            NSUInteger pos = [component rangeOfString:@"="].location;
-            if (pos == NSNotFound) pos = component.length - 1;
-            NSString *key = [component substringToIndex:pos];
-            NSString *val = [component substringFromIndex:pos + 1];
-            
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            val = [[val stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
-                   stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-#pragma clang diagnostic pop
-            
-            if ([key isEqualToString:@"event"]) {
-                eventName = val;
-            }
-            else {
-                // stringByReplacingPercentEscapesUsingEncoding may return nil on malformed UTF8 sequence
-                if (!val) val = @"";
-                
-                data[key] = val;
-            }
-        }
-        
-        if (eventName.length) {
-            
-            if ([eventName isEqualToString:@"timeupdate"]) {
-                [self willChangeValueForKey:@"currentTime"];
-                _currentTime = [data[@"time"] floatValue];
-                [self didChangeValueForKey:@"currentTime"];
-            }
-            else if ([eventName isEqualToString:@"progress"]) {
-                self.bufferedTime = [data[@"time"] floatValue];
-            }
-            else if ([eventName isEqualToString:@"durationchange"]) {
-                self.duration = [data[@"duration"] floatValue];
-            }
-            else if ([eventName isEqualToString:@"fullscreenchange"]) {
-                [self willChangeValueForKey:@"fullscreen"];
-                _fullscreen = [data[@"fullscreen"] boolValue];
-                [self didChangeValueForKey:@"fullscreen"];
-            }
-            else if ([eventName isEqualToString:@"volumechange"]) {
-                self.volume = [data[@"volume"] floatValue];
-            }
-            else if ([eventName isEqualToString:@"play"] || [eventName isEqualToString:@"playing"]) {
-                self.paused = NO;
-            }
-            else if ([eventName isEqualToString:@"start"]) {
-                self.started = YES;
-            }
-            else if ([eventName isEqualToString:@"end"]) {
-                self.ended = YES;
-            }
-            else if ([eventName isEqualToString:@"end"] || [eventName isEqualToString:@"pause"]) {
-                self.paused = YES;
-            }
-            else if ([eventName isEqualToString:@"seeking"]) {
-                self.seeking = YES;
-                _currentTime = [data[@"time"] floatValue];
-            }
-            else if ([eventName isEqualToString:@"seeked"]) {
-                self.seeking = NO;
-                _currentTime = [data[@"time"] floatValue];
-            }
-            else if ([eventName isEqualToString:@"apiready"]) {
-                [self play];
-            }
-            else if ([eventName isEqualToString:@"error"]) {
-                NSDictionary *userInfo =
-                @{
-                  @"code" : @([data[@"code"] intValue]) ?: @0,
-                  @"title" : data[@"title"] ?: @"",
-                  @"message" : data[@"message"] ?: @"",
-                  NSLocalizedDescriptionKey : data[@"message"] ?: @"",
-                  };
-                self.error = [NSError errorWithDomain:@"DailymotionPlayer"
-                                                 code:[data[@"code"] integerValue]
-                                             userInfo:userInfo];
-            }
-            
-            if ([self.delegate respondsToSelector:@selector(dailymotionPlayer:didReceiveEvent:)]) {
-                [self.delegate dailymotionPlayer:self didReceiveEvent:eventName];
-            }
-        }
-        
-        return NO;
-    }
-    else if ([request.URL.path hasPrefix:@"/embed/video/"]) {
-        return YES;
-    }
-    else {
-        [self openURLInSafari:request.URL];
-        return NO;
-    }
-}
-
 - (void)setFullscreen:(BOOL)newFullscreen {
-    [self api:@"fullscreen" arg:newFullscreen ? @"1" : @"0"];
-    _fullscreen = newFullscreen;
+    [self notifyPlayerApi:@"fullscreen" arg:newFullscreen ? @"1" : @"0" completion:^{
+        self->_fullscreen = newFullscreen;
+    }];
+    
 }
 
 - (void)setCurrentTime:(float)newTime {
-    [self api:@"seek" arg:[NSString stringWithFormat:@"%f", newTime]];
-    _currentTime = newTime;
+    [self notifyPlayerApi:@"seek" arg:[NSString stringWithFormat:@"%f", newTime] completion:^{
+        self->_currentTime = newTime;
+    }];
+    
 }
 
 - (void)play {
@@ -312,11 +212,26 @@ static NSString *const DMAPIVersion = @"2.9.3";
         return;
     }
     if (self.inited) {
-        [self api:@"load" arg:aVideo];
+        [self loadPlayer:aVideo];
     }
     else {
         [self initPlayerWithVideo:aVideo];
     }
+}
+
+- (void)loadPlayer:(NSString *)videoId {
+    NSMutableArray *builder = [[NSMutableArray alloc]init];
+    NSString *loadStr = [NSString stringWithFormat:@"player.load('%@'", videoId];
+    [builder addObject:loadStr];
+    if (self.params && [self.params count]>0) {
+        [builder addObject:@", "];
+        [builder addObject:_params];
+    }
+    [builder addObject:@")"];
+    NSString *jsonStrig =  [builder componentsJoinedByString:@""];
+    [_wkWebView evaluateJavaScript:jsonStrig completionHandler:^(id message, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)loadVideo:(NSString *)videoId withParams:(NSDictionary *)params {
@@ -324,39 +239,39 @@ static NSString *const DMAPIVersion = @"2.9.3";
     [self load:videoId];
 }
 
-
-- (void)api:(NSString *)method arg:(NSString *)arg {
+- (void)notifyPlayerApi:(NSString *)method arg:(NSString *)arg completion:(void(^)(void))completed {
     if (!self.inited) return;
     if (!method) return;
     
     NSString *warnMessage = [self APIReadyWarnMessageForMethod:method];
     if (!self.started && warnMessage) {
     }
-    
-    NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];
     NSString *jsArg = arg ? [NSString stringWithFormat:@"\"%@\"", [arg stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]] : @"null";
-    [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"player.api(%@, %@)", jsMethod, jsArg]];
+    [_wkWebView evaluateJavaScript:[NSString stringWithFormat:@"player.api(%@, %@)", method, jsArg] completionHandler:^(id message, NSError * _Nullable error) {
+        completed();
+    }];
 }
 
 - (void)api:(NSString *)method {
-    [self api:method arg:nil];
+    [self notifyPlayerApi:method arg:nil completion:^{
+        
+    }];
 }
 
 - (NSString *) APIReadyWarnMessageForMethod:(NSString *)method {
-    
     NSString * param = @{
-                         @"play"         : @"autoplay",
-                         @"toggle-play"  : @"autoplay",
-                         @"seek"         : @"start",
-                         @"quality"      : @"quality",
-                         @"muted"        : @"muted",
-                         @"toggle-muted" : @"muted",
-                         @"0"            :@"controls",
-                         @"0"            :@"sharing-enable",
-                         @"0"            :@"ui-logo",
-                         @"0"            :@"ui-start-screen-info",
-                         @"1"            :@"endscreen-enable",
-                         }[method];
+        @"play"         : @"autoplay",
+        @"toggle-play"  : @"autoplay",
+        @"seek"         : @"start",
+        @"quality"      : @"quality",
+        @"muted"        : @"muted",
+        @"toggle-muted" : @"muted",
+        @"0"            :@"controls",
+        @"0"            :@"sharing-enable",
+        @"0"            :@"ui-logo",
+        @"0"            :@"ui-start-screen-info",
+        @"1"            :@"endscreen-enable",
+    }[method];
     
     SlikeDLog(@"%@",param);
     
@@ -371,38 +286,174 @@ static NSString *const DMAPIVersion = @"2.9.3";
     }
 }
 
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 }
 
 #pragma mark - Open In Safari
 - (void)openURLInSafari:(NSURL *)URL {
+    if(_isDMExternalLinkHandle) {
     if (self.autoOpenExternalURLs) {
         [[UIApplication sharedApplication] openURL:URL];
     }
     else {
         self.safariURL = URL;
-        
         if ([self.delegate respondsToSelector:@selector(dailymotionAddOpen:)]) {
             [self.delegate dailymotionAddOpen:URL];
         }
-        
-        
-        /*
-         NSString *safariAlertTitle = [NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil), [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"]];
-         NSString *safariAlertMessage = [NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil), URL.host];
-         UIAlertView *safariAlertView = [[UIAlertView alloc] initWithTitle:safariAlertTitle
-         message:safariAlertMessage
-         delegate:self
-         cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-         otherButtonTitles:NSLocalizedString(@"Open", nil), nil];
-         [safariAlertView show];
-         */
+    }
     }
 }
 
+#pragma mark - WebKit Methods
+- (WKUserContentController *)newContentController {
+    WKUserContentController *controller= [[WKUserContentController alloc]init];
+    NSString *source = [self eventHandler];
+    [controller addUserScript:[[WKUserScript alloc]initWithSource:source injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:false]];
+    [controller addScriptMessageHandler:[[Trampoline alloc]initWithDelegate:self] name:_messageHandlerEvent];
+    return controller;
+}
 
+- (NSString *)eventHandler {
+    NSMutableString *source = [NSMutableString string];
+    [source appendString:@"window.dmpNativeBridge = {"];
+    [source appendString:@"triggerEvent: function(data) {"];
+    
+    NSString *formatStr = [NSString stringWithFormat:@"window.webkit.messageHandlers.%@.postMessage(decodeURIComponent(data));", _messageHandlerEvent];
+    [source appendString:formatStr];
+    [source appendString:@"}};"];
+    return source;
+}
 
+#pragma mark - WKUIDelegate
+- (nullable WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    
+    if (navigationAction.request.URL) {
+        [self openURLInSafari:navigationAction.request.URL];
+    }
+    return nil;
+}
 
+#pragma mark - WKNavigationDelegate
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    
+    NSURL * url = navigationAction.request.URL;
+    WKNavigationType navigationType =  navigationAction.navigationType;
+    if (url != nil && navigationType == WKNavigationTypeLinkActivated) {
+        decisionHandler(WKNavigationActionPolicyAllow);
+        return;
+    }
+    
+    if(![url.absoluteString containsString:_pathPrefix]) {
+        NSURLComponents *components = [[NSURLComponents alloc]initWithURL:url resolvingAgainstBaseURL:FALSE];
+        if ([components.scheme isEqualToString:@"http"] || [components.scheme isEqualToString:@"https"] ){
+            [self openURLInSafari:url];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        }
+    }
+    decisionHandler(WKNavigationActionPolicyAllow);
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error {
+    if(self.delegate) {
+    [self.delegate dailymotionPlayer:self didFailToInitializeWithError:error];
+    }
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error {
+    if(self.delegate) {
+    [self.delegate dailymotionPlayer:self didFailToInitializeWithError:error];
+    }
+}
+
+#pragma mark - WKNavigationDelegate
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    
+    {
+        NSDictionary *events =[DMEventParser parseEvent:message.body];
+        if ([events count] ==0) {
+            return;
+        }
+        [self parseMessageBody:events[@"event"] dataDict:events];
+    }
+}
+
+- (void)parseMessageBody:(NSString *)eventName dataDict:(NSDictionary *)data {
+    
+    if ([eventName length] > 0 && eventName) {
+        
+        if ([eventName isEqualToString:@"timeupdate"]) {
+            [self willChangeValueForKey:@"currentTime"];
+            _currentTime = [data[@"time"] floatValue];
+            [self didChangeValueForKey:@"currentTime"];
+        }
+        else if ([eventName isEqualToString:@"progress"]) {
+            self.bufferedTime = [data[@"time"] floatValue];
+        }
+        else if ([eventName isEqualToString:@"durationchange"]) {
+            self.duration = [data[@"duration"] floatValue];
+        }
+        else if ([eventName isEqualToString:@"fullscreenchange"]) {
+            [self willChangeValueForKey:@"fullscreen"];
+            _fullscreen = [data[@"fullscreen"] boolValue];
+            [self didChangeValueForKey:@"fullscreen"];
+        }
+        else if ([eventName isEqualToString:@"volumechange"]) {
+            self.volume = [data[@"volume"] floatValue];
+        }
+        else if ([eventName isEqualToString:@"play"] || [eventName isEqualToString:@"playing"]) {
+            self.paused = NO;
+        }
+        else if ([eventName isEqualToString:@"start"]) {
+            self.started = YES;
+        }
+        else if ([eventName isEqualToString:@"end"]) {
+            self.ended = YES;
+        }
+        else if ([eventName isEqualToString:@"end"] || [eventName isEqualToString:@"pause"]) {
+            self.paused = YES;
+        }
+        else if ([eventName isEqualToString:@"seeking"]) {
+            self.seeking = YES;
+            _currentTime = [data[@"time"] floatValue];
+        }
+        else if ([eventName isEqualToString:@"seeked"]) {
+            self.seeking = NO;
+            _currentTime = [data[@"time"] floatValue];
+        }
+        else if ([eventName isEqualToString:@"apiready"]) {
+            [self play];
+        }
+        else if ([eventName isEqualToString:@"error"]) {
+            NSDictionary *userInfo =
+            @{
+                @"code" : @([data[@"code"] intValue]) ?: @0,
+                @"title" : data[@"title"] ?: @"",
+                @"message" : data[@"message"] ?: @"",
+                NSLocalizedDescriptionKey : data[@"message"] ?: @"",
+            };
+            self.error = [NSError errorWithDomain:@"DailymotionPlayer"
+                                             code:[data[@"code"] integerValue]
+                                         userInfo:userInfo];
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(dailymotionPlayer:didReceiveEvent:)]) {
+            [self.delegate dailymotionPlayer:self didReceiveEvent:eventName];
+        }
+    }
+}
 @end
+
+@implementation Trampoline
+- (instancetype)initWithDelegate:(id<WKScriptMessageHandler>)delegate {
+    self = [super init];
+    self.delegate = delegate;
+    return self;
+}
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    [self.delegate userContentController:userContentController didReceiveScriptMessage:message];
+}
+@end
+

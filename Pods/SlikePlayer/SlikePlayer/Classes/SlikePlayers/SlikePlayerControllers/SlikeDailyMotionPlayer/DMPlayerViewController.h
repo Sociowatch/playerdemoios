@@ -4,6 +4,8 @@
 //  Copyright 2011 Dailymotion. All rights reserved.
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WKWebView.h>
+#import <WebKit/WebKit.h>
 
 @class DMPlayerViewController;
 
@@ -17,11 +19,12 @@
  @param eventName The name of the emited event */
 - (void)dailymotionPlayer:(DMPlayerViewController *)player didReceiveEvent:(NSString *)eventName;
 - (void)dailymotionAddOpen:(NSURL*) URL;
+- (void)dailymotionPlayer:(DMPlayerViewController *)player didFailToInitializeWithError:(NSError *)error;
 @end
 
 /* The DMPlayerViewController class implements a wrapper around the Dailymtion HTML5 player
  so it can be easily controlled. */
-@interface DMPlayerViewController : UIView <UIWebViewDelegate>
+@interface DMPlayerViewController : UIView <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
 
 #pragma mark - Initializing a Player
 /* Initialize a video player with paramsters
@@ -80,6 +83,9 @@
 // Allows to control if external URLs show an alert or directly jump to Safari. Default is false.
 @property(nonatomic, assign) BOOL autoOpenExternalURLs;
 
+/// Daily Motion external link Default is YES
+@property(nonatomic, assign) BOOL isDMExternalLinkHandle;
+
 
 #pragma mark - Controlling Playback
 // Start the video playback.
@@ -111,7 +117,7 @@
  See `Player API Reference <http://www.dailymotion.com/doc/api/player.html#api-reference>` for more info.
  @param method The method name to call
  @param arg The argument to pass to the method (if any) */
-- (void)api:(NSString *)method arg:(NSString *)arg;
+- (void)notifyPlayerApi:(NSString *)method arg:(NSString *)arg completion:(void(^)(void))completed;
 
 /* Call player API method.
  See `Player API Reference <http://www.dailymotion.com/doc/api/player.html#api-reference>` for more info.
@@ -126,3 +132,10 @@
 
 - (void)removeWebView;
 @end
+
+
+@interface Trampoline: NSObject<WKScriptMessageHandler>
+@property(nonatomic, assign) id<WKScriptMessageHandler>delegate;
+- (instancetype)initWithDelegate:(id<WKScriptMessageHandler>)delegate;
+@end
+

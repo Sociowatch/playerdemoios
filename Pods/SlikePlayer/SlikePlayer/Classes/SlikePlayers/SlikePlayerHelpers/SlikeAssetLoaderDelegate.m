@@ -52,6 +52,7 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
     
     if ([url hasPrefix:khlsStreamHttp]) {
         
+        NSLog(@"MANIFESTLESS:: TS from cache");
         NSString *hasCachedStream = [[SLManifestlessDataCache sharedManifestCache]cachedStreamForUrl:url];
         if (hasCachedStream) {
             NSData *charlieSendData = [hasCachedStream dataUsingEncoding:NSUTF8StringEncoding];
@@ -63,6 +64,8 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
         return [self handleSegmentsRequest:loadingRequest];
         
     } else {
+        
+        
         if([url containsString:@".ts"]) {
             return [self handleSegmentsRequest:loadingRequest];
         } else if(loadingRequest.dataRequest) {
@@ -130,10 +133,12 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
         NSString *manifestFile = [[SLManifestlessDataCache sharedManifestCache]cachedManifestForKey:[urlComponents string]];
         if (manifestFile && [manifestFile length]>0) {
             [self parsePlaylistString:manifestFile baseUrl:[urlComponents string] loading:loadingRequest];
+            NSLog(@"MANIFESTLESS:: MASTER from cache");
             return YES;
         }
         
         [[SlikeNetworkInterface sharedNetworkInteface] getHLSStreamDataString:[urlComponents string] withCompletionBlock:^BOOL(NSArray *bitratesArray, NSString *responseString, NSError *error) {
+                    
             if (error) {
                 return NO;
             }
@@ -259,7 +264,7 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
     
     if ([autoBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
         SlikeBitratesModel* autoBitrateModel =  [[SlikeBitratesModel alloc]init];
-        autoBitrateModel.bitrateName = @"Auto";
+        autoBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.autoBitrateTitle;
         autoBitrateModel.bitrateUrl = autoBitrate;
         autoBitrateModel.isValid = YES;
         autoBitrateModel.bitrateType = SlikeMediaBitrateAuto;
@@ -268,7 +273,7 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
     
     if ([lowBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
         SlikeBitratesModel* lowBitrateModel =  [[SlikeBitratesModel alloc]init];
-        lowBitrateModel.bitrateName = @"Low";
+        lowBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.lowBitrateTitle;
         lowBitrateModel.bitrateUrl = lowBitrate;
         lowBitrateModel.isValid = YES;
         lowBitrateModel.bitrateType = SlikeMediaBitrateLow;
@@ -277,7 +282,7 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
     
     if ([mediumBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
         SlikeBitratesModel* mediumBitrateModel =  [[SlikeBitratesModel alloc]init];
-        mediumBitrateModel.bitrateName = @"Medium";
+        mediumBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.mediumBitrateTitle;
         mediumBitrateModel.bitrateUrl = mediumBitrate;
         mediumBitrateModel.isValid = YES;
         mediumBitrateModel.bitrateType = SlikeMediaBitrateMedium;
@@ -286,7 +291,7 @@ NSString * const TAG_MEDIA = @"#EXT-X-MEDIA";
     
     if ([highBitrate length] > [TAG_PLAYLIST length]+ validationCons) {
         SlikeBitratesModel* highBitrateModel =  [[SlikeBitratesModel alloc]init];
-        highBitrateModel.bitrateName = @"High";
+        highBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.highBitrateTitle;
         highBitrateModel.bitrateUrl = highBitrate;
         highBitrateModel.isValid = YES;
         highBitrateModel.bitrateType = SlikeMediaBitrateHigh;

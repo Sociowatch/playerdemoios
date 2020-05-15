@@ -8,7 +8,7 @@
 #import "SlikeGifPlayerViewController.h"
 #import "SlikeUtilities.h"
 #import "NSBundle+Slike.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikePlayerEvent.h"
 #import "EventManagerProtocol.h"
 #import "EventManager.h"
@@ -19,6 +19,7 @@
 @interface SlikeGifPlayerViewController () <SlikeGifPlayerDelegate, EventManagerProtocol> {
     id playerContainer;
 }
+@property (weak, nonatomic) IBOutlet UIButton *reloadBtn;
 
 @property (assign, nonatomic) BOOL playerLoaded;
 @property (assign, nonatomic) BOOL playerStarted;
@@ -37,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet SlikeGifView *slikeGifView;
 @property (assign, nonatomic) SlikePlayerState playerStatus;
 @property (weak, nonatomic) IBOutlet UIImageView *posterImage;
+@property (weak, nonatomic) IBOutlet UILabel *noNetworkLbl;
 
 @end
 
@@ -47,7 +49,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.noNetworkLbl.text = [SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr;
+    [self.reloadBtn setTitle:[SlikePlayerSettings playerSettingsInstance].slikestrings.reloadButtonTitle forState:UIControlStateNormal];
     [self.btnClose setImage:[UIImage imageNamed:@"player_closebtn" inBundle:[NSBundle slikeImagesBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
     self.networkErrIcon.image = [UIImage imageNamed:@"iconError" inBundle:[NSBundle slikeImagesBundle] compatibleWithTraitCollection:nil];
     self.networkErrorView.hidden= YES;
@@ -242,6 +245,7 @@
 }
 
 - (void)setOnPlayerStatusDelegate:(onChange) block {
+         [[EventManager sharedEventManager] setEventHanlderBlock:block];
 }
 - (void)setController:(id<ISlikePlayerControl>) control {
 }
@@ -377,7 +381,7 @@
         self.mp4Duration=0;
     }
     
-    EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeGif withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
+    SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeGif withBehaviorEvent:SlikeUserBehaviorEventNone withPayload:@{}];
     eventModel.slikeConfigModel = self.sdkConfiguration;
     
     eventModel.playerEventModel.eventType = evtString;

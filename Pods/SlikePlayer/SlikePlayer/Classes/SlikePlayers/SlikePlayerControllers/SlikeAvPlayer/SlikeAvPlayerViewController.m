@@ -27,7 +27,7 @@
 #import "SlikeStringCommon.h"
 #import "SlikeSharedDataCache.h"
 #import "SlikeAdManager.h"
-#import "EventModel.h"
+#import "SLEventModel.h"
 #import "SlikeVideoPlayerRegistrar.h"
 #import "SlikeBitratesModel.h"
 #import "SlikeMaterialDesignSpinner.h"
@@ -50,6 +50,9 @@
 @property (nonatomic, readwrite) BOOL isFullScreen;
 @property (nonatomic, readwrite) BOOL isUserPaused;
 @property (nonatomic, readwrite) BOOL isVideoSeen;
+@property (nonatomic, readwrite) BOOL switichDvrLive;
+
+//@property (nonatomic, readwrite) BOOL isPreRollMissSeen;
 @property (nonatomic, readwrite) BOOL isUserSeeked;
 @property (nonatomic, readwrite) BOOL isPlaybackDone;
 @property (nonatomic, readwrite) BOOL isPlayerLoaded;
@@ -113,9 +116,10 @@
 }
 
 - (void)resetVariables {
-    
+    self.switichDvrLive = NO;
     self.isUserPaused =NO;
     _isVideoSeen = NO;
+   // _isPreRollMissSeen = NO;
     _isUserSeeked = NO;
     _isPlaybackDone = NO;
     _isPlayerLoaded = NO;
@@ -174,32 +178,38 @@
             
         } else if(eventType == AD) {
             
+            
             if(payload[kSlikeEventModelKey])
             {
-                EventModel *eventModel  = payload[kSlikeEventModelKey];
+                SLEventModel *eventModel  = payload[kSlikeEventModelKey];
                 if (eventModel && eventModel.adEventModel.extranlAdFail) {
-                    SlikeDLog(@"%d",eventModel.adEventModel.extranlAdFail);
                     return;
                 }
             }
-          
+            
             if (playerState == SL_CONTENT_RESUME)
             {
                 if(payload[kSlikeNormalAdFailKey])
-                                     {
+                {
                     [self _requestAdForPosition:self->_currentAdType];
-                        return;
-                        }
+                    return;
+                }
                 
                 [self _hideAdPlayerContainerView];
                 [self _setAdIsPlaying:NO];
-                
                 if (!self.isPlaybackDone) {
                     [self _playStreamAfterPreRoll];
+//                    if(self.slikeConfig.skipPre)
+//                    {
+//                        [self play:NO];
+//                    }else {
+//                        [self _playStreamAfterPreRoll];
+//                    }
                 } else {
                     self.hasPostRollCompleted = YES;
                     [self stopVideoWithCompletion:YES];
                 }
+                
                 
             } else if (playerState == SL_CONTENT_PAUSE) {
                 
@@ -253,6 +263,10 @@
     } else if (state == SL_PLAY) {
         if ([[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
             [self removeErrorAlert];
+        }
+        if(self.slikeConfig && self.slikeConfig.streamingInfo.isLive && ![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
+            [self _showAlertViewForOffline:YES hasEmptyBuffer:NO];
+            [self _sendNetworkErrorMessage];
         }
     } else if (state == SL_PLAYING) {
         
@@ -475,7 +489,6 @@
         }
         
         if (weekSelf.isAppEnteredInBackground && ![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
-            
             [weekSelf _showAlertViewForOffline:YES hasEmptyBuffer:NO];
             weekSelf.isAppEnteredInBackground = NO;
             [weekSelf _sendNetworkErrorMessage];
@@ -586,7 +599,8 @@
     if (!_isAutoPlayEnable) {
         //Make the variable TRUE so that it should be called only on startup
         _isAutoPlayEnable = YES;
-        if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
+                if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
+//        if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr || self.slikeConfig.skipPre) {
             [self _startMediaStream];
         } else {
             //Play the Stream After the PreRoll Ads
@@ -672,6 +686,7 @@
         [weekSelf _sendStatusToControls:SL_SHOWCONTROLS];
         //Set this
         weekSelf.isVideoSeen = NO;
+       // weekSelf.isPreRollMissSeen = NO;
         weekSelf.isPlaybackDone =  NO;
         weekSelf.isPlayerLoaded = YES;
         [weekSelf play:NO];
@@ -719,6 +734,7 @@
         [self.playerView seekPlayerToTime:seekPostion fastSeek:FALSE completionBlock:^(BOOL finished) {
             if(self.isPlaybackDone) {
                 weekSelf.isVideoSeen = NO;
+             //   weekSelf.isPreRollMissSeen = NO;
                 weekSelf.isPlaybackDone =  NO;
                 weekSelf.isPlayerLoaded = YES;
                 [weekSelf _sendPlayerStatus:SL_START withUserBehavior:SlikeUserBehaviorEventSeek withError:nil withPayload:@{}];
@@ -844,14 +860,14 @@
             if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >0)
             {
                 SlikeBitratesModel* autoBitrateModel =  [[SlikeBitratesModel alloc]init];
-                autoBitrateModel.bitrateName = @"Auto";
+                autoBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.autoBitrateTitle;
                 autoBitrateModel.bitrateUrl = nil;
                 autoBitrateModel.isValid = YES;
                 autoBitrateModel.bitrateType = SlikeMediaBitrateAuto;
                 
                 [bitratesModelArray addObject:autoBitrateModel];
                 SlikeBitratesModel* lowBitrateModel =  [[SlikeBitratesModel alloc]init];
-                lowBitrateModel.bitrateName = @"Low";
+                lowBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.lowBitrateTitle;
                 lowBitrateModel.bitrateUrl = nil;
                 lowBitrateModel.isValid = YES;
                 lowBitrateModel.bitrateType = SlikeMediaBitrateLow;
@@ -860,7 +876,7 @@
             if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >1)
             {
                 SlikeBitratesModel* mediumBitrateModel =  [[SlikeBitratesModel alloc]init];
-                mediumBitrateModel.bitrateName = @"Medium";
+                mediumBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.mediumBitrateTitle;
                 mediumBitrateModel.bitrateUrl = nil;
                 mediumBitrateModel.isValid = YES;
                 mediumBitrateModel.bitrateType = SlikeMediaBitrateMedium;
@@ -869,7 +885,7 @@
             if([SlikeSharedDataCache sharedCacheManager].xStreamList.bitrateObjets.count >2)
             {
                 SlikeBitratesModel* highBitrateModel =  [[SlikeBitratesModel alloc]init];
-                highBitrateModel.bitrateName = @"High";
+                highBitrateModel.bitrateName = [SlikePlayerSettings playerSettingsInstance].slikestrings.highBitrateTitle;
                 highBitrateModel.bitrateUrl = nil;
                 highBitrateModel.isValid = YES;
                 highBitrateModel.bitrateType = SlikeMediaBitrateHigh;
@@ -1003,9 +1019,12 @@
             [self _readyMediaStream];
             
         }
-        
-        if (self.slikeConfig.streamingInfo.currentStream.hasDVR) {
+      
+        if (self.switichDvrLive) {
+            self.switichDvrLive = NO;
+            dispatch_async(dispatch_get_main_queue(), ^{
             [self _hideWaitingIndicator];
+            });
             [self play:NO];
         }
         [self _layoutPlayerIfNeeded];
@@ -1191,7 +1210,6 @@
         if(_isUserPaused) {
             return;
         }
-        
         NSUInteger currentPosition = [self getPosition];
         NSUInteger duration = [self getDuration];
         NSDictionary *playerData = @{kSlikeCurrentPositionKey:@(currentPosition), kSlikeDurationKey:@(duration)};
@@ -1202,14 +1220,22 @@
             {
                 //                SlikeDLog(@"totalVideoPlayedDuration %ld",(long)[[SlikeSharedDataCache  sharedCacheManager] totalVideoPlayedDuration]);
                 //                SlikeDLog(@"totalVideoPlayedDuration videoPlayed %ld",(long)self.slikeConfig.videoPlayed);
-                
+                //[[SlikeSharedDataCache  sharedCacheManager] totalVideoPlayedDuration]
+                /*
+                if( self.slikeConfig.failOverTime < duration && self.slikeConfig.skipPre) {
+                    if( currentPosition  >= self.slikeConfig.failOverTime && !_isPreRollMissSeen) {
+                        [self loadMissPreRoll];
+                    }
+                }
+                */
                 if( [[SlikeSharedDataCache  sharedCacheManager] totalVideoPlayedDuration]  > self.slikeConfig.videoPlayed && _isVideoSeen == NO) {
                     [self _sendPlayerStatus:SL_VIDEOPLAYED withUserBehavior:SlikeUserBehaviorEventNone withError:nil withPayload:@{}];
                     _isVideoSeen =  YES;
                 }
             }
-            SlikeDLog(@"data %@",[notification.userInfo objectForKey:@"data"]);
-            
+            SlikeDLog(@"data %@",[notification.userInfo objectForKey:@"data"]);            dispatch_async(dispatch_get_main_queue(), ^{
+            [self _hideWaitingIndicator];
+            });
             if(duration/1000 >[[notification.userInfo objectForKey:@"data"] intValue] || self.slikeConfig.streamingInfo.mediaStreamType == SLKMediaPlayerStreamTypeDVR) {
                 //Dispatch the Event
                 _playerCurrentState = self.isMediaReStart ?SL_START :SL_PLAYING;
@@ -1253,7 +1279,8 @@
     //User wants to auto play the media
     if(self.slikeConfig.isAutoPlay) {
         //Not interested in the ads
-        if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
+                if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
+//        if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr || self.slikeConfig.skipPre) {
             [self.playerView actionAfterReady];
         } else {
             //TODO: Can be used here to fetch the PreRoll in future
@@ -1285,6 +1312,7 @@
  */
 - (void)playMovieStreamWithObject:(SlikeConfig *)configModel withParent:(id)parent {
     [[SlikeDeviceSettings sharedSettings] setVideoRid:@""];
+    self.switichDvrLive = NO;
     SlikeDLog(@"AV PLAYER LOG: playMovieStreamWithObject");
     _orentationObserver.disableOrientation = NO;
     if (configModel.disableOrientation) {
@@ -1360,7 +1388,8 @@
     }
     [self.playerView attachCueManager:self];
     if (self.slikeConfig.isAutoPlay) {
-        if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
+                if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr) {
+//        if (self.slikeConfig.isSkipAds || self.slikeConfig.isPrerollEnabled == OFF || self.slikeConfig.ispr || self.slikeConfig.skipPre) {
             [self.view bringSubviewToFront:self.slikeConfig.customControls];
             [self _loadMediaStream];
             
@@ -1379,6 +1408,11 @@
     }
     
 }
+//-(void)loadMissPreRoll {
+//    //[self _initializeLoadingIndicator];
+//    _isPreRollMissSeen = YES;
+//    [self _requestAdForPosition:0];
+//}
 -(void)updateExternalAddIfAny:(SlikeConfig*)configModel
 {
     if(configModel.externalAdArray && configModel.externalAdArray.count >0)
@@ -1429,7 +1463,7 @@
 - (void)_requestAdForPosition:(NSInteger)adPosition {
     self.currentAdType =  adPosition;
     if(self.slikeConfig.streamingInfo && self.slikeConfig.streamingInfo.outSideAd)
-    {        
+    {
         [[SlikeAdManager sharedInstance] cleanupAdManager:^{
             [self _sendStatusToControls:SL_AD_REQUESTED];
             [[SlikeAdManager sharedInstance] showAd:self.slikeConfig adContainerView:[self _adPlayerContainerView] forAdPosition:adPosition];
@@ -1641,9 +1675,14 @@
 }
 - (void)_updateOrientationSettings {
     if (_orentationObserver) {
+        
         if (self.slikeConfig.orientationTypeiPad && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             _orentationObserver.orientationType = SlikeOrientationTypeiPad;
-        } else {
+        } else if (self.slikeConfig.orientationTypeiPad && self.slikeConfig.fullScreenPortraitMode) {
+            _orentationObserver.orientationType = SlikeOrientationTypeiPad;
+            _orentationObserver.isAspectOreintation = true;
+        }
+        else {
             _orentationObserver.orientationType = SlikeOrientationTypeiPhone;
         }
     }
@@ -1686,7 +1725,7 @@
         [self replay];
     }else
     {
-    [self play:NO];
+        [self play:NO];
     }
     [self setVideoPlaceHolder:NO];
 }
@@ -1741,7 +1780,7 @@
         _progressInfo.adStatusInfo = nil;
     }
     
-    EventModel *eventModel = [EventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:isUserAction withPayload:nil];
+    SLEventModel *eventModel = [SLEventModel createEventModel:SlikeAnalyticsTypeMedia withBehaviorEvent:isUserAction withPayload:nil];
     eventModel.slikeConfigModel = self.slikeConfig;
     
     NSMutableDictionary *payloadInfo =  [[NSMutableDictionary alloc]initWithDictionary:payload];
@@ -1856,7 +1895,7 @@
     _bitratesView = [SlikeBitratesView slikeBitratesView];
     _bitratesView.configModel = self.slikeConfig;
     [_bitratesView  presentAvailableBitratesForStream];
-    
+
     UIView *parentView = (UIView *)self.view;
     [parentView addSubviewWithContstraints:_bitratesView];
     _bitratesView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -1880,6 +1919,20 @@
         [weekSelf _updateBitrate];
         [weakAlert removeAlertViewWithAnimation:YES];
     };
+    
+    _bitratesView.selectedSpeedBlock = ^(id speedType)
+      {
+          if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
+              [weekSelf _showAlertViewForOffline:YES hasEmptyBuffer:NO];
+              [weekSelf _sendNetworkErrorMessage];
+              return;
+          }
+          SlikeMediaSpeed selectStreamSpeed = [speedType integerValue];
+          [[SlikeSharedDataCache sharedCacheManager] setCurrentStreamSpeed:selectStreamSpeed];
+          [weekSelf _updateSpeed];
+          [weakAlert removeAlertViewWithAnimation:YES];
+      };
+    
     
     //Bring the Subview to Front
     [self.view bringSubviewToFront:_bitratesView];
@@ -1912,6 +1965,9 @@
         [self setVideoPlaceHolder:YES];
     });
     
+}
+-(void)_updateSpeed {
+        [self play:NO];
 }
 /**
  Update Bitrate
@@ -1985,7 +2041,7 @@
  Show the Offline message.
  */
 - (void)_showAlertViewForOffline:(BOOL)enableReload hasEmptyBuffer:(BOOL)bufferEmpty {
-    
+     if(!self.isNetworkWindowPresented) {
     [self setVideoPlaceHolder:YES];
     [self _sendStatusToControls:SL_HIDECONTROLS];
     if (_isNetworkWindowPresented && bufferEmpty) {
@@ -2002,10 +2058,10 @@
     __block SlikePlayerErrorView* weakAlert = _slikeAlertView;
     if(self.slikeConfig.isNoNetworkCloseControlEnable)
     {
-        [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:_isFullScreen withReloadEnable:enableReload];
+        [_slikeAlertView setErrorMessage:[SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr withCloseEnable:_isFullScreen withReloadEnable:enableReload];
     }else
     {
-        [_slikeAlertView setErrorMessage:NO_NETWORK withCloseEnable:self.slikeConfig.isNoNetworkCloseControlEnable withReloadEnable:enableReload];
+        [_slikeAlertView setErrorMessage:[SlikePlayerSettings playerSettingsInstance].slikestrings.networkErr withCloseEnable:self.slikeConfig.isNoNetworkCloseControlEnable withReloadEnable:enableReload];
     }
     _isNetworkWindowPresented = YES;
     
@@ -2034,6 +2090,7 @@
     };
     
     [self.view bringSubviewToFront:_slikeAlertView];
+     }
 }
 
 #pragma mark - Cleanup
@@ -2285,12 +2342,10 @@
         if(self.cueManager &&  self.cueManager.evtUrl && [self.cueManager.evtUrl  length] == 0 && self.strNewURL && self.strNewURL.length >0) {
             self.cueManager.evtUrl =  [self.strNewURL stringByReplacingOccurrencesOfString:@".m3u8" withString:@"/evt.json"];
         }
-        
         if(self.cueManager.evtUrl) {
             self.cueManager.cuePointPolling = self.slikeConfig.cuePointPolling;
             [self.cueManager startTimer];
         }
-        
     } else if (hasCueEvents == 0) {
         if(self.cueManager) {
             self.cueManager = nil;
@@ -2298,9 +2353,7 @@
     }
 }
 
-
 - (void)streamEventStatus:(LiveStatusMDO*)evtstatusMDO {
-    
     if(evtstatusMDO.evtstatus == -1 && evtstatusMDO.evttime)
     {
         NSTimeInterval unixTimeStamp = evtstatusMDO.evttime / 1000.0;
@@ -2318,9 +2371,7 @@
     if(self.eventStatus == -2 && evtstatusMDO.evtstatus == -1) {
         self.eventStatus = evtstatusMDO.evtstatus;
         return;
-    }
-    
-    
+    }    
     BOOL isSeekNeeded =  NO;
     if((self.eventStatus == 2 &&  evtstatusMDO.evtstatus == 1) || (self.eventStatus == -1 &&  evtstatusMDO.evtstatus == 1)) {
         isSeekNeeded = YES;
@@ -2332,19 +2383,14 @@
     [[EventManager sharedEventManager]dispatchEvent:MEDIA playerState:SL_LIVE_STATES dataPayload:@{kSlikeADispatchEventToParentKey:@YES, kSlikeAdStatusInfoKey:info} slikePlayer:nil];
     
     if(self.liveErrorHandler) {
-        
         if(self.eventStatus == 2) {
             [self.liveErrorHandler startPollingTimer:0];
-            
         } else  if(self.eventStatus == 1 && isSeekNeeded) {
-            
             if(self.slikeConfig.streamingInfo.isLive) {
                 [self playerTryToplay];
-                
             } else {
                 [self play:NO];
                 [self _hideWaitingIndicator];
-                
             }
         }
     }
@@ -2375,9 +2421,16 @@
 
 #pragma mark - DVR/LIVE Switching
 - (void)switchToStream:(SLKMediaPlayerStreamType)aStream {
+    if (![[SlikeNetworkMonitor sharedSlikeNetworkMonitor] isNetworkReachible]) {
+               [self _showAlertViewForOffline:YES hasEmptyBuffer:NO];
+               [self _sendNetworkErrorMessage];
+               return;
+           }
     if (aStream == SLKMediaPlayerStreamTypeLive) {
+        self.switichDvrLive = YES;
         [self playLiveStream];
     } else if (aStream == SLKMediaPlayerStreamTypeDVR) {
+        self.switichDvrLive = YES;
         [self playDVRLiveStream];
     } else {
         //TODO:
@@ -2388,7 +2441,6 @@
     self.slikeConfig.streamingInfo.mediaStreamType = SLKMediaPlayerStreamTypeDVR;
     [[SlikeSharedDataCache sharedCacheManager]resetSlikeBitratesModel];
     self.strNewURL = [self.slikeConfig.streamingInfo dvrMediaStream:self.slikeConfig.preferredVideoType];
-    
     if (self.strNewURL && [self.strNewURL length]>0) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self _showWaitingIndicator];
@@ -2460,6 +2512,7 @@
 {
     if(!self.objTimerView)
     {
+        [self pause:YES];
         self.objTimerView =  [[[NSBundle slikeNibsBundle] loadNibNamed:NSStringFromClass([SLTimerVC class]) owner:self options:nil] lastObject];
         [self.objTimerView eventEnded];
         [self.view addSubview:self.objTimerView];
@@ -2469,6 +2522,7 @@
         [self.objTimerView.blurBG setPlaceHolderImage:YES configModel:self.slikeConfig withPlayerView:_playerView];
     }else
     {
+        [self pause:YES];
         [self.objTimerView eventEnded];
     }
 }

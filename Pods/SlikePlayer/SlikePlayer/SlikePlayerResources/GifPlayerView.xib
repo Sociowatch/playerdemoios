@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,7 +13,9 @@
                 <outlet property="networkErrIcon" destination="V1l-OA-lsM" id="TvG-sq-e73"/>
                 <outlet property="networkErrorView" destination="El4-XC-YG9" id="pqX-xh-Bqk"/>
                 <outlet property="networkTabButton" destination="CGF-oD-0aG" id="l9c-Ml-fvr"/>
+                <outlet property="noNetworkLbl" destination="1lr-qO-MYW" id="11A-x3-qqR"/>
                 <outlet property="posterImage" destination="atA-7C-BXe" id="d8R-Zh-csO"/>
+                <outlet property="reloadBtn" destination="qaQ-3i-5hf" id="eVD-4B-xFS"/>
                 <outlet property="slikeGifView" destination="zgb-hb-ysS" id="hjN-I1-EnO"/>
                 <outlet property="view" destination="iN0-l3-epB" id="j9v-iu-ejC"/>
             </connections>
@@ -97,7 +97,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qaQ-3i-5hf">
-                            <rect key="frame" x="130" y="63" width="60" height="26"/>
+                            <rect key="frame" x="130" y="63.5" width="60" height="26"/>
                             <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="60" id="Fa0-Ni-EVy"/>

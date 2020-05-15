@@ -9,6 +9,8 @@
 #import "BaseViewController.h"
 #import "DemoViewController.h"
 #import "SlikeConfigViewController.h"
+#import "SlikePlaylistViewController.h"
+#import "SlikeMusicListViewController.h"
 
 @interface BaseViewController ()
 
@@ -43,6 +45,17 @@
     DemoViewController *controller=   [mainStoryboard instantiateViewControllerWithIdentifier:@"DemoViewController"];
     controller.playType =  2;
     [self.navigationController pushViewController:controller animated:YES];
+}
+- (IBAction)fbAction:(id)sender {
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    DemoViewController *controller=   [mainStoryboard instantiateViewControllerWithIdentifier:@"DemoViewController"];
+    controller.playType =  4;
+    [self.navigationController pushViewController:controller animated:YES];
+}
+- (IBAction)audioPlayerDidClicked:(id)sender {
+        
+    SlikeMusicListViewController *audioPlayer = [[SlikeMusicListViewController alloc]initWithNibName:@"SlikeMusicListViewController" bundle:nil];
+    [self.navigationController pushViewController:audioPlayer animated:YES];
 }
 - (IBAction)configAction:(id)sender
 {

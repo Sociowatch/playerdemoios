@@ -19,11 +19,21 @@ typedef NS_ENUM(NSUInteger, SlikeMediaBitrate) {
     SlikeMediaBitrateHigh,
     SlikeMediaBitrateNone
 };
+typedef NS_ENUM(NSUInteger, SlikeMediaSpeed) {
+    SlikeMediaSpeed50 = 0x0,
+    SlikeMediaSpeed75,
+    SlikeMediaSpeed100,
+    SlikeMediaSpeed125,
+    SlikeMediaSpeed150,
+    SlikeMediaSpeed200
+};
 
 @interface SlikeSharedDataCache : NSObject
 + (instancetype)sharedCacheManager;
 
 @property (nonatomic, assign) SlikeMediaBitrate currentStreamBitrate;
+@property (nonatomic, assign) SlikeMediaSpeed currentStreamSpeed;
+
 /**
  Slike Base Url
  @return - base Url
@@ -224,6 +234,7 @@ CSS ID
 - (BOOL)isPlayListVideo;
 
 @property (nonatomic, assign) BOOL isGDPREnable;
+
 
 - (NSString *)tileImageBaseUrl;
 - (void)updateTileImageBaseUrl:(NSString *)tileImageURLString;

@@ -102,8 +102,9 @@ typedef NS_ENUM(NSInteger, SlikePlayerState ) {
     SL_MUSICLIST_UPDATE,
     SL_MUSICLIST_STOP,
     SL_MUSIC_ITEM,
-    SL_OFFLINE_CLICK
-    
+    SL_OFFLINE_CLICK,
+    SL_AD_PAUSED,
+    SL_AD_RESUMED
     
 };
 

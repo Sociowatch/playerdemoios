@@ -10,6 +10,7 @@
 #import "SlikeKeychain.h"
 #import <sys/utsname.h>
 #import "NSString+Advanced.h"
+#import "SlikeSharedDataCache.h"
 
 static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 
@@ -33,7 +34,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 @property(nonatomic, strong) CLLocation *location;
 @property(nonatomic, strong) CLLocationManager *locationManager;
 @property(nonatomic, strong) NSString *mediaSavedBitrate;
-@property(atomic, strong) NSString *userSessionId;
+@property(nonatomic, strong) NSString *userSessionId;
 @property(nonatomic, strong) NSDate *sessionGenrateTime;
 @property(nonatomic, strong) NSString * rid;
 @property(nonatomic, strong) NSString * geoID;
@@ -171,6 +172,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
         
         self.location = nil;
         [self setDeviceFlag];
+        self.tryHlsAds = NO;
     }
     return self;
 }
@@ -314,7 +316,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
                               @"iPad6,8"   :@"iPad Pro (12.9\")", // iPad Pro 12.9 inches - (model A1652)
                               @"iPad6,3"   :@"iPad Pro (9.7\")",  // iPad Pro 9.7 inches - (model A1673)
                               @"iPad6,4"   :@"iPad Pro (9.7\")"   // iPad Pro 9.7 inches - (models A1674 and A1675)
-                              };
+        };
     }
     
     NSString* deviceName = [deviceNamesByCode objectForKey:code];
@@ -543,30 +545,35 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
     return ss;
 }
 
-- (NSString*)getUserSession:(SlikeConfig *) config
-{
-    if(self.userSessionId.length == 0) {
-        self.userSessionId =[self genrateUserSS:nil];
-        self.sessionGenrateTime = [NSDate date];
-        
-    } else if(self.sessionGenrateTime) {
-        NSDate* date1 = self.sessionGenrateTime;
-        NSDate* date2 = [NSDate date];
-        NSTimeInterval distanceBetweenDates = [date2 timeIntervalSinceDate:date1];
-        NSInteger secondsInAMinute = 60;
-        NSInteger minuteBetweenDates = distanceBetweenDates / secondsInAMinute;
-        if(minuteBetweenDates<0) {
-            minuteBetweenDates = - minuteBetweenDates;
-        }
-        if(minuteBetweenDates < _sessionTimeout) {
+- (NSString*)getUserSession:(SlikeConfig *) config {
+    @synchronized (self) {
+        if(self.userSessionId.length == 0) {
+            self.userSessionId =[self genrateUserSS:nil];
             self.sessionGenrateTime = [NSDate date];
-        } else {
-            self.userSessionId = [self genrateUserSS:nil];
-            self.sessionGenrateTime = [NSDate date];
-            config.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:config.mediaId];
+            
+        } else if(self.sessionGenrateTime) {
+            NSDate* date1 = self.sessionGenrateTime;
+            NSDate* date2 = [NSDate date];
+            NSTimeInterval distanceBetweenDates = [date2 timeIntervalSinceDate:date1];
+            NSInteger secondsInAMinute = 60;
+            NSInteger minuteBetweenDates = distanceBetweenDates / secondsInAMinute;
+            if(minuteBetweenDates<0) {
+                minuteBetweenDates = - minuteBetweenDates;
+            }
+            if(minuteBetweenDates < _sessionTimeout) {
+                self.sessionGenrateTime = [NSDate date];
+            } else {
+                self.userSessionId = [self genrateUserSS:nil];
+                self.sessionGenrateTime = [NSDate date];
+                if(config && config.mediaId) {
+                    config.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:config.mediaId];
+                }else {
+                    config.streamingInfo.strSS = [[SlikeDeviceSettings sharedSettings] genrateUniqueSSId:@""];
+                }
+            }
         }
+        return self.userSessionId;
     }
-    return self.userSessionId;
 }
 
 - (NSInteger)nUserSessionChangeInterval {
@@ -656,7 +663,7 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 }
 
 - (NSString*)getSDKVersion {
-    return  @"2.7.8";
+    return  @"2.9.5";
 }
 
 - (void)setPlayerViewArea:(id)parentView {
@@ -746,11 +753,32 @@ static NSString *kCoachMarkSettingString = @"kCoachMarkSettingString";
 
 #pragma mark - Coach Mark
 - (BOOL)hasCoachMarkShown {
-  return [[NSUserDefaults standardUserDefaults]boolForKey:kCoachMarkSettingString];
+    return [[NSUserDefaults standardUserDefaults]boolForKey:kCoachMarkSettingString];
 }
 
 - (void)updateCoachMarkStatus:(BOOL)hasShown {
     [[NSUserDefaults standardUserDefaults]setBool:hasShown forKey:kCoachMarkSettingString];
     [[NSUserDefaults standardUserDefaults]synchronize];
+}
+-(float)getAvplayerSpeed {
+    float speed = 1.0;
+    if([SlikeSharedDataCache sharedCacheManager].currentStreamSpeed == SlikeMediaSpeed50){
+        speed = 0.5;
+    }else  if([SlikeSharedDataCache sharedCacheManager].currentStreamSpeed == SlikeMediaSpeed75){
+        speed = 0.75;
+    }
+    else  if([SlikeSharedDataCache sharedCacheManager].currentStreamSpeed == SlikeMediaSpeed100){
+        speed = 1.0;
+    }
+    else  if([SlikeSharedDataCache sharedCacheManager].currentStreamSpeed == SlikeMediaSpeed125){
+        speed = 1.25;
+    }
+    else  if([SlikeSharedDataCache sharedCacheManager].currentStreamSpeed == SlikeMediaSpeed150){
+        speed = 1.5;
+    }
+    else{
+        speed = 2.0;
+    }
+    return  speed;
 }
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EventModel.h"
+#import "SLEventModel.h"
 
 @interface SlikeAnalytics : NSObject {
 }
@@ -19,8 +19,8 @@
  */
 - (void)registerAnalyticsToListenEvents;
 - (void)sendEvent:(NSString*)category Action:(NSString*)action Label:(NSString*)label;
-- (void)addComScoreMetaDataAd:(SlikeConfig*)config adLength:(NSInteger)ad_length  adType:(NSInteger)adtype  PlayerStatus:(SlikePlayerState) state;
--(void)sendGAAnalytics:(EventModel *)eventModel;
+- (void)addComScoreMetaDataAd:(SlikeConfig*)config adLength:(NSInteger)ad_length  adType:(NSInteger)adtype  adStatus:(NSInteger) state;
+-(void)sendGAAnalytics:(SLEventModel *)eventModel;
 -(void)processVideoRequest:(SlikeConfig*)slikeConfigModel;
--(NSString*)sendSlikePlayerAnalytics:(SlikeEventType)eventType playerState:(SlikePlayerState)state dataPayload:(EventModel *)eventModel withCurrentPlayerTime:(NSInteger)pCurrentTime;
+-(NSString*)sendSlikePlayerAnalytics:(SlikeEventType)eventType playerState:(SlikePlayerState)state dataPayload:(SLEventModel *)eventModel withCurrentPlayerTime:(NSInteger)pCurrentTime;
 @end
