@@ -1,92 +1,136 @@
-# slikeplayerdemoios
+# SlikePlayer  (v 10.0.0)
 
+## Example
 
+To run the example project, clone the repo by clicking [**SlikePlayer demo for iOS**][aef1a7c4]
 
-## Getting started
+  [aef1a7c4]: https://codes.timesnetwork.in/ios/slikeplayerdemoios.git "SlikePlayerDemoiOS"
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://codes.timesnetwork.in/ios/slikeplayerdemoios.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://codes.timesnetwork.in/ios/slikeplayerdemoios/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Requirements
+platform: iOS 9 or greater
+NSAppTransportSecurity: (For app transport security see the example's info plist file.)
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+SlikePlayer is available through private repo [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+pod 'SlikePlayer', :git => 'https://codes.timesnetwork.in/ios/slikeplayer-ios.git', :tag => '10.0.0'
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+#HOW TO INTEGRATE:
+Best way to integrate, [**just clone the example repo**][65b043dc].
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+  [65b043dc]: https://codes.timesnetwork.in/ios/slikeplayerdemoios.git "SlikePlayerDemoiOS"
 
-## License
-For open source projects, say how it is licensed.
+**************************************
+``` Basic Implimentation ```
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+SlikePlayerSettings is a singleton class. To instantiate,
+
+```
+#import <SlikePlayer/SlikePlayer.h>
+```
+SlikePlayer will be initialized as follows.
+
+```
+[[SlikePlayerSettings playerSettingsInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
+
+```
+
+#####apikey
+The Slike key provided by the Slike CMS.
+
+#####uuid
+Device unique id used by the app.
+
+#####debug mode
+BOOL. The app should ensure release build should not go with debug mode as YES.
+
+
+####SlikePlayer Property
+```
+@property (strong, nonatomic) SlikePlayer *slikePlayer;
+@property (strong, nonatomic) SlikeConfig *slikeConfig;
+```
+####initialisation
+
+```self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"slike" withID:@"1x13srhggk" withSection:@"default" withMSId:@"56087249" posterImage:@""]
+self.slikePlayer = [SlikePlayer sharedSlikePlayer];
+```
+####method
+
+ `- (void)playVideo:(SlikeConfig *)configModel inParentView:(UIView *)parent withProgressHandler:(onChange)stateBlock`
+ 
+
+#### Parameters:
+
+#####configModel:
+
+ The media configuration file and instance of **SlikeConfig MDO**.
+
+####SlikeConfig has following properties.
+
+Property|Type|Description|Default Value
+--|---|--|--
+mediaId|String|Media id to be played.(required)|N/A
+ssoid|String|SSO login id.(optional)|Empty
+msId|String|entity id (required)|N/A
+title|String|title of the media.|Empty
+channel|String|channel name. No need to be filled.|N/A
+section|String|Section id. Ads will be served as per section id. (required)|Empty
+streamingInfo|StreamingInfo|StreamingInfo instance. Not required to fill if using mediaId. SlikePlayer will take care of it.|N/A
+adCleanupTime|Number|Remove pending or stucked ad within time. Default is 6000 milliseconds.| 6000 milliseconds
+timecode|Number|Time in milliseconds from where media should start.|0
+isSkipAds|boolean|If property true, SlikePlayer does not show any ad.|NO
+isAutoPlay|boolean|If property true, the media will start automatically.|YES
+isFullscreenControl|boolean|If property false, the fullscreen button will not be visible.|YES
+isCloseControl|boolean|If property false, the close button will be visible only in fullscreen mode. Close control sends CONTROL event as CLOSE.|YES
+isShareControl|boolean|If property false, share button will not be visible. Share control sends CONTROL event as SHARE.|YES
+isNextControl|boolean|If property true, next button control will be visible. Next control sends CONTROL event as SL_NEXT.|NO
+isPreviousControl|boolean|If property true, previous button control will not be visible. Previous control sends CONTROL event as SL_PREVIOUS.|NO
+isFastSeekable|boolean|If property false (default), precise seeking is performed. Otherwise loose but fast seek is performed.|NO
+customControl|optional|If you want to create your own custom control, Please provide the customControl.|Default control added
+isCromeCastEnable|boolean|If property true, SlikePlayer does not show any cromecast.|NO
+shareText|String|If property is empty, share action return callback in to application. Otherwise we will open ios default share dialog|Empty
+posterImage|String|posterImage is used for video place holder before playing.|Empty
+strLatLong|String|This property is used for latitude and longitude which is concatenated by ',' .|Empty
+country|String|This property is used for user profile.|Empty
+state|String|This property is used for user profile..|Empty
+city|String|This property is used for user profile.|Empty
+gender|String|This property is used for user profile.|Empty
+screenName|String|This property is used for google analytic screen capture.|Empty
+fbAppId|String|This property is used for FaceBook video play.|Empty
+pageTemplate|String|Section within the app where media is to be played eg. Home/Videos|Empty
+
+
+##### parent:
+
+ Parent is the view in which the player will be added. It should be  an UIView. It is non nil.
+
+**************************************
+
+##Author
+
+Times Internet Limited, pravin.ranjan@timesinternet.in
+
+License
+-------
+
+    Copyright 2017 Times Internet
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
