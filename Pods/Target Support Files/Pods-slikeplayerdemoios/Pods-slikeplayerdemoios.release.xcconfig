@@ -1,0 +1,11 @@
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/FBAudienceNetwork/Static" "${PODS_ROOT}/GoogleAds-IMA-iOS-SDK"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1 $(inherited) FBSDKCOCOAPODS=1
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/FLAnimatedImage" "${PODS_ROOT}/Headers/Public/IQKeyboardManager" "${PODS_ROOT}/Headers/Public/MBProgressHUD" "${PODS_ROOT}/Headers/Public/SlikePlayer" "${PODS_ROOT}/Headers/Public/SlikePodcast"
+LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/FBSDKCoreKit" "${PODS_CONFIGURATION_BUILD_DIR}/FLAnimatedImage" "${PODS_CONFIGURATION_BUILD_DIR}/IQKeyboardManager" "${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD" "${PODS_CONFIGURATION_BUILD_DIR}/SlikePlayer" "${PODS_CONFIGURATION_BUILD_DIR}/SlikePodcast"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"FBSDKCoreKit" -l"FLAnimatedImage" -l"IQKeyboardManager" -l"MBProgressHUD" -l"SlikePlayer" -l"SlikePodcast" -l"c++" -l"stdc++" -l"xml2" -l"z" -framework "AVFoundation" -framework "AdSupport" -framework "AudioToolbox" -framework "CoreFoundation" -framework "CoreGraphics" -framework "CoreImage" -framework "CoreMedia" -framework "FBAudienceNetwork" -framework "Foundation" -framework "GoogleInteractiveMediaAds" -framework "ImageIO" -framework "MessageUI" -framework "MobileCoreServices" -framework "QuartzCore" -framework "Security" -framework "StoreKit" -framework "SystemConfiguration" -framework "UIKit" -weak_framework "Accelerate" -weak_framework "Accounts" -weak_framework "AdSupport" -weak_framework "AudioToolbox" -weak_framework "CFNetwork" -weak_framework "CoreGraphics" -weak_framework "CoreMotion" -weak_framework "CoreTelephony" -weak_framework "Foundation" -weak_framework "LocalAuthentication" -weak_framework "QuartzCore" -weak_framework "SafariServices" -weak_framework "Security" -weak_framework "Social" -weak_framework "SystemConfiguration" -weak_framework "UIKit" -weak_framework "VideoToolbox" -weak_framework "WebKit"
+PODS_BUILD_DIR = ${BUILD_DIR}
+PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
+PODS_ROOT = ${SRCROOT}/Pods
+USE_RECURSIVE_SCRIPT_INPUTS_IN_SCRIPT_PHASES = YES

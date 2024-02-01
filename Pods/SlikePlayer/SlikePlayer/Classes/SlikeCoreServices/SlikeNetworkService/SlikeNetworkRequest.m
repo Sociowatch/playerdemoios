@@ -1,0 +1,12 @@
+//
+//  SlikeNetworkRequest.m
+//  Pods
+//
+//  Created by Christian Menschel on 16/02/16.
+//
+//
+
+#import "SlikeNetworkRequest.h"
+
+@implementation SlikeNetworkRequest
+@end

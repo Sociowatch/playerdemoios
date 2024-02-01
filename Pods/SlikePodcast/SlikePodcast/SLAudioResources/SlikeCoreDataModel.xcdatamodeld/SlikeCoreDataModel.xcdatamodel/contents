@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="17G65" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="SlikeOfflineConfigModel" representedClassName="SlikeOfflineConfigModel" syncable="YES">
+        <attribute name="configData" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="configDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="SlikeOfflineModel" representedClassName="SlikeOfflineModel" syncable="YES">
+        <attribute name="cacheDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="downloadedPath" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="downloadStatus" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="downloadUrlString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="imageURLString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mediaType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="metaData" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="section" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="slikeId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="streamData" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userId" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="SlikeOfflineConfigModel" positionX="159.69921875" positionY="-16.890625" width="128" height="75"/>
+        <element name="SlikeOfflineModel" positionX="-63" positionY="-11" width="128" height="225"/>
+    </elements>
+</model>

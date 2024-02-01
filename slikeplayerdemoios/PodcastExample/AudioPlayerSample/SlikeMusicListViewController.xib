@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SlikeMusicListViewController">
+            <connections>
+                <outlet property="activityLoading" destination="P9J-zu-t7l" id="jAz-hI-VBh"/>
+                <outlet property="btConst" destination="baE-rY-fHS" id="v3z-s4-J5w"/>
+                <outlet property="errorLabel" destination="if6-lY-9Yp" id="QDz-4l-6Oc"/>
+                <outlet property="tableView" destination="hqO-PS-eJP" id="oaJ-2H-6Ej"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="if6-lY-9Yp">
+                    <rect key="frame" x="186.66666666666666" y="358.33333333333331" width="40.666666666666657" height="19.333333333333314"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="P9J-zu-t7l">
+                    <rect key="frame" x="188.66666666666666" y="349.66666666666669" width="37" height="37"/>
+                    <color key="color" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </activityIndicatorView>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="hqO-PS-eJP">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="ncA-G6-3uA"/>
+                        <outlet property="delegate" destination="-1" id="s1v-fL-CxR"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="P9J-zu-t7l" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="Aob-d5-6I9"/>
+                <constraint firstItem="hqO-PS-eJP" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="Sga-N8-xzU"/>
+                <constraint firstItem="if6-lY-9Yp" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="YsB-Nj-ZV7"/>
+                <constraint firstAttribute="trailing" secondItem="hqO-PS-eJP" secondAttribute="trailing" id="aQn-B2-nv4"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="hqO-PS-eJP" secondAttribute="bottom" id="baE-rY-fHS"/>
+                <constraint firstItem="if6-lY-9Yp" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="d6G-pk-wLg"/>
+                <constraint firstItem="hqO-PS-eJP" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="oRa-Y0-BOp"/>
+                <constraint firstItem="P9J-zu-t7l" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="uzS-dW-sBD"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <point key="canvasLocation" x="137.68115942028987" y="127.98913043478262"/>
+        </view>
+    </objects>
+</document>

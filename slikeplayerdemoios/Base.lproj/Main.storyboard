@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="WTZ-VJ-IEy">
+            <objects>
+                <navigationController id="0kg-Qy-Vd7" sceneMemberID="viewController">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="B6L-eW-SC4">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="FFq-mn-aIX" kind="relationship" relationship="rootViewController" id="HMS-BS-d6n"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SSe-VD-AfW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2120" y="446"/>
+        </scene>
+        <!--Slike Player-->
+        <scene sceneID="cCh-rO-yxv">
+            <objects>
+                <viewController storyboardIdentifier="BaseViewController" id="FFq-mn-aIX" customClass="BaseViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Vnp-Kx-Tco"/>
+                        <viewControllerLayoutGuide type="bottom" id="NMi-R6-l5R"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="yLB-h9-8tz">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="wfg-Wp-Pnw">
+                                <rect key="frame" x="20" y="202.5" width="335" height="262"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G7W-64-k1M">
+                                        <rect key="frame" x="0.0" y="0.0" width="335" height="40.5"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Player"/>
+                                        <connections>
+                                            <action selector="startSlikePlayer:" destination="FFq-mn-aIX" eventType="touchUpInside" id="x04-nY-ehA"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dN1-uX-rY1">
+                                        <rect key="frame" x="0.0" y="55.5" width="335" height="40.5"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Youtube (slike id)"/>
+                                        <connections>
+                                            <action selector="startSlikeYoutube:" destination="FFq-mn-aIX" eventType="touchUpInside" id="Kih-TU-ojP"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1t8-rO-Vna">
+                                        <rect key="frame" x="0.0" y="111" width="335" height="40"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Youtube(youtube Id)"/>
+                                        <connections>
+                                            <action selector="directYoutubePlay:" destination="FFq-mn-aIX" eventType="touchUpInside" id="qWo-Wm-U9F"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QiW-Jb-XCV">
+                                        <rect key="frame" x="0.0" y="166" width="335" height="40.5"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Start Facebook (slike id)"/>
+                                        <connections>
+                                            <action selector="fbAction:" destination="FFq-mn-aIX" eventType="touchUpInside" id="k0e-ox-iZo"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AYF-Bq-Wfv">
+                                        <rect key="frame" x="0.0" y="221.5" width="335" height="40.5"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Audio Player"/>
+                                        <connections>
+                                            <action selector="audioPlayerDidClicked:" destination="FFq-mn-aIX" eventType="touchUpInside" id="SXc-ln-XPs"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="262" id="XPd-or-o4n"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="wfg-Wp-Pnw" secondAttribute="trailing" constant="20" id="1IN-8C-1S8"/>
+                            <constraint firstItem="wfg-Wp-Pnw" firstAttribute="centerY" secondItem="yLB-h9-8tz" secondAttribute="centerY" id="Jdy-nj-zPD"/>
+                            <constraint firstItem="wfg-Wp-Pnw" firstAttribute="leading" secondItem="yLB-h9-8tz" secondAttribute="leading" constant="20" id="UE5-XN-1Dd"/>
+                            <constraint firstItem="wfg-Wp-Pnw" firstAttribute="centerX" secondItem="yLB-h9-8tz" secondAttribute="centerX" id="i9C-iE-gk7"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Slike Player" id="Pv9-YI-Cow"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sOb-Ax-3BI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1402.4000000000001" y="472.71364317841085"/>
+        </scene>
+        <!--Slike Player-->
+        <scene sceneID="aYu-cd-MUG">
+            <objects>
+                <viewController storyboardIdentifier="DemoViewController" id="3Hl-h7-KSh" customClass="DemoViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1bo-Qp-KhT"/>
+                        <viewControllerLayoutGuide type="bottom" id="Acz-Va-wIm"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="cl5-tN-OfJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HLi-01-mdq">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="240"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="240" id="Jba-Vi-0rS"/>
+                                </constraints>
+                            </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XyI-PC-mWT">
+                                <rect key="frame" x="0.0" y="240" width="375" height="427"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="HLi-01-mdq" firstAttribute="top" secondItem="1bo-Qp-KhT" secondAttribute="bottom" id="ZO6-K6-TqF"/>
+                            <constraint firstItem="XyI-PC-mWT" firstAttribute="top" secondItem="HLi-01-mdq" secondAttribute="bottom" id="aSw-y4-w2F"/>
+                            <constraint firstAttribute="trailing" secondItem="HLi-01-mdq" secondAttribute="trailing" id="qdL-of-an4"/>
+                            <constraint firstItem="Acz-Va-wIm" firstAttribute="top" secondItem="XyI-PC-mWT" secondAttribute="bottom" id="tvI-G6-LnS"/>
+                            <constraint firstItem="HLi-01-mdq" firstAttribute="leading" secondItem="cl5-tN-OfJ" secondAttribute="leading" id="uy7-er-Rsz"/>
+                            <constraint firstAttribute="trailing" secondItem="XyI-PC-mWT" secondAttribute="trailing" id="vNL-Cq-cPL"/>
+                            <constraint firstItem="XyI-PC-mWT" firstAttribute="leading" secondItem="cl5-tN-OfJ" secondAttribute="leading" id="vmZ-cm-w0g"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Slike Player" id="AZh-qf-fN8"/>
+                    <connections>
+                        <outlet property="playerAreaView" destination="HLi-01-mdq" id="AFU-Xt-fpH"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vau-bj-PpQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-556" y="473"/>
+        </scene>
+        <!--Slike Config View Controller-->
+        <scene sceneID="c7v-a2-CPA">
+            <objects>
+                <viewController storyboardIdentifier="SlikeConfigViewController" id="zhd-2E-nXh" customClass="SlikeConfigViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="tYk-eJ-ViL"/>
+                        <viewControllerLayoutGuide type="bottom" id="elC-cQ-yjd"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="mki-vN-hld">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="72" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="idM-aY-8jn">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="zhd-2E-nXh" id="B7d-X9-bTJ"/>
+                                    <outlet property="delegate" destination="zhd-2E-nXh" id="19p-Nr-nmx"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="elC-cQ-yjd" firstAttribute="top" secondItem="idM-aY-8jn" secondAttribute="bottom" id="J1H-2S-ztU"/>
+                            <constraint firstAttribute="trailing" secondItem="idM-aY-8jn" secondAttribute="trailing" id="YNY-Lu-dmb"/>
+                            <constraint firstItem="idM-aY-8jn" firstAttribute="top" secondItem="tYk-eJ-ViL" secondAttribute="bottom" id="nKO-rr-5hI"/>
+                            <constraint firstItem="idM-aY-8jn" firstAttribute="leading" secondItem="mki-vN-hld" secondAttribute="leading" id="z5e-Y0-brt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tbView" destination="idM-aY-8jn" id="8vE-T0-Z5a"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zRS-1E-s0M" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="340" y="472.71364317841085"/>
+        </scene>
+        <!--SlikePlaylistViewController-->
+        <scene sceneID="B25-nt-WJc">
+            <objects>
+                <viewController storyboardIdentifier="SlikePlaylistViewController" id="RpU-Bg-tRf" userLabel="SlikePlaylistViewController" customClass="SlikePlaylistViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1Rb-vs-NGI"/>
+                        <viewControllerLayoutGuide type="bottom" id="gFX-YU-34a"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="GHX-pN-TdP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cZn-0y-eaN">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="84"/>
+                                <color key="backgroundColor" white="0.1533203125" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="84" id="JV9-fF-eWV"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mpd-u4-MDd">
+                                <rect key="frame" x="0.0" y="37" width="50" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="WH8-B8-vgR"/>
+                                    <constraint firstAttribute="height" constant="44" id="wT6-Rm-c4P"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <state key="normal" image="back"/>
+                                <connections>
+                                    <action selector="backAction:" destination="RpU-Bg-tRf" eventType="touchUpInside" id="Mi8-Aw-n5U"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SLIKE PLAYLIST" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1BE-9Z-NVd">
+                                <rect key="frame" x="95.5" y="37" width="184.5" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="bOp-9x-sRe"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y8d-QB-5y8">
+                                <rect key="frame" x="0.0" y="84" width="375" height="240"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="imI-TB-mcB" customClass="SlikeMaterialDesignSpinner">
+                                        <rect key="frame" x="169.5" y="102" width="36" height="36"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="36" id="Ayt-Jh-0uH"/>
+                                            <constraint firstAttribute="width" constant="36" id="U3a-Lw-fxC"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="imI-TB-mcB" firstAttribute="centerY" secondItem="Y8d-QB-5y8" secondAttribute="centerY" id="D8S-du-AW0"/>
+                                    <constraint firstItem="imI-TB-mcB" firstAttribute="centerX" secondItem="Y8d-QB-5y8" secondAttribute="centerX" id="pF4-gR-FwP"/>
+                                    <constraint firstAttribute="height" constant="240" id="rx4-CP-wS2"/>
+                                </constraints>
+                            </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="16Y-pP-U5N">
+                                <rect key="frame" x="0.0" y="326" width="375" height="341"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Mpd-u4-MDd" firstAttribute="leading" secondItem="GHX-pN-TdP" secondAttribute="leading" id="CKX-yL-RPM"/>
+                            <constraint firstItem="Y8d-QB-5y8" firstAttribute="top" secondItem="cZn-0y-eaN" secondAttribute="bottom" id="DKs-fH-tFI"/>
+                            <constraint firstAttribute="bottom" secondItem="16Y-pP-U5N" secondAttribute="bottom" id="Hs9-EL-jAp"/>
+                            <constraint firstItem="16Y-pP-U5N" firstAttribute="top" secondItem="Y8d-QB-5y8" secondAttribute="bottom" constant="2" id="Jeb-vl-u5B"/>
+                            <constraint firstAttribute="trailing" secondItem="Y8d-QB-5y8" secondAttribute="trailing" id="NDb-eo-i6M"/>
+                            <constraint firstItem="cZn-0y-eaN" firstAttribute="top" secondItem="GHX-pN-TdP" secondAttribute="top" id="QG3-Ft-wx8"/>
+                            <constraint firstAttribute="trailing" secondItem="16Y-pP-U5N" secondAttribute="trailing" id="QZv-mt-bMn"/>
+                            <constraint firstItem="Y8d-QB-5y8" firstAttribute="leading" secondItem="GHX-pN-TdP" secondAttribute="leading" id="TSW-mS-S2t"/>
+                            <constraint firstItem="Y8d-QB-5y8" firstAttribute="top" secondItem="1BE-9Z-NVd" secondAttribute="bottom" constant="3" id="aVq-lZ-t59"/>
+                            <constraint firstItem="cZn-0y-eaN" firstAttribute="leading" secondItem="GHX-pN-TdP" secondAttribute="leading" id="jq5-O3-lFg"/>
+                            <constraint firstItem="16Y-pP-U5N" firstAttribute="leading" secondItem="GHX-pN-TdP" secondAttribute="leading" id="kUa-Dk-IDy"/>
+                            <constraint firstItem="1BE-9Z-NVd" firstAttribute="centerX" secondItem="GHX-pN-TdP" secondAttribute="centerX" id="nSv-PJ-9gF"/>
+                            <constraint firstAttribute="trailing" secondItem="cZn-0y-eaN" secondAttribute="trailing" id="qjt-DQ-s5e"/>
+                            <constraint firstItem="Y8d-QB-5y8" firstAttribute="top" secondItem="Mpd-u4-MDd" secondAttribute="bottom" constant="3" id="yPc-er-ZIE"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="loadingView" destination="imI-TB-mcB" id="fw1-uW-cqb"/>
+                        <outlet property="playerAreaView" destination="Y8d-QB-5y8" id="rnw-EY-b2m"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dC5-gd-aI2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1370" y="446"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="back" width="10" height="17.5"/>
+    </resources>
+</document>

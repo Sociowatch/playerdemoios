@@ -1,0 +1,59 @@
+PODS:
+  - FBAudienceNetwork (5.8.0):
+    - FBSDKCoreKit/Basics (>= 5.6.0)
+  - FBSDKCoreKit/Basics (7.0.0)
+  - FLAnimatedImage (1.0.12)
+  - GoogleAds-IMA-iOS-SDK (3.11.3)
+  - IQKeyboardManager (6.5.5)
+  - MBProgressHUD (1.2.0)
+  - SlikePlayer (2.9.5):
+    - FBAudienceNetwork
+    - GoogleAds-IMA-iOS-SDK (~> 3.11.0)
+  - SlikePodcast (1.1.2):
+    - FLAnimatedImage (~> 1.0)
+    - SlikePlayer (= 2.9.5)
+
+DEPENDENCIES:
+  - IQKeyboardManager
+  - MBProgressHUD (~> 1.2.0)
+  - SlikePlayer (from `https://bitbucket.org/times_internet/slikeplayer-ios.git`, tag `2.9.5`)
+  - SlikePodcast (from `https://bitbucket.org/times_internet/SlikePodcast.git`, tag `1.1.2`)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - FBAudienceNetwork
+    - FBSDKCoreKit
+    - FLAnimatedImage
+    - GoogleAds-IMA-iOS-SDK
+    - IQKeyboardManager
+    - MBProgressHUD
+
+EXTERNAL SOURCES:
+  SlikePlayer:
+    :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
+    :tag: 2.9.5
+  SlikePodcast:
+    :git: https://bitbucket.org/times_internet/SlikePodcast.git
+    :tag: 1.1.2
+
+CHECKOUT OPTIONS:
+  SlikePlayer:
+    :git: https://bitbucket.org/times_internet/slikeplayer-ios.git
+    :tag: 2.9.5
+  SlikePodcast:
+    :git: https://bitbucket.org/times_internet/SlikePodcast.git
+    :tag: 1.1.2
+
+SPEC CHECKSUMS:
+  FBAudienceNetwork: 98c125767300048ad46c756680644f4ecb7c4040
+  FBSDKCoreKit: 8ad31cd09f793d1d7e84cf20fd6cebfe80ad318d
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  GoogleAds-IMA-iOS-SDK: 134b35758455576aaa6b3d2d3146699dcf8af4f1
+  IQKeyboardManager: 3a8b9e603f8b0eeaf5f096a1f2b2cfcf121992ef
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
+  SlikePlayer: deacf58ba0b904bbd35678eb871d8b17b0404c37
+  SlikePodcast: bc90be282bb7c95450bb070ef8b1cba73a5114a5
+
+PODFILE CHECKSUM: 3eb46947f15c91f07a7d64dbaa747d48b83adbb5
+
+COCOAPODS: 1.9.1
