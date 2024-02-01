@@ -643,12 +643,12 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-slikeplayerdemoios/Pods-slikeplayerdemoios-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SlikePlayer/SlikePlayerResources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SlikePodcast/SLAudioResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SlikeRecommendation/SlikeRecResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SlikePlayerResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SLAudioResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SlikeRecResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
