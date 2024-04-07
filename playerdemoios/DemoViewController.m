@@ -7,15 +7,15 @@
 //
 
 #import "DemoViewController.h"
-#import "SlikeMusicListViewController.h"
+//#import "SlikeMusicListViewController.h"
 
 
 @interface DemoViewController ()
 {
 }
 @property (weak, nonatomic) IBOutlet UIView *playerAreaView;
-@property (strong, nonatomic) SlikeConfig *slikeConfig;
-@property (strong, nonatomic) SlikePlayer *slikePlayer;
+@property (strong, nonatomic) SWConfig *slikeConfig;
+@property (strong, nonatomic) SWPlayer *slikePlayer;
 
 @end
 
@@ -49,7 +49,7 @@
 #pragma mark Slike Player
 -(void)startPlayer {
     //1xwrad3ugg
-    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"slike" withID:@"1xwrad3ugg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    self.slikeConfig = [[SWConfig alloc] initWithChannel:@"slike" withID:@"1xwrad3ugg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
     _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"";
@@ -63,8 +63,8 @@
     _slikeConfig.isCloseControl = NO;
     _slikeConfig.isAllowSlikePlaceHolder =  YES;
     _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SlikePlayer sharedSlikePlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
+    self.slikePlayer = [SWPlayer sharedSWPlayer];
+    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         NSLog(@"PARENT EVENT: (AD) ===> [adTypeEnum - %ld]", (long)statusInfo.adStatusInfo.adTypeEnum);
         
@@ -89,14 +89,14 @@
         }
         
         else if (eventType == MEDIA) {
-            NSLog(@"PARENT EVENT: (MEDIA) ===> [SlikePlayerState - %ld]", (long)playerState);
+            NSLog(@"PARENT EVENT: (MEDIA) ===> [SWPlayerState - %ld]", (long)playerState);
         }
     }];
 }
 
 #pragma mark Slike Player Youtube
 -(void)startPlayerYoutube {
-    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"slike" withID:@"1xn1487gk9" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    self.slikeConfig = [[SWConfig alloc] initWithChannel:@"slike" withID:@"1xn1487gk9" withSection:@"default" withMSId:@"56087249" posterImage:@""];
     _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"";
@@ -109,8 +109,8 @@
     _slikeConfig.preview =  YES;
     _slikeConfig.isGestureEnable = YES;
     _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SlikePlayer sharedSlikePlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
+    self.slikePlayer = [SWPlayer sharedSWPlayer];
+    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         if (eventType == AD) {
             
@@ -126,7 +126,7 @@
         }
         
         else if (eventType == MEDIA) {
-            NSLog(@"PARENT EVENT: (MEDIA) ===> [SlikePlayerState - %ld]", (long)playerState);
+            NSLog(@"PARENT EVENT: (MEDIA) ===> [SWPlayerState - %ld]", (long)playerState);
         }
     }];
 }
@@ -134,7 +134,7 @@
 -(void)startPlayerYoutubeOutSide {
     //youtube ID
     
-    self.slikeConfig =  [SlikeConfig createConfigForType:VIDEO_SOURCE_YT mediaTitle:@"Seagram’s 100 Pipers | The Legacy Project" mediaURL:@"cv8UocAT87c" posterURL:@"" isAutoPlay:YES];
+    self.slikeConfig =  [SWConfig createConfigForType:VIDEO_SOURCE_YT mediaTitle:@"Seagram’s 100 Pipers | The Legacy Project" mediaURL:@"cv8UocAT87c" posterURL:@"" isAutoPlay:YES];
     _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"Toi.in";
@@ -146,8 +146,8 @@
     SlikeFullscreenAutorotationModeLandscape;
     _slikeConfig.preview =  YES;
     _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SlikePlayer sharedSlikePlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
+    self.slikePlayer = [SWPlayer sharedSWPlayer];
+    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         if (eventType == AD) {
             
@@ -163,7 +163,7 @@
         }
         
         else if (eventType == MEDIA) {
-            NSLog(@"PARENT EVENT: (MEDIA) ===> [SlikePlayerState - %ld]", (long)playerState);
+            NSLog(@"PARENT EVENT: (MEDIA) ===> [SWPlayerState - %ld]", (long)playerState);
         }
     }];
 }
@@ -184,8 +184,8 @@
     [self stopPlayer];
 }
 -(void)startPlayerPreviousMethod {
-    self.slikePlayer = [SlikePlayer sharedSlikePlayer];
-    [_slikePlayer playVideo:_slikeConfigPrevious inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
+    self.slikePlayer = [SWPlayer sharedSWPlayer];
+    [_slikePlayer playVideo:_slikeConfigPrevious inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         if (eventType == AD) {
             
@@ -205,14 +205,14 @@
         }
         
         else if (eventType == MEDIA) {
-            NSLog(@"PARENT EVENT: (MEDIA) ===> [SlikePlayerState - %ld]", (long)playerState);
+            NSLog(@"PARENT EVENT: (MEDIA) ===> [SWPlayerState - %ld]", (long)playerState);
         }
     }];
 }
 
 -(void)startFBPlayerSlikeId {
     //1xwrad3ugg
-    self.slikeConfig = [[SlikeConfig alloc] initWithChannel:@"slike" withID:@"1xwmdv1kll" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    self.slikeConfig = [[SWConfig alloc] initWithChannel:@"slike" withID:@"1xwmdv1kll" withSection:@"default" withMSId:@"56087249" posterImage:@""];
     _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _slikeConfig.pid = @"101";
     _slikeConfig.shareText = @"";
@@ -226,8 +226,8 @@
     _slikeConfig.isCloseControl = NO;
     _slikeConfig.isAllowSlikePlaceHolder =  YES;
     _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SlikePlayer sharedSlikePlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SlikeEventType eventType, SlikePlayerState playerState, StatusInfo *statusInfo) {
+    self.slikePlayer = [SWPlayer sharedSWPlayer];
+    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         NSLog(@"PARENT EVENT: (AD) ===> [adTypeEnum - %ld]", (long)statusInfo.adStatusInfo.adTypeEnum);
         
@@ -252,7 +252,7 @@
         }
         
         else if (eventType == MEDIA) {
-            NSLog(@"PARENT EVENT: (MEDIA) ===> [SlikePlayerState - %ld]", (long)playerState);
+            NSLog(@"PARENT EVENT: (MEDIA) ===> [SWPlayerState - %ld]", (long)playerState);
         }
     }];
 }

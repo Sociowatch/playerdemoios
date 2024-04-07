@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #define apikey @"test165ios5aps9gok6z"
-#import <SlikePlayer/SlikePlayer.h>
+#import <SWPlayer/SWPlayer.h>
 
 @interface AppDelegate ()
 
@@ -29,7 +29,7 @@
     isDebug = YES;
 #endif
     if ([apikey length]> 0) {
-        [[SlikePlayerSettings playerSettingsInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
+        [[SWPlayerSettings playerSettingsInstance] initPlayerWithApikey:apikey andWithDeviceUID:nil debugMode:isDebug];
     }
     return YES;
 }

@@ -8,9 +8,9 @@
 
 #import "BaseViewController.h"
 #import "DemoViewController.h"
-#import "SlikeConfigViewController.h"
-#import "SlikePlaylistViewController.h"
-#import "SlikeMusicListViewController.h"
+//#import "SlikeConfigViewController.h"
+//#import "SlikePlaylistViewController.h"
+//#import "SlikeMusicListViewController.h"
 
 @interface BaseViewController ()
 
@@ -54,14 +54,16 @@
 }
 - (IBAction)audioPlayerDidClicked:(id)sender {
         
-    SlikeMusicListViewController *audioPlayer = [[SlikeMusicListViewController alloc]initWithNibName:@"SlikeMusicListViewController" bundle:nil];
+  /*  SlikeMusicListViewController *audioPlayer = [[SlikeMusicListViewController alloc]initWithNibName:@"SlikeMusicListViewController" bundle:nil];
     [self.navigationController pushViewController:audioPlayer animated:YES];
+   */
 }
 - (IBAction)configAction:(id)sender
 {
-    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+   /* UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
     SlikeConfigViewController *controller=   [mainStoryboard instantiateViewControllerWithIdentifier:@"SlikeConfigViewController"];
     [self.navigationController pushViewController:controller animated:YES];
+    */
 }
 
 @end
