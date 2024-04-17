@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0kg-Qy-Vd7">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -13,7 +14,7 @@
                 <navigationController id="0kg-Qy-Vd7" sceneMemberID="viewController">
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="B6L-eW-SC4">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -24,10 +25,10 @@
             </objects>
             <point key="canvasLocation" x="-2120" y="446"/>
         </scene>
-        <!--Slike Player-->
+        <!--SWPlayer-->
         <scene sceneID="cCh-rO-yxv">
             <objects>
-                <viewController storyboardIdentifier="BaseViewController" id="FFq-mn-aIX" customClass="BaseViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BaseViewController" title="SWPlayer" id="FFq-mn-aIX" customClass="BaseViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Vnp-Kx-Tco"/>
                         <viewControllerLayoutGuide type="bottom" id="NMi-R6-l5R"/>
@@ -93,16 +94,16 @@
                             <constraint firstItem="wfg-Wp-Pnw" firstAttribute="centerX" secondItem="yLB-h9-8tz" secondAttribute="centerX" id="i9C-iE-gk7"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Slike Player" id="Pv9-YI-Cow"/>
+                    <navigationItem key="navigationItem" title="SWPlayer" id="Pv9-YI-Cow"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sOb-Ax-3BI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1402.4000000000001" y="472.71364317841085"/>
         </scene>
-        <!--Slike Player-->
+        <!--SWPlayer-->
         <scene sceneID="aYu-cd-MUG">
             <objects>
-                <viewController storyboardIdentifier="DemoViewController" id="3Hl-h7-KSh" customClass="DemoViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DemoViewController" title="SWPlayer" id="3Hl-h7-KSh" customClass="DemoViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1bo-Qp-KhT"/>
                         <viewControllerLayoutGuide type="bottom" id="Acz-Va-wIm"/>
@@ -112,14 +113,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HLi-01-mdq">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="240"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="240"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="240" id="Jba-Vi-0rS"/>
                                 </constraints>
                             </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XyI-PC-mWT">
-                                <rect key="frame" x="0.0" y="240" width="375" height="427"/>
+                                <rect key="frame" x="0.0" y="260" width="375" height="407"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -146,10 +147,10 @@
             </objects>
             <point key="canvasLocation" x="-556" y="473"/>
         </scene>
-        <!--Slike Config View Controller-->
+        <!--SWPlayer-->
         <scene sceneID="c7v-a2-CPA">
             <objects>
-                <viewController storyboardIdentifier="SlikeConfigViewController" id="zhd-2E-nXh" customClass="SlikeConfigViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SlikeConfigViewController" title="SWPlayer" id="zhd-2E-nXh" customClass="SlikeConfigViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="tYk-eJ-ViL"/>
                         <viewControllerLayoutGuide type="bottom" id="elC-cQ-yjd"/>
@@ -159,15 +160,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="72" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="idM-aY-8jn">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="zhd-2E-nXh" id="B7d-X9-bTJ"/>
                                     <outlet property="delegate" destination="zhd-2E-nXh" id="19p-Nr-nmx"/>
                                 </connections>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="elC-cQ-yjd" firstAttribute="top" secondItem="idM-aY-8jn" secondAttribute="bottom" id="J1H-2S-ztU"/>
                             <constraint firstAttribute="trailing" secondItem="idM-aY-8jn" secondAttribute="trailing" id="YNY-Lu-dmb"/>
@@ -186,7 +187,7 @@
         <!--SlikePlaylistViewController-->
         <scene sceneID="B25-nt-WJc">
             <objects>
-                <viewController storyboardIdentifier="SlikePlaylistViewController" id="RpU-Bg-tRf" userLabel="SlikePlaylistViewController" customClass="SlikePlaylistViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SlikePlaylistViewController" title="SWPlayer" id="RpU-Bg-tRf" userLabel="SlikePlaylistViewController" customClass="SlikePlaylistViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1Rb-vs-NGI"/>
                         <viewControllerLayoutGuide type="bottom" id="gFX-YU-34a"/>
@@ -214,8 +215,8 @@
                                     <action selector="backAction:" destination="RpU-Bg-tRf" eventType="touchUpInside" id="Mi8-Aw-n5U"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SLIKE PLAYLIST" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1BE-9Z-NVd">
-                                <rect key="frame" x="95.5" y="37" width="184.5" height="44"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SW PLAYLIST" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1BE-9Z-NVd">
+                                <rect key="frame" x="109" y="37" width="157" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="bOp-9x-sRe"/>
                                 </constraints>
@@ -280,5 +281,8 @@
     </scenes>
     <resources>
         <image name="back" width="10" height="17.5"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

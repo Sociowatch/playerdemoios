@@ -14,8 +14,8 @@
 {
 }
 @property (weak, nonatomic) IBOutlet UIView *playerAreaView;
-@property (strong, nonatomic) SWConfig *slikeConfig;
-@property (strong, nonatomic) SWPlayer *slikePlayer;
+@property (strong, nonatomic) SWConfig *swConfig;
+@property (strong, nonatomic) SWPlayer *swPlayer;
 
 @end
 
@@ -49,22 +49,22 @@
 #pragma mark Slike Player
 -(void)startPlayer {
     //1xwrad3ugg
-    self.slikeConfig = [[SWConfig alloc] initWithChannel:@"slike" withID:@"1xwrad3ugg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
-    _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
-    _slikeConfig.pid = @"101";
-    _slikeConfig.shareText = @"";
-    _slikeConfig.isSkipAds =  NO;
-    _slikeConfig.section =  @"default";
-    _slikeConfig.pageTemplate =  @"home/api/test";
-    _slikeConfig.isFullscreenControl =  YES;
-    _slikeConfig.autorotationMode  =
-    SlikeFullscreenAutorotationModeLandscape;
-    _slikeConfig.preview =  YES;
-    _slikeConfig.isCloseControl = NO;
-    _slikeConfig.isAllowSlikePlaceHolder =  YES;
-    _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SWPlayer sharedSWPlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
+    self.swConfig = [[SWConfig alloc] initWithChannel:@"swPlayer" withID:@"1xwrad3ugg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    _swConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    _swConfig.pid = @"101";
+    _swConfig.shareText = @"";
+    _swConfig.isSkipAds =  NO;
+    _swConfig.section =  @"default";
+    _swConfig.pageTemplate =  @"home/api/test";
+    _swConfig.isFullscreenControl =  YES;
+    _swConfig.autorotationMode  =
+    SWFullscreenAutorotationModeLandscape;
+    _swConfig.preview =  YES;
+    _swConfig.isCloseControl = NO;
+    _swConfig.isAllowSWPlaceHolder =  YES;
+    _swConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    self.swPlayer = [SWPlayer sharedSWPlayer];
+    [_swPlayer playVideo:_swConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         NSLog(@"PARENT EVENT: (AD) ===> [adTypeEnum - %ld]", (long)statusInfo.adStatusInfo.adTypeEnum);
         
@@ -79,9 +79,9 @@
             
             //Pause the player. Pause:FALSE (User has not paused the video. It is Paused by activity)
             //Input share logic
-            //            if([[_slikePlayer getAnyPlayer] isPlaying])
-            //            [[_slikePlayer getAnyPlayer] pause:NO];
-            //            else  [[_slikePlayer getAnyPlayer] play:NO];
+            //            if([[_swPlayer getAnyPlayer] isPlaying])
+            //            [[_swPlayer getAnyPlayer] pause:NO];
+            //            else  [[_swPlayer getAnyPlayer] play:NO];
             
         }
         else if (eventType == CONTROLS && playerState == SL_CLOSE) {
@@ -96,21 +96,22 @@
 
 #pragma mark Slike Player Youtube
 -(void)startPlayerYoutube {
-    self.slikeConfig = [[SWConfig alloc] initWithChannel:@"slike" withID:@"1xn1487gk9" withSection:@"default" withMSId:@"56087249" posterImage:@""];
-    _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
-    _slikeConfig.pid = @"101";
-    _slikeConfig.shareText = @"";
-    _slikeConfig.isSkipAds =  NO;
-    _slikeConfig.section =  @"default";
-    _slikeConfig.pageTemplate =  @"home/api/test";
-    _slikeConfig.isFullscreenControl =  YES;
-    _slikeConfig.autorotationMode  =
-    SlikeFullscreenAutorotationModeLandscape;
-    _slikeConfig.preview =  YES;
-    _slikeConfig.isGestureEnable = YES;
-    _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SWPlayer sharedSWPlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
+    self.swConfig = [[SWConfig alloc] initWithChannel:@"sw" withID:@"4x1ea3pazg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    _swConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    _swConfig.pid = @"101";
+    _swConfig.shareText = @"";
+    _swConfig.isSkipAds =  NO;
+    _swConfig.section =  @"default";
+    _swConfig.pageTemplate =  @"home/api/test";
+    _swConfig.isFullscreenControl =  YES;
+    _swConfig.muteControlEnable =  YES;
+    _swConfig.autorotationMode  =
+    SWFullscreenAutorotationModeLandscape;
+    _swConfig.preview =  YES;
+    _swConfig.isGestureEnable = YES;
+    _swConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    self.swPlayer = [SWPlayer sharedSWPlayer];
+    [_swPlayer playVideo:_swConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         if (eventType == AD) {
             
@@ -134,20 +135,20 @@
 -(void)startPlayerYoutubeOutSide {
     //youtube ID
     
-    self.slikeConfig =  [SWConfig createConfigForType:VIDEO_SOURCE_YT mediaTitle:@"Seagram’s 100 Pipers | The Legacy Project" mediaURL:@"cv8UocAT87c" posterURL:@"" isAutoPlay:YES];
-    _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
-    _slikeConfig.pid = @"101";
-    _slikeConfig.shareText = @"Toi.in";
-    _slikeConfig.isSkipAds =  YES;
-    _slikeConfig.section =  @"default";
-    _slikeConfig.pageTemplate =  @"home/api/test";
-    _slikeConfig.isFullscreenControl =  YES;
-    _slikeConfig.autorotationMode  =
-    SlikeFullscreenAutorotationModeLandscape;
-    _slikeConfig.preview =  YES;
-    _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SWPlayer sharedSWPlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
+    self.swConfig =  [SWConfig createConfigForType:VIDEO_SOURCE_YT mediaTitle:@"Seagram’s 100 Pipers | The Legacy Project" mediaURL:@"cv8UocAT87c" posterURL:@"" isAutoPlay:YES];
+    _swConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    _swConfig.pid = @"101";
+    _swConfig.shareText = @"Toi.in";
+    _swConfig.isSkipAds =  YES;
+    _swConfig.section =  @"default";
+    _swConfig.pageTemplate =  @"home/api/test";
+    _swConfig.isFullscreenControl =  YES;
+    _swConfig.autorotationMode  =
+    SWFullscreenAutorotationModeLandscape;
+    _swConfig.preview =  YES;
+    _swConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    self.swPlayer = [SWPlayer sharedSWPlayer];
+    [_swPlayer playVideo:_swConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         if (eventType == AD) {
             
@@ -168,8 +169,8 @@
     }];
 }
 -(void)stopPlayer {
-    [_slikePlayer stopPlayer];
-    self.slikePlayer =  nil;
+    [_swPlayer stopPlayer];
+    self.swPlayer =  nil;
 }
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
@@ -184,8 +185,8 @@
     [self stopPlayer];
 }
 -(void)startPlayerPreviousMethod {
-    self.slikePlayer = [SWPlayer sharedSWPlayer];
-    [_slikePlayer playVideo:_slikeConfigPrevious inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
+    self.swPlayer = [SWPlayer sharedSWPlayer];
+    [_swPlayer playVideo:_slikeConfigPrevious inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         if (eventType == AD) {
             
@@ -198,9 +199,9 @@
             
             //Pause the player. Pause:FALSE (User has not paused the video. It is Paused by activity)
             //Input share logic
-            //            if([[_slikePlayer getAnyPlayer] isPlaying])
-            //            [[_slikePlayer getAnyPlayer] pause:NO];
-            //            else  [[_slikePlayer getAnyPlayer] play:NO];
+            //            if([[_swPlayer getAnyPlayer] isPlaying])
+            //            [[_swPlayer getAnyPlayer] pause:NO];
+            //            else  [[_swPlayer getAnyPlayer] play:NO];
             
         }
         
@@ -212,22 +213,22 @@
 
 -(void)startFBPlayerSlikeId {
     //1xwrad3ugg
-    self.slikeConfig = [[SWConfig alloc] initWithChannel:@"slike" withID:@"1xwmdv1kll" withSection:@"default" withMSId:@"56087249" posterImage:@""];
-    _slikeConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
-    _slikeConfig.pid = @"101";
-    _slikeConfig.shareText = @"";
-    _slikeConfig.isSkipAds =  NO;
-    _slikeConfig.section =  @"default";
-    _slikeConfig.pageTemplate =  @"home/api/test";
-    _slikeConfig.isFullscreenControl =  YES;
-    _slikeConfig.autorotationMode  =
-    SlikeFullscreenAutorotationModeLandscape;
-    _slikeConfig.preview =  YES;
-    _slikeConfig.isCloseControl = NO;
-    _slikeConfig.isAllowSlikePlaceHolder =  YES;
-    _slikeConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.slikePlayer = [SWPlayer sharedSWPlayer];
-    [_slikePlayer playVideo:_slikeConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
+    self.swConfig = [[SWConfig alloc] initWithChannel:@"swplayer" withID:@"1xwmdv1kll" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    _swConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
+    _swConfig.pid = @"101";
+    _swConfig.shareText = @"";
+    _swConfig.isSkipAds =  NO;
+    _swConfig.section =  @"default";
+    _swConfig.pageTemplate =  @"home/api/test";
+    _swConfig.isFullscreenControl =  YES;
+    _swConfig.autorotationMode  =
+    SWFullscreenAutorotationModeLandscape;
+    _swConfig.preview =  YES;
+    _swConfig.isCloseControl = NO;
+    _swConfig.isAllowSWPlaceHolder =  YES;
+    _swConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    self.swPlayer = [SWPlayer sharedSWPlayer];
+    [_swPlayer playVideo:_swConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         NSLog(@"PARENT EVENT: (AD) ===> [adTypeEnum - %ld]", (long)statusInfo.adStatusInfo.adTypeEnum);
         
@@ -242,9 +243,9 @@
             
             //Pause the player. Pause:FALSE (User has not paused the video. It is Paused by activity)
             //Input share logic
-            //            if([[_slikePlayer getAnyPlayer] isPlaying])
-            //            [[_slikePlayer getAnyPlayer] pause:NO];
-            //            else  [[_slikePlayer getAnyPlayer] play:NO];
+            //            if([[_swPlayer getAnyPlayer] isPlaying])
+            //            [[_swPlayer getAnyPlayer] pause:NO];
+            //            else  [[_swPlayer getAnyPlayer] play:NO];
             
         }
         else if (eventType == CONTROLS && playerState == SL_CLOSE) {
