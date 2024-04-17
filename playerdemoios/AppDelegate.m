@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#define apikey @"tnsw6web5mpgzug9gl"
+#define apikey @"toiweba5ec9705eb7ac2c984033e061"
 #import <SWPlayer/SWPlayer.h>
 
 @interface AppDelegate ()

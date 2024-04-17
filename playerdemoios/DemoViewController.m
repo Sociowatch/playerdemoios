@@ -49,7 +49,7 @@
 #pragma mark Slike Player
 -(void)startPlayer {
     //1xwrad3ugg
-    self.swConfig = [[SWConfig alloc] initWithChannel:@"swPlayer" withID:@"1xwrad3ugg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    self.swConfig = [[SWConfig alloc] initWithChannel:@"swPlayer" withID:@"4x1ea3pazg" withSection:@"default" withMSId:@"56087249" posterImage:@""];
     _swConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _swConfig.pid = @"101";
     _swConfig.shareText = @"";
@@ -63,7 +63,11 @@
     _swConfig.isCloseControl = NO;
     _swConfig.isAllowSWPlaceHolder =  YES;
     _swConfig.appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    
+    //self.swConfig.mediaId = @"4x1ea3pazg";
     self.swPlayer = [SWPlayer sharedSWPlayer];
+    
+    
     [_swPlayer playVideo:_swConfig inParentView:self.playerAreaView withProgressHandler:^(SWEventType eventType, SWPlayerState playerState, StatusInfo *statusInfo) {
         
         NSLog(@"PARENT EVENT: (AD) ===> [adTypeEnum - %ld]", (long)statusInfo.adStatusInfo.adTypeEnum);
@@ -213,7 +217,7 @@
 
 -(void)startFBPlayerSlikeId {
     //1xwrad3ugg
-    self.swConfig = [[SWConfig alloc] initWithChannel:@"swplayer" withID:@"1xwmdv1kll" withSection:@"default" withMSId:@"56087249" posterImage:@""];
+    self.swConfig = [[SWConfig alloc] initWithChannel:@"swplayer" withID:@"1xp83x3ku6" withSection:@"default" withMSId:@"56087249" posterImage:@""];
     _swConfig.ssoid = @"7ccgp8cpng4vcw9rg2tqvlkqc";
     _swConfig.pid = @"101";
     _swConfig.shareText = @"";
